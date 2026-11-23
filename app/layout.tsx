@@ -6,7 +6,7 @@ import { getJournal } from "@/lib/journal";
 import { appUrl } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const serif = Source_Serif_4({ subsets: ["latin"], variable: "--font-display", display: "swap", weight: ["400", "600", "700"], style: ["normal", "italic"] });
+const serif = Source_Serif_4({ subsets: ["latin"], variable: "--font-display", display: "swap" });
 
 export const dynamic = "force-dynamic";
 
