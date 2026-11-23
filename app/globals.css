@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-navy: #142D4E;
+  --color-navy-dark: #0d1f37;
+  --color-brand: #2864A5;
+  --color-brand-light: #e8f0fa;
+  --color-surface: #F5F7FA;
+  --color-ink: #202B38;
+  --color-muted: #6B7280;
+  --color-line: #E5E7EB;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+}
+
+html { scroll-behavior: smooth; }
+body { background: #fff; color: var(--color-ink); }
+
+@utility container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+
+@utility btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer; }
+@utility btn-primary { @apply btn bg-navy text-white hover:bg-navy-dark; }
+@utility btn-secondary { @apply btn border border-line bg-white text-ink hover:bg-surface; }
+@utility btn-brand { @apply btn bg-brand text-white hover:bg-navy; }
+@utility btn-danger { @apply btn bg-red-700 text-white hover:bg-red-800; }
+@utility btn-ghost { @apply btn text-brand hover:bg-brand-light; }
+@utility btn-sm { @apply px-2.5 py-1 text-xs; }
+
+@utility input { @apply block w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink shadow-sm placeholder:text-gray-400 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand; }
+@utility label { @apply mb-1 block text-sm font-medium text-ink; }
+@utility hint { @apply mt-1 text-xs text-muted; }
+@utility card { @apply rounded-lg border border-line bg-white; }
+@utility link { @apply text-brand hover:text-navy hover:underline underline-offset-2; }
+
+/*t*/.table { @apply w-full text-left text-sm; }
+.table th { @apply border-b border-line bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted; }
+.table td { @apply border-b border-line px-3 py-2 align-top; }
+

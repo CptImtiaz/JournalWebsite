@@ -1,0 +1,46 @@
+{
+  "name": "ijcst-journal",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "node scripts/vercel-build.mjs",
+    "build:local": "prisma generate && next build",
+    "start": "next start",
+    "db:push": "prisma db push",
+    "db:seed": "node --experimental-strip-types --no-warnings prisma/seed.ts",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@vercel/blob": "^2.9.0",
+    "bcryptjs": "^3.0.3",
+    "marked": "^18.2.1",
+    "next": "15.5",
+    "nodemailer": "^10.6.1",
+    "otpauth": "^9.6.0",
+    "qrcode": "^1.5.4",
+    "react": "19.1",
+    "react-dom": "19.1",
+    "sanitize-html": "^2.18.2",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@tailwindcss/typography": "^0.5.20",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^26.6.6",
+    "@types/nodemailer": "^8.0.2",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/sanitize-html": "^2.16.2",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4.3.5",
+    "typescript": "5.9"
+  },
+  "engines": {
+    "node": ">=22.6"
+  }
+}

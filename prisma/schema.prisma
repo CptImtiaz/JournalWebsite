@@ -1,0 +1,578 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+// ───────────── Users, roles, permissions ─────────────
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  fullName          String
+  country           String?
+  affiliation       String?
+  department        String?
+  orcid             String?
+  rorId             String?
+  researchInterests String?
+  emailVerifiedAt   DateTime?
+  privacyConsentAt  DateTime?
+  isActive          Boolean   @default(true)
+  mfaSecret         String?
+  mfaEnabled        Boolean   @default(false)
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  roles               UserRole[]
+  sessions            Session[]
+  tokens              AuthToken[]
+  authorProfile       AuthorProfile?
+  reviewerProfile     ReviewerProfile?
+  manuscripts         Manuscript[]         @relation("Submitter")
+  editedManuscripts   Manuscript[]         @relation("HandlingEditor")
+  reviewAssignments   ReviewerAssignment[] @relation("Reviewer")
+  invitedAssignments  ReviewerAssignment[] @relation("Inviter")
+  decisions           EditorialDecision[]
+  editorialNotes      EditorialNote[]
+  auditLogs           AuditLog[]
+  uploadedFiles       StoredFile[]
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  key         String           @unique // SUPER_ADMIN, JOURNAL_ADMIN, ...
+  name        String
+  description String?
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  key         String           @unique
+  description String?
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  mfaPassed Boolean  @default(true)
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model AuthToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  type      String // VERIFY_EMAIL, RESET_PASSWORD, REVIEW_INVITE
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  key       String // email or ip
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+}
+
+model AuthorProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  biography String?
+  website   String?
+}
+
+model ReviewerProfile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expertise    String?
+  institution  String?
+  availability String   @default("AVAILABLE") // AVAILABLE, LIMITED, UNAVAILABLE
+  notes        String?
+  createdAt    DateTime @default(now())
+}
+
+// ───────────── Editorial board ─────────────
+
+model EditorialBoardMember {
+  id                String   @id @default(cuid())
+  fullName          String
+  photoFileId       String?
+  designation       String? // e.g. Professor
+  department        String?
+  affiliation       String?
+  country           String?
+  researchInterests String?
+  biography         String?
+  email             String?
+  orcid             String?
+  website           String?
+  position          String // EDITOR_IN_CHIEF, MANAGING_EDITOR, ...
+  sortOrder         Int      @default(0)
+  isPublished       Boolean  @default(false)
+  appointmentConfirmed Boolean @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ResearchCategory {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  slug        String       @unique
+  description String?
+  sortOrder   Int          @default(0)
+  isActive    Boolean      @default(true)
+  manuscripts Manuscript[]
+  articles    Article[]
+}
+
+// ───────────── Manuscripts & peer review ─────────────
+
+model Manuscript {
+  id                    String    @id @default(cuid())
+  code                  String    @unique // JCS-2026-00001
+  title                 String
+  abstract              String
+  keywords              String
+  articleType           String
+  categoryId            String?
+  category              ResearchCategory? @relation(fields: [categoryId], references: [id])
+  status                String    @default("SUBMITTED")
+  submitterId           String
+  submitter             User      @relation("Submitter", fields: [submitterId], references: [id])
+  handlingEditorId      String?
+  handlingEditor        User?     @relation("HandlingEditor", fields: [handlingEditorId], references: [id])
+  coverLetter           String?
+  conflictOfInterest    String
+  fundingStatement      String
+  ethicsApprovalRequired Boolean  @default(false)
+  ethicsStatement       String?
+  originalityDeclared   Boolean   @default(false)
+  aiUsageDisclosure     String?
+  currentRevision       Int       @default(0)
+  submittedAt           DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  decidedAt             DateTime?
+
+  authors      ManuscriptAuthor[]
+  files        ManuscriptFile[]
+  revisions    ManuscriptRevision[]
+  assignments  ReviewerAssignment[]
+  decisions    EditorialDecision[]
+  notes        EditorialNote[]
+  statusEvents ManuscriptStatusEvent[]
+  article      Article?
+
+  @@index([status])
+  @@index([submitterId])
+}
+
+model ManuscriptAuthor {
+  id            String     @id @default(cuid())
+  manuscriptId  String
+  manuscript    Manuscript @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  order         Int
+  fullName      String
+  email         String
+  affiliation   String
+  country       String?
+  orcid         String?
+  isCorresponding Boolean  @default(false)
+}
+
+model ManuscriptFile {
+  id           String     @id @default(cuid())
+  manuscriptId String
+  manuscript   Manuscript @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  fileId       String
+  file         StoredFile @relation(fields: [fileId], references: [id])
+  kind         String // MANUSCRIPT, SUPPLEMENTARY, COVER_LETTER, REVISION, RESPONSE_LETTER, SIMILARITY_REPORT, EDITORIAL, ACCEPTED
+  revision     Int        @default(0)
+  createdAt    DateTime   @default(now())
+}
+
+model ManuscriptRevision {
+  id              String     @id @default(cuid())
+  manuscriptId    String
+  manuscript      Manuscript @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  number          Int
+  responseToReviewers String?
+  submittedAt     DateTime   @default(now())
+}
+
+model ManuscriptStatusEvent {
+  id           String     @id @default(cuid())
+  manuscriptId String
+  manuscript   Manuscript @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  status       String
+  note         String?
+  actorId      String?
+  createdAt    DateTime   @default(now())
+}
+
+model ReviewerAssignment {
+  id            String     @id @default(cuid())
+  manuscriptId  String
+  manuscript    Manuscript @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  reviewerId    String
+  reviewer      User       @relation("Reviewer", fields: [reviewerId], references: [id])
+  invitedById   String?
+  invitedBy     User?      @relation("Inviter", fields: [invitedById], references: [id])
+  revision      Int        @default(0)
+  status        String     @default("INVITED") // INVITED, ACCEPTED, DECLINED, COMPLETED, CANCELLED
+  dueAt         DateTime?
+  invitedAt     DateTime   @default(now())
+  respondedAt   DateTime?
+  lastReminderAt DateTime?
+  reminderCount Int        @default(0)
+  report        ReviewReport?
+
+  @@index([reviewerId])
+}
+
+model ReviewReport {
+  id                 String             @id @default(cuid())
+  assignmentId       String             @unique
+  assignment         ReviewerAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  recommendation     String // ACCEPT, MINOR_REVISION, MAJOR_REVISION, REJECT
+  commentsToAuthor   String
+  confidentialComments String?
+  annotatedFileId    String?
+  annotatedFile      StoredFile?        @relation(fields: [annotatedFileId], references: [id])
+  releasedToAuthor   Boolean            @default(false)
+  submittedAt        DateTime           @default(now())
+}
+
+model EditorialDecision {
+  id           String     @id @default(cuid())
+  manuscriptId String
+  manuscript   Manuscript @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  editorId     String
+  editor       User       @relation(fields: [editorId], references: [id])
+  decision     String // ACCEPT, MINOR_REVISION, MAJOR_REVISION, REJECT, RECOMMENDATION
+  isRecommendation Boolean @default(false)
+  letter       String
+  revision     Int        @default(0)
+  createdAt    DateTime   @default(now())
+}
+
+model EditorialNote {
+  id           String     @id @default(cuid())
+  manuscriptId String
+  manuscript   Manuscript @relation(fields: [manuscriptId], references: [id], onDelete: Cascade)
+  authorId     String
+  author       User       @relation(fields: [authorId], references: [id])
+  body         String
+  createdAt    DateTime   @default(now())
+}
+
+// ───────────── Journal, volumes, issues, articles ─────────────
+
+model Journal {
+  id                 String   @id @default("journal")
+  name               String
+  shortName          String
+  abbreviation       String?
+  tagline            String?
+  description        String?
+  logoFileId         String?
+  printIssn          String?
+  eIssn              String?
+  issnL              String?
+  issnAuthority      String?
+  publicationCountry String?
+  publisherName      String?
+  publisherAddress   String?
+  publicationFrequency String?
+  contactEmail       String?
+  contactPhone       String?
+  contactAddress     String?
+  isOpenAccess       Boolean  @default(true)
+  licenseName        String?  @default("CC BY 4.0")
+  licenseUrl         String?  @default("https://creativecommons.org/licenses/by/4.0/")
+  doiPrefix          String?
+  crossrefDepositorName  String?
+  crossrefDepositorEmail String?
+  crossrefTestMode   Boolean  @default(true)
+  manuscriptPrefix   String   @default("JCS")
+  maxUploadMb        Int      @default(4)
+  footerText         String?
+  copyrightStatement String?
+  seoTitle           String?
+  seoDescription     String?
+  seoKeywords        String?
+  googleAnalyticsId  String?
+  emailSenderName    String?
+  emailSenderAddress String?
+  editorialOfficeEmail String?
+  navMenu            Json?
+  footerLinks        Json?
+  homepage           Json?
+  requireMfaForStaff Boolean  @default(false)
+  updatedAt          DateTime @updatedAt
+}
+
+model Volume {
+  id        String   @id @default(cuid())
+  number    Int      @unique
+  year      Int
+  title     String?
+  issues    Issue[]
+  createdAt DateTime @default(now())
+}
+
+model Issue {
+  id          String    @id @default(cuid())
+  volumeId    String
+  volume      Volume    @relation(fields: [volumeId], references: [id], onDelete: Cascade)
+  number      Int
+  year        Int
+  title       String?
+  description String?
+  coverFileId String?
+  pdfFileId   String?
+  publishedAt DateTime?
+  isPublished Boolean   @default(false)
+  isCurrent   Boolean   @default(false)
+  slug        String    @unique // volume-1-issue-1
+  articles    Article[]
+  createdAt   DateTime  @default(now())
+
+  @@unique([volumeId, number])
+}
+
+model Article {
+  id                 String    @id @default(cuid())
+  slug               String    @unique
+  title              String
+  abstract           String
+  keywords           String
+  articleType        String
+  categoryId         String?
+  category           ResearchCategory? @relation(fields: [categoryId], references: [id])
+  issueId            String?
+  issue              Issue?    @relation(fields: [issueId], references: [id])
+  manuscriptId       String?   @unique
+  manuscript         Manuscript? @relation(fields: [manuscriptId], references: [id])
+  sortOrder          Int       @default(0)
+  pages              String?
+  articleNumber      String?
+  doi                String?
+  bodyHtml           String?   @db.Text
+  bodyMarkdown       String?   @db.Text
+  fundingStatement   String?
+  conflictOfInterest String?
+  dataAvailability   String?
+  licenseName        String?
+  licenseUrl         String?
+  copyrightHolder    String?
+  receivedAt         DateTime?
+  acceptedAt         DateTime?
+  publishedAt        DateTime?
+  status             String    @default("DRAFT") // DRAFT, PUBLISHED, RETRACTED
+  views              Int       @default(0)
+  downloads          Int       @default(0)
+  seoDescription     String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  authors    ArticleAuthor[]
+  files      ArticleFile[]
+  references ArticleReference[]
+  doiRecords DoiRecord[]
+
+  @@index([status, publishedAt])
+  @@index([issueId])
+}
+
+model ArticleAuthor {
+  id              String  @id @default(cuid())
+  articleId       String
+  article         Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  order           Int
+  fullName        String
+  givenName       String?
+  familyName      String?
+  email           String?
+  affiliation     String?
+  rorId           String?
+  country         String?
+  orcid           String?
+  isCorresponding Boolean @default(false)
+}
+
+model ArticleFile {
+  id        String     @id @default(cuid())
+  articleId String
+  article   Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  fileId    String
+  file      StoredFile @relation(fields: [fileId], references: [id])
+  kind      String // PDF, SUPPLEMENTARY, FIGURE, XML
+  label     String?
+  sortOrder Int        @default(0)
+  createdAt DateTime   @default(now())
+}
+
+model ArticleReference {
+  id        String  @id @default(cuid())
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  order     Int
+  citation  String
+  doi       String?
+}
+
+model DoiRecord {
+  id            String    @id @default(cuid())
+  articleId     String
+  article       Article   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  doi           String
+  status        String    @default("DRAFT") // DRAFT, SUBMITTED, REGISTERED, FAILED
+  batchId       String?
+  depositXml    String?   @db.Text
+  response      String?   @db.Text
+  submittedAt   DateTime?
+  registeredAt  DateTime?
+  lastCheckedAt DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+// ───────────── Files ─────────────
+
+model StoredFile {
+  id           String   @id @default(cuid())
+  storageKey   String   @unique
+  originalName String
+  mimeType     String
+  size         Int
+  sha256       String?
+  visibility   String   @default("PRIVATE") // PRIVATE, PUBLIC
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+
+  manuscriptFiles ManuscriptFile[]
+  articleFiles    ArticleFile[]
+  reviewReports   ReviewReport[]
+}
+
+// ───────────── CMS ─────────────
+
+model Page {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  kind           String   @default("PAGE") // PAGE, POLICY
+  body           String   @db.Text // markdown
+  seoDescription String?
+  isPublished    Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+}
+
+model Announcement {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  body        String    @db.Text
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  name      String
+  subject   String
+  bodyHtml  String   @db.Text
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model EmailNotification {
+  id          String    @id @default(cuid())
+  templateKey String?
+  toEmail     String
+  subject     String
+  bodyHtml    String    @db.Text
+  status      String    @default("QUEUED") // QUEUED, SENT, FAILED, LOGGED
+  error       String?
+  attempts    Int       @default(0)
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([status])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+  handled   Boolean  @default(false)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String
+  entityType String?
+  entityId   String?
+  details    Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
