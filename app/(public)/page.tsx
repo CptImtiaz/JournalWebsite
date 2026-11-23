@@ -1,22 +1,23 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { getJournal, getCurrentIssue, homepageOf, fileUrl, issuePath } from "@/lib/journal";
+import { getJournal, getCurrentIssue, homepageOf, issuePath } from "@/lib/journal";
 import { latestArticles } from "@/lib/queries";
-import { ArticleCard } from "@/components/article-card";
-import { Empty } from "@/components/ui";
-import { formatDate } from "@/lib/utils";
-import { Logo } from "@/components/site";
+import { ArticleFeature, ArticleRow } from "@/components/article-card";
 import { IssueCover } from "@/components/issue-cover";
+import { Icon, type IconName } from "@/components/icons";
+import { formatDate } from "@/lib/utils";
 
 export default async function Home() {
   const j = await getJournal();
   const hp = homepageOf(j);
-  const [issue, latest, announcements, categories] = await Promise.all([
+  const [issue, latest, announcements, categories, board] = await Promise.all([
     getCurrentIssue(),
-    latestArticles(6),
+    latestArticles(9),
     db.announcement.findMany({ where: { isPublished: true }, orderBy: { publishedAt: "desc" }, take: 3 }),
-    db.researchCategory.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" }, take: 8 }),
+    db.researchCategory.findMany({ where: { isActive: true }, orderBy: { sortOrder: "asc" }, include: { _count: { select: { articles: { where: { status: "PUBLISHED" } } } } } }),
+    db.editorialBoardMember.findFirst({ where: { isPublished: true, position: "EDITOR_IN_CHIEF" } }),
   ]);
+  const [lead, ...rest] = latest;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Periodical",
@@ -27,166 +28,189 @@ export default async function Home() {
     isAccessibleForFree: j.isOpenAccess,
     inLanguage: "en",
   };
+  const facts: [IconName, string, string][] = [
+    ["shield", "Double-anonymous peer review", "Every research article is assessed by independent experts who do not know the authors' identities."],
+    ["globe", j.isOpenAccess ? `Open access · ${j.licenseName ?? "CC BY"}` : "Global readership", "Articles are free to read, download and share immediately on publication."],
+    ["link", "Permanent scholarly record", "Stable article URLs, rich metadata for indexing services, and DOI registration through Crossref."],
+  ];
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-navy text-white">
-        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "48px 48px" }} />
-        <div className="container-x relative grid items-center gap-10 py-16 lg:grid-cols-[1.4fr_1fr] lg:py-20">
-          <div>
-            <div className="mb-5 flex items-center gap-3">
-              <Logo size={52} logoUrl={fileUrl(j.logoFileId)} />
-              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#9cc3ee]">{j.name}</div>
-            </div>
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight sm:text-4xl lg:text-5xl">
+
+      {/* Masthead */}
+      <section className="border-b border-line">
+        <div className="container-x grid items-end gap-8 py-10 lg:grid-cols-[1fr_auto] lg:py-14">
+          <div className="max-w-3xl">
+            <p className="kicker">{j.shortName} · Computer Science & Information Technology</p>
+            <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[56px]">
               {hp.headline || j.tagline || "Advancing Research in Computing and Emerging Technologies."}
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">{hp.description || j.description}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/submit" className="btn bg-white text-navy hover:bg-brand-light">Submit Manuscript</Link>
-              <Link href="/articles" className="btn border border-white/40 text-white hover:bg-white/10">Browse Articles</Link>
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink/75">{hp.description || j.description}</p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/submit" className="btn-primary px-5 py-2.5">Submit manuscript <Icon name="arrowRight" size={16} /></Link>
+              <Link href="/articles" className="btn-secondary px-5 py-2.5">Browse articles</Link>
             </div>
-            {issue && (
-              <p className="mt-6 text-sm text-white/70">
-                Current issue: <Link className="underline underline-offset-2 hover:text-white" href={issuePath(issue)}>Volume {issue.volume.number}, Issue {issue.number} ({issue.year})</Link>
-              </p>
-            )}
           </div>
-          <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-white/15 bg-white/15 text-sm">
-            {[
-              ["Review model", "Double-anonymous peer review"],
-              ["Access", j.isOpenAccess ? `Open access${j.licenseName ? ` · ${j.licenseName}` : ""}` : "Subscription"],
-              ["Frequency", j.publicationFrequency || "—"],
-              ["Scope", "Computer Science & IT"],
-              ...(j.eIssn ? [["e-ISSN", j.eIssn]] : []),
-              ...(j.printIssn ? [["Print ISSN", j.printIssn]] : []),
-            ].map(([k, v]) => (
-              <div key={k} className="bg-navy/95 p-4">
-                <dt className="text-xs uppercase tracking-wider text-white/60">{k}</dt>
-                <dd className="mt-1 font-medium">{v}</dd>
-              </div>
-            ))}
-          </dl>
+          {issue && (
+            <Link href={issuePath(issue)} className="group hidden w-44 lg:block">
+              <IssueCover issue={issue} />
+              <p className="mt-2 text-xs font-bold uppercase tracking-wider text-muted">Current issue</p>
+              <p className="text-sm font-semibold text-ink group-hover:text-brand">Volume {issue.volume.number}, Issue {issue.number} · {issue.year}</p>
+            </Link>
+          )}
         </div>
       </section>
 
-      <div className="container-x grid gap-12 py-14 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-14">
-          {/* Latest articles */}
-          <section aria-labelledby="latest">
-            <div className="mb-6 flex items-end justify-between gap-4 border-b border-line pb-3">
-              <h2 id="latest" className="text-xl font-semibold text-navy">Latest Published Articles</h2>
-              <Link href="/articles" className="link text-sm">View all articles →</Link>
+      {/* Latest research */}
+      <section className="container-x py-12" aria-labelledby="latest">
+        <div className="rule-top mb-8 flex items-end justify-between">
+          <h2 id="latest" className="section-title">Latest research</h2>
+          <Link href="/articles" className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline">View all articles <Icon name="arrowRight" size={14} /></Link>
+        </div>
+        {lead ? (
+          <div className="grid gap-10 lg:grid-cols-[1.35fr_1fr]">
+            <ArticleFeature a={lead} />
+            <div className="lg:border-l lg:border-line lg:pl-10">
+              {rest.slice(0, 4).map((a) => <ArticleRow key={a.id} a={a} />)}
+              {rest.length === 0 && <p className="text-sm text-muted">More articles will appear here as they are published.</p>}
             </div>
-            {latest.length ? (
-              <div className="grid gap-5 md:grid-cols-2">{latest.map((a) => <ArticleCard key={a.id} a={a} />)}</div>
-            ) : (
-              <Empty title="No articles published yet">The first articles will appear here once they complete peer review. <Link className="link" href="/submit">Submit your manuscript</Link>.</Empty>
-            )}
-          </section>
+          </div>
+        ) : (
+          <div className="grid gap-8 rounded-xl border border-line bg-surface p-8 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              <h3 className="font-display text-2xl font-semibold">The first articles are in peer review</h3>
+              <p className="mt-2 max-w-xl text-ink/75">We are now accepting submissions for our inaugural issue. Original research, reviews and short communications across computer science and IT are welcome.</p>
+            </div>
+            <Link href="/submit" className="btn-primary px-5 py-2.5">Submit your work</Link>
+          </div>
+        )}
+        {rest.length > 4 && (
+          <div className="mt-10 grid gap-x-10 border-t border-line pt-8 md:grid-cols-2 lg:grid-cols-3">
+            {rest.slice(4).map((a) => <ArticleRow key={a.id} a={a} />)}
+          </div>
+        )}
+      </section>
 
-          {/* Current issue */}
-          <section aria-labelledby="current">
-            <div className="mb-6 flex items-end justify-between gap-4 border-b border-line pb-3">
-              <h2 id="current" className="text-xl font-semibold text-navy">Current Issue</h2>
-              <Link href="/archives" className="link text-sm">Browse archives →</Link>
+      {/* Current issue */}
+      {issue && (
+        <section className="bg-surface py-12" aria-labelledby="issue">
+          <div className="container-x">
+            <div className="rule-top mb-8 flex items-end justify-between">
+              <h2 id="issue" className="section-title">Current issue</h2>
+              <Link href="/archives" className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline">Browse all issues <Icon name="arrowRight" size={14} /></Link>
             </div>
-            {issue ? (
-              <div className="card grid gap-6 p-5 sm:grid-cols-[160px_1fr]">
+            <div className="grid gap-10 md:grid-cols-[200px_1fr]">
+              <div>
                 <IssueCover issue={issue} />
-                <div>
-                  <h3 className="text-lg font-semibold text-navy">
-                    <Link href={issuePath(issue)} className="hover:text-brand">Volume {issue.volume.number}, Issue {issue.number} ({issue.year})</Link>
-                  </h3>
-                  {issue.title && <p className="text-sm text-muted">{issue.title}</p>}
-                  <p className="mt-1 text-sm text-muted">{issue.articles.length} article{issue.articles.length === 1 ? "" : "s"}{issue.publishedAt ? ` · Published ${formatDate(issue.publishedAt)}` : ""}</p>
-                  <ol className="mt-4 space-y-2 text-sm">
-                    {issue.articles.slice(0, 6).map((a) => (
-                      <li key={a.id}>
-                        <Link href={`/article/${a.slug}`} className="font-medium text-ink hover:text-brand">{a.title}</Link>
-                        <div className="text-xs text-muted">{a.authors.map((x) => x.fullName).join(", ")}{a.pages ? ` · pp. ${a.pages}` : ""}</div>
-                      </li>
-                    ))}
-                  </ol>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <Link href={issuePath(issue)} className="btn-primary btn-sm">Table of contents</Link>
-                    {issue.pdfFileId && <a href={`/api/files/${issue.pdfFileId}`} className="btn-secondary btn-sm">Download issue PDF</a>}
-                  </div>
+                <div className="mt-3 space-y-2">
+                  <Link href={issuePath(issue)} className="btn-primary w-full">Table of contents</Link>
+                  {issue.pdfFileId && <a href={`/api/files/${issue.pdfFileId}`} className="btn-secondary w-full"><Icon name="download" size={15} /> Issue PDF</a>}
                 </div>
               </div>
-            ) : (
-              <Empty title="The first issue is in preparation" />
-            )}
-          </section>
+              <div>
+                <p className="kicker">Volume {issue.volume.number} · Issue {issue.number} · {issue.year}</p>
+                {issue.title && <h3 className="mt-1 font-display text-2xl font-semibold">{issue.title}</h3>}
+                <p className="mt-1 text-sm text-muted">{issue.articles.length} article{issue.articles.length === 1 ? "" : "s"}{issue.publishedAt ? ` · Published ${formatDate(issue.publishedAt)}` : ""}</p>
+                <ol className="mt-5 divide-y divide-line border-y border-line bg-white">
+                  {issue.articles.slice(0, 6).map((a, i) => (
+                    <li key={a.id} className="flex gap-4 px-4 py-3">
+                      <span className="w-6 shrink-0 font-display text-lg text-muted">{i + 1}</span>
+                      <div>
+                        <Link href={`/article/${a.slug}`} className="font-display text-[17px] font-semibold leading-snug hover:text-brand">{a.title}</Link>
+                        <div className="text-xs text-muted">{a.authors.map((x) => x.fullName).join(", ")}{a.pages ? ` · pp. ${a.pages}` : ""}</div>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Subjects */}
+      <section className="container-x py-12" aria-labelledby="subjects">
+        <div className="rule-top mb-8 flex items-end justify-between">
+          <h2 id="subjects" className="section-title">Explore by subject</h2>
+          <Link href="/aims-scope" className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline">Aims & scope <Icon name="arrowRight" size={14} /></Link>
         </div>
+        <ul className="grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          {categories.map((c) => (
+            <li key={c.id} className="bg-white">
+              <Link href={`/articles?category=${c.slug}`} className="group flex h-full items-center justify-between gap-3 px-5 py-4 hover:bg-surface">
+                <span className="font-medium text-ink group-hover:text-brand">{c.name}</span>
+                <span className="shrink-0 text-xs text-muted">{c._count.articles > 0 ? `${c._count.articles} article${c._count.articles === 1 ? "" : "s"}` : <Icon name="arrowRight" size={14} />}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-        <aside className="space-y-6">
-          <section className="card p-5">
-            <h2 className="text-base font-semibold text-navy">Journal Information</h2>
-            <dl className="mt-4 space-y-3 text-sm">
-              <Info k="Peer review" v="Double-anonymous" />
-              <Info k="Open access" v={j.isOpenAccess ? "Yes — free to read" : "No"} />
-              {j.licenseName && <Info k="Licence" v={j.licenseName} />}
-              {j.publicationFrequency && <Info k="Frequency" v={j.publicationFrequency} />}
-              {j.printIssn && <Info k="Print ISSN" v={j.printIssn} />}
-              {j.eIssn && <Info k="e-ISSN" v={j.eIssn} />}
-              {j.issnL && <Info k="ISSN-L" v={j.issnL} />}
-              {j.publisherName && <Info k="Publisher" v={j.publisherName} />}
-              {j.publicationCountry && <Info k="Country" v={j.publicationCountry} />}
-              {j.contactEmail && <Info k="Editorial contact" v={<a className="link" href={`mailto:${j.contactEmail}`}>{j.contactEmail}</a>} />}
-            </dl>
-            <Link href="/about" className="link mt-4 inline-block text-sm">About the journal →</Link>
-          </section>
+      {/* Publish with us */}
+      <section className="bg-navy text-white">
+        <div className="container-x grid gap-10 py-14 lg:grid-cols-[1fr_2fr]">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#9cc3ee]">Publish with us</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold leading-tight">Share your research with the global computing community</h2>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href="/submit" className="btn bg-white text-navy hover:bg-brand-light">Submit manuscript</Link>
+              <Link href="/for-authors" className="btn border border-white/40 text-white hover:bg-white/10">Author guidelines</Link>
+            </div>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-3">
+            {facts.map(([icon, t, d]) => (
+              <div key={t} className="border-t border-white/20 pt-4">
+                <Icon name={icon} size={22} className="text-[#9cc3ee]" />
+                <h3 className="mt-3 font-semibold text-white">{t}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-white/70">{d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <section className="card p-5">
-            <h2 className="text-base font-semibold text-navy">For Authors</h2>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li><Link className="link" href="/for-authors">Submission guidelines</Link></li>
-              <li><Link className="link" href="/peer-review">Peer review process</Link></li>
-              <li><Link className="link" href="/publication-fees">Publication fees</Link></li>
-              <li><Link className="link" href="/author/dashboard">Track your manuscript</Link></li>
+      {/* Info + news */}
+      <section className="container-x grid gap-12 py-12 lg:grid-cols-[1fr_1fr_1fr]">
+        <div>
+          <h2 className="rule-top mb-4 font-display text-xl font-semibold">Journal information</h2>
+          <dl className="divide-y divide-line text-sm">
+            {[
+              ["Peer review", "Double-anonymous"],
+              ["Access", j.isOpenAccess ? "Open access" : "—"],
+              ["Licence", j.licenseName],
+              ["Frequency", j.publicationFrequency],
+              ["Print ISSN", j.printIssn],
+              ["eISSN", j.eIssn],
+              ["Publisher", j.publisherName],
+              ["Editor-in-Chief", board?.fullName],
+            ].filter(([, v]) => v).map(([k, v]) => (
+              <div key={k} className="flex justify-between gap-4 py-2"><dt className="text-muted">{k}</dt><dd className="text-right font-medium">{v}</dd></div>
+            ))}
+          </dl>
+        </div>
+        <div>
+          <h2 className="rule-top mb-4 font-display text-xl font-semibold">For authors</h2>
+          <ul className="space-y-3 text-sm">
+            {[["Submission guidelines", "/for-authors", "file"], ["Peer review process", "/peer-review", "review"], ["Publication ethics", "/publication-ethics", "shield"], ["AI usage policy", "/ai-usage-policy", "activity"], ["Publication fees", "/publication-fees", "tag"], ["Track your manuscript", "/author/dashboard", "clock"]].map(([l, h, i]) => (
+              <li key={h}><Link href={h} className="flex items-center gap-2 font-medium text-ink hover:text-brand"><Icon name={i as IconName} size={16} className="text-brand" />{l}</Link></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 className="rule-top mb-4 font-display text-xl font-semibold">Announcements</h2>
+          {announcements.length ? (
+            <ul className="space-y-4">
+              {announcements.map((a) => (
+                <li key={a.id}>
+                  <time className="text-xs text-muted">{formatDate(a.publishedAt)}</time>
+                  <Link href={`/announcements/${a.slug}`} className="block font-display text-[17px] font-semibold leading-snug hover:text-brand">{a.title}</Link>
+                </li>
+              ))}
             </ul>
-            <Link href="/submit" className="btn-primary mt-4 w-full">Submit Manuscript</Link>
-          </section>
-
-          {categories.length > 0 && (
-            <section className="card p-5">
-              <h2 className="text-base font-semibold text-navy">Research Areas</h2>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {categories.map((c) => (
-                  <li key={c.id}><Link href={`/articles?category=${c.slug}`} className="inline-block rounded-full border border-line px-3 py-1 text-xs hover:border-brand hover:text-brand">{c.name}</Link></li>
-                ))}
-              </ul>
-              <Link href="/aims-scope" className="link mt-3 inline-block text-sm">Full aims & scope →</Link>
-            </section>
-          )}
-
-          {announcements.length > 0 && (
-            <section className="card p-5">
-              <h2 className="text-base font-semibold text-navy">Announcements</h2>
-              <ul className="mt-3 space-y-3 text-sm">
-                {announcements.map((a) => (
-                  <li key={a.id}>
-                    <Link href={`/announcements/${a.slug}`} className="font-medium hover:text-brand">{a.title}</Link>
-                    <div className="text-xs text-muted">{formatDate(a.publishedAt)}</div>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-        </aside>
-      </div>
+          ) : <p className="text-sm text-muted">No announcements yet. Follow the <Link className="link" href="/feed.xml">RSS feed</Link> for new articles.</p>}
+        </div>
+      </section>
     </>
   );
 }
-
-function Info({ k, v }: { k: string; v: React.ReactNode }) {
-  return (
-    <div className="flex justify-between gap-4 border-b border-line pb-2 last:border-0">
-      <dt className="text-muted">{k}</dt>
-      <dd className="text-right font-medium text-ink">{v}</dd>
-    </div>
-  );
-}
-

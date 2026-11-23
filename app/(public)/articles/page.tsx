@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { PageHeader, Empty, Pagination } from "@/components/ui";
-import { ArticleCard } from "@/components/article-card";
+import { ArticleRow } from "@/components/article-card";
 import { articleCardInclude, PUBLIC_ARTICLE } from "@/lib/queries";
 import { ARTICLE_TYPES } from "@/lib/constants";
 
@@ -57,7 +57,7 @@ export default async function Articles({ searchParams }: { searchParams: SP }) {
     <>
       <PageHeader title="Articles" subtitle="Search the journal's published research." crumbs={[{ label: "Articles" }]} />
       <div className="container-x py-8">
-        <form className="card mb-8 grid gap-3 p-4 md:grid-cols-6" role="search">
+        <form className="mb-8 grid gap-3 rounded-xl border border-line bg-surface p-4 md:grid-cols-6" role="search">
           <input name="q" defaultValue={q} placeholder="Search title, author, keywords, abstract or DOI" className="input md:col-span-4" aria-label="Search" />
           <select name="sort" defaultValue={sp.sort ?? ""} className="input" aria-label="Sort">
             <option value="">Newest first</option>
@@ -87,7 +87,7 @@ export default async function Articles({ searchParams }: { searchParams: SP }) {
           <span>{total} result{total === 1 ? "" : "s"}{q ? ` for “${q}”` : ""}</span>
           {Object.values(sp).some(Boolean) && <Link className="link" href="/articles">Clear filters</Link>}
         </div>
-        {items.length ? <div className="grid gap-5">{items.map((a) => <ArticleCard key={a.id} a={a} />)}</div> : <Empty title="No articles found">Try different search terms or remove filters.</Empty>}
+        {items.length ? <div className="border-t border-line pt-5">{items.map((a) => <ArticleRow key={a.id} a={a} snippet />)}</div> : <Empty title="No articles found">Try different search terms or remove filters.</Empty>}
         <Pagination page={page} pages={pages} makeHref={qs} />
       </div>
     </>

@@ -189,6 +189,10 @@ model Manuscript {
   ethicsStatement       String?
   originalityDeclared   Boolean   @default(false)
   aiUsageDisclosure     String?
+  dataAvailability      String?
+  suggestedReviewers    Json?
+  opposedReviewers      Json?
+  previouslySubmitted   String?
   currentRevision       Int       @default(0)
   submittedAt           DateTime  @default(now())
   updatedAt             DateTime  @updatedAt

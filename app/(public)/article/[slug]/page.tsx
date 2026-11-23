@@ -6,8 +6,10 @@ import { getJournal } from "@/lib/journal";
 import { db } from "@/lib/db";
 import { FORMATS } from "@/lib/citations";
 import { appUrl, formatDate, splitKeywords, fileSize } from "@/lib/utils";
-import { sanitize, renderMarkdown } from "@/lib/markdown";
-import { Badge, Breadcrumbs } from "@/components/ui";
+import { sanitize, renderMarkdown, withHeadingIds, headingsOf } from "@/lib/markdown";
+import { Breadcrumbs } from "@/components/ui";
+import { Icon } from "@/components/icons";
+import { IssueCover } from "@/components/issue-cover";
 import { CopyButton } from "@/components/client";
 
 type P = { params: Promise<{ slug: string }> };
@@ -68,11 +70,24 @@ export default async function ArticlePage({ params }: P) {
   const reg = doiRegistered(a);
   const pdf = a.files.find((f) => f.kind === "PDF");
   const others = a.files.filter((f) => f.kind !== "PDF");
+  const figures = others.filter((f) => f.kind === "FIGURE");
+  const supp = others.filter((f) => f.kind !== "FIGURE");
   const cite = toCite(a);
   const affs = [...new Set(a.authors.map((x) => x.affiliation).filter(Boolean))] as string[];
   const corr = a.authors.find((x) => x.isCorresponding);
   const lic = a.licenseName ?? j.licenseName;
   const licUrl = a.licenseUrl ?? j.licenseUrl;
+  const body = a.bodyHtml ? withHeadingIds(sanitize(a.bodyHtml)) : "";
+  const sections = [
+    { id: "abstract", label: "Abstract" },
+    ...headingsOf(body),
+    ...(figures.length ? [{ id: "figures", label: "Figures" }] : []),
+    ...(a.references.length ? [{ id: "references", label: "References" }] : []),
+    { id: "declarations", label: "Declarations" },
+    ...(supp.length ? [{ id: "supplementary", label: "Supplementary information" }] : []),
+    { id: "rights", label: "Rights and permissions" },
+    { id: "about", label: "About this article" },
+  ];
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -100,141 +115,207 @@ export default async function ArticlePage({ params }: P) {
   };
   const shareText = encodeURIComponent(a.title);
   const shareUrl = encodeURIComponent(url);
+  const H2 = "scroll-mt-24 font-display text-2xl font-semibold text-ink";
 
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <div className="border-b border-line bg-surface">
-        <div className="container-x py-8">
-          <Breadcrumbs items={[{ label: "Articles", href: "/articles" }, ...(a.issue ? [{ label: `Vol. ${a.issue.volume.number}, Iss. ${a.issue.number}`, href: `/archives/${a.issue.year}/${a.issue.slug}` }] : []), { label: a.title.length > 60 ? a.title.slice(0, 60) + "…" : a.title }]} />
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <Badge tone="blue">{a.articleType}</Badge>
-            {j.isOpenAccess && <Badge tone="green">Open Access</Badge>}
-            {a.status === "RETRACTED" && <Badge tone="red">Retracted</Badge>}
-            {a.category && <Link href={`/articles?category=${a.category.slug}`}><Badge>{a.category.name}</Badge></Link>}
-          </div>
-          <h1 className="max-w-4xl text-2xl font-semibold leading-tight text-navy sm:text-3xl">{a.title}</h1>
-          <p className="mt-4 text-base text-ink">
-            {a.authors.map((x, i) => (
-              <span key={x.id}>
-                {x.fullName}
-                {x.affiliation && <sup className="ml-0.5 text-brand">{affs.indexOf(x.affiliation) + 1}</sup>}
-                {x.isCorresponding && <span title="Corresponding author" className="text-brand">*</span>}
-                {x.orcid && <a href={`https://orcid.org/${x.orcid}`} className="ml-1 inline-flex align-middle" title={`ORCID ${x.orcid}`} target="_blank" rel="noopener"><span className="rounded bg-[#A6CE39] px-1 text-[10px] font-bold text-white">iD</span></a>}
-                {i < a.authors.length - 1 && ", "}
-              </span>
-            ))}
-          </p>
-          <ol className="mt-2 space-y-0.5 text-sm text-muted">
-            {affs.map((af, i) => <li key={af}><sup>{i + 1}</sup> {af}</li>)}
-          </ol>
-          {corr && <p className="mt-2 text-sm text-muted">* Corresponding author: {corr.fullName}{corr.email ? <> — <a className="link" href={`mailto:${corr.email}`}>{corr.email}</a></> : null}</p>}
-          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted">
-            <span><span className="font-medium text-ink">{j.name}</span>{a.issue ? `, Vol. ${a.issue.volume.number}, Issue ${a.issue.number} (${a.issue.year})` : ""}{a.pages ? `, pp. ${a.pages}` : ""}{a.articleNumber ? `, Article ${a.articleNumber}` : ""}</span>
-            {a.receivedAt && <span>Received {formatDate(a.receivedAt)}</span>}
-            {a.acceptedAt && <span>Accepted {formatDate(a.acceptedAt)}</span>}
-            {a.publishedAt && <span>Published {formatDate(a.publishedAt)}</span>}
-          </div>
-          {reg && <p className="mt-2 text-sm">DOI: <a className="link" href={`https://doi.org/${a.doi}`}>https://doi.org/{a.doi}</a></p>}
-        </div>
+      <div className="container-x pt-6">
+        <Breadcrumbs items={[{ label: "Articles", href: "/articles" }, ...(a.issue ? [{ label: `Volume ${a.issue.volume.number}, Issue ${a.issue.number}`, href: `/archives/${a.issue.year}/${a.issue.slug}` }] : []), { label: "Article" }]} />
       </div>
 
-      <div className="container-x grid gap-10 py-10 lg:grid-cols-[1fr_300px]">
-        <article className="min-w-0">
-          {a.status === "RETRACTED" && (
-            <div className="mb-6 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">This article has been retracted. See the journal&apos;s <Link className="underline" href="/retraction-policy">Retraction Policy</Link>.</div>
-          )}
-          <section aria-labelledby="abstract">
-            <h2 id="abstract" className="text-lg font-semibold text-navy">Abstract</h2>
-            <p className="mt-3 font-serif text-[17px] leading-relaxed">{a.abstract}</p>
-          </section>
-          <section className="mt-6">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted">Keywords</h2>
-            <ul className="mt-2 flex flex-wrap gap-2">
-              {splitKeywords(a.keywords).map((k) => <li key={k}><Link href={`/articles?q=${encodeURIComponent(k)}`} className="inline-block rounded-full border border-line px-3 py-1 text-xs hover:border-brand hover:text-brand">{k}</Link></li>)}
+      <div className="container-x grid gap-10 py-8 lg:grid-cols-[1fr_300px] xl:grid-cols-[200px_1fr_300px]">
+        {/* Section navigation */}
+        <nav aria-label="Article sections" className="hidden xl:block">
+          <div className="sticky top-6">
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.14em] text-muted">Sections</p>
+            <ul className="space-y-1 border-l border-line text-sm">
+              {sections.map((s) => <li key={s.id}><a href={`#${s.id}`} className="-ml-px block border-l-2 border-transparent py-1 pl-3 text-ink/80 hover:border-brand hover:text-brand">{s.label}</a></li>)}
             </ul>
+          </div>
+        </nav>
+
+        <article className="min-w-0">
+          <header>
+            <div className="flex flex-wrap items-center gap-x-2 text-xs">
+              <span className="font-bold uppercase tracking-wide text-brand">{a.articleType}</span>
+              {j.isOpenAccess && <><span className="text-line">|</span><span className="inline-flex items-center gap-1 font-semibold text-emerald-700"><Icon name="lock" size={12} />Open access</span></>}
+              {a.publishedAt && <><span className="text-line">|</span><span className="text-muted">Published: {formatDate(a.publishedAt, { day: "numeric", month: "long", year: "numeric" })}</span></>}
+            </div>
+            {a.status === "RETRACTED" && (
+              <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800"><strong>This article has been retracted.</strong> See the journal&apos;s <Link className="underline" href="/retraction-policy">Retraction Policy</Link>.</div>
+            )}
+            <h1 className="mt-4 font-display text-3xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-[42px]">{a.title}</h1>
+            <p className="mt-5 text-[15px] leading-relaxed text-ink">
+              {a.authors.map((x, i) => (
+                <span key={x.id}>
+                  <span className="font-medium">{x.fullName}</span>
+                  {x.affiliation && <sup className="ml-0.5 text-brand">{affs.indexOf(x.affiliation) + 1}</sup>}
+                  {x.isCorresponding && <a href="#corresponding" title="Corresponding author" className="ml-0.5 text-brand"><Icon name="mail" size={13} className="inline" /></a>}
+                  {x.orcid && <a href={`https://orcid.org/${x.orcid}`} className="ml-1 inline-flex align-middle" title={`ORCID ${x.orcid}`} target="_blank" rel="noopener"><span className="rounded-full bg-[#A6CE39] px-1 text-[9px] font-bold leading-[14px] text-white">iD</span></a>}
+                  {i < a.authors.length - 1 && ", "}
+                </span>
+              ))}
+            </p>
+            <p className="mt-3 text-sm text-muted">
+              <em className="font-display text-base not-italic text-ink">{j.name}</em>
+              {a.issue && <> <strong className="text-ink">{a.issue.volume.number}</strong>, {a.issue.number}</>}
+              {a.pages ? `, ${a.pages}` : ""}{a.articleNumber ? `, ${a.articleNumber}` : ""} ({a.issue?.year ?? (a.publishedAt ? new Date(a.publishedAt).getUTCFullYear() : "")})
+              {reg && <> · <a className="link" href={`https://doi.org/${a.doi}`}>https://doi.org/{a.doi}</a></>}
+            </p>
+            <div className="mt-5 flex flex-wrap items-center gap-6 border-y border-line py-3 text-sm">
+              <span><strong className="text-ink">{(a.views + 1).toLocaleString()}</strong> <span className="text-muted">Accesses</span></span>
+              <span><strong className="text-ink">{a.downloads.toLocaleString()}</strong> <span className="text-muted">Downloads</span></span>
+              <a href="#about" className="link ml-auto">Cite this article</a>
+            </div>
+          </header>
+
+          <section id="abstract" className="mt-8 scroll-mt-24">
+            <h2 className={H2}>Abstract</h2>
+            <p className="mt-4 font-serif text-[18px] leading-[1.7] text-ink">{a.abstract}</p>
           </section>
 
-          {a.bodyHtml && (
-            <section className="mt-10 border-t border-line pt-8" aria-label="Full text">
-              <div className="prose prose-slate prose-lg max-w-none font-serif prose-headings:font-sans prose-headings:text-navy prose-a:text-brand" dangerouslySetInnerHTML={{ __html: sanitize(a.bodyHtml) }} />
+          {body && <section aria-label="Main text" className="mt-10 prose prose-slate prose-lg max-w-none font-serif prose-headings:scroll-mt-24 prose-headings:font-display prose-headings:text-ink prose-h2:text-2xl prose-a:text-brand prose-img:rounded" dangerouslySetInnerHTML={{ __html: body }} />}
+
+          {figures.length > 0 && (
+            <section id="figures" className="mt-12 scroll-mt-24">
+              <h2 className={H2}>Figures</h2>
+              <div className="mt-4 grid gap-6 sm:grid-cols-2">
+                {figures.map((f) => (
+                  <figure key={f.id} className="rounded-lg border border-line p-3">
+                    <a href={`/api/files/${f.fileId}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`/api/files/${f.fileId}`} alt={f.label ?? "Figure"} loading="lazy" className="w-full rounded" />
+                    </a>
+                    {f.label && <figcaption className="mt-2 text-sm"><strong>{f.label}</strong></figcaption>}
+                  </figure>
+                ))}
+              </div>
             </section>
           )}
 
-          <section className="mt-10 space-y-4 border-t border-line pt-8 text-sm">
-            <h2 className="text-lg font-semibold text-navy">Declarations</h2>
-            {a.fundingStatement && <div><h3 className="font-semibold">Funding</h3><p className="text-muted">{a.fundingStatement}</p></div>}
-            {a.conflictOfInterest && <div><h3 className="font-semibold">Conflict of interest</h3><p className="text-muted">{a.conflictOfInterest}</p></div>}
-            {a.dataAvailability && <div><h3 className="font-semibold">Data availability</h3><p className="text-muted">{a.dataAvailability}</p></div>}
-            <div>
-              <h3 className="font-semibold">Copyright and licence</h3>
-              <p className="text-muted">© {a.publishedAt ? new Date(a.publishedAt).getUTCFullYear() : ""} {a.copyrightHolder || "The Author(s)"}. {lic && <>This article is published under the {licUrl ? <a className="link" href={licUrl} rel="license noopener" target="_blank">{lic}</a> : lic} licence.</>}</p>
-            </div>
-          </section>
-
           {a.references.length > 0 && (
-            <section className="mt-10 border-t border-line pt-8" aria-labelledby="refs">
-              <h2 id="refs" className="text-lg font-semibold text-navy">References</h2>
-              <ol className="mt-4 list-decimal space-y-2 pl-6 font-serif text-[15px] leading-relaxed">
+            <section id="references" className="mt-12 scroll-mt-24">
+              <h2 className={H2}>References</h2>
+              <ol className="mt-5 space-y-4">
                 {a.references.map((r) => (
-                  <li key={r.id} id={`ref${r.order}`}>
-                    <span dangerouslySetInnerHTML={{ __html: renderMarkdown(r.citation).replace(/^<p>|<\/p>\s*$/g, "") }} />
-                    {r.doi && <> <a className="link font-sans text-xs" href={`https://doi.org/${r.doi}`}>doi:{r.doi}</a></>}
+                  <li key={r.id} id={`ref${r.order}`} className="grid grid-cols-[2rem_1fr] gap-2 text-[15px] leading-relaxed">
+                    <span className="text-muted">{r.order}.</span>
+                    <div>
+                      <span className="font-serif" dangerouslySetInnerHTML={{ __html: renderMarkdown(r.citation).replace(/^<p>|<\/p>\s*$/g, "") }} />
+                      <div className="mt-1 flex gap-3 text-xs">
+                        {r.doi && <a className="link" href={`https://doi.org/${r.doi}`}>Article</a>}
+                        <a className="link" href={`https://scholar.google.com/scholar?q=${encodeURIComponent(r.citation.slice(0, 250))}`} target="_blank" rel="noopener">Google Scholar</a>
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ol>
             </section>
           )}
-        </article>
 
-        <aside className="space-y-6">
-          <div className="card space-y-2 p-5">
-            {pdf ? <a href={`/api/articles/${a.slug}/pdf`} className="btn-primary w-full">Download PDF{pdf.file ? ` (${fileSize(pdf.file.size)})` : ""}</a> : <p className="text-sm text-muted">PDF not yet available.</p>}
-            {pdf && <a href={`/api/articles/${a.slug}/pdf?inline=1`} target="_blank" className="btn-secondary w-full">View PDF in browser</a>}
-            <div className="flex justify-around pt-3 text-center text-xs text-muted">
-              <div><div className="text-lg font-semibold text-navy">{a.views + 1}</div>Views</div>
-              <div><div className="text-lg font-semibold text-navy">{a.downloads}</div>Downloads</div>
+          <section id="declarations" className="mt-12 scroll-mt-24 space-y-5 text-[15px]">
+            <h2 className={H2}>Declarations</h2>
+            {a.fundingStatement && <div><h3 className="font-semibold">Funding</h3><p className="mt-1 text-ink/80">{a.fundingStatement}</p></div>}
+            {a.conflictOfInterest && <div><h3 className="font-semibold">Competing interests</h3><p className="mt-1 text-ink/80">{a.conflictOfInterest}</p></div>}
+            {a.dataAvailability && <div><h3 className="font-semibold">Data availability</h3><p className="mt-1 text-ink/80">{a.dataAvailability}</p></div>}
+            <div id="corresponding" className="scroll-mt-24">
+              <h3 className="font-semibold">Author information</h3>
+              <ol className="mt-1 space-y-0.5 text-ink/80">{affs.map((af, i) => <li key={af}><sup>{i + 1}</sup> {af}</li>)}</ol>
+              {corr && <p className="mt-2 text-ink/80">Correspondence to {corr.fullName}{corr.email ? <> (<a className="link" href={`mailto:${corr.email}`}>{corr.email}</a>)</> : null}.</p>}
             </div>
-          </div>
+          </section>
 
-          {others.length > 0 && (
-            <div className="card p-5">
-              <h2 className="mb-3 text-sm font-semibold text-navy">Supplementary material, figures & tables</h2>
-              <ul className="space-y-2 text-sm">
-                {others.map((f) => <li key={f.id}><a className="link" href={`/api/files/${f.fileId}`}>{f.label || f.file.originalName}</a> <span className="text-xs text-muted">({fileSize(f.file.size)})</span></li>)}
+          {supp.length > 0 && (
+            <section id="supplementary" className="mt-12 scroll-mt-24">
+              <h2 className={H2}>Supplementary information</h2>
+              <ul className="mt-4 divide-y divide-line rounded-lg border border-line">
+                {supp.map((f) => <li key={f.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm"><span className="flex items-center gap-2"><Icon name="file" size={16} className="text-muted" />{f.label || f.file.originalName}</span><a className="link" href={`/api/files/${f.fileId}`}>Download ({fileSize(f.file.size)})</a></li>)}
               </ul>
-            </div>
+            </section>
           )}
 
-          <div className="card p-5">
-            <h2 className="mb-3 text-sm font-semibold text-navy">Cite this article</h2>
-            <div className="space-y-3">
-              {Object.entries(FORMATS).map(([k, f]) => {
-                const text = f.fn(cite, j);
-                return (
-                  <details key={k} className="group text-sm">
-                    <summary className="flex cursor-pointer items-center justify-between font-medium text-ink hover:text-brand">{f.label}<span className="text-muted group-open:rotate-180">⌄</span></summary>
-                    <p className="mt-2 rounded bg-surface p-2 text-xs leading-relaxed">{text}</p>
-                    <div className="mt-1"><CopyButton text={text} /></div>
-                  </details>
-                );
-              })}
-            </div>
-            <div className="mt-4 flex flex-wrap gap-2 border-t border-line pt-3">
-              <a className="btn-secondary btn-sm" href={`/api/articles/${a.slug}/cite?format=bibtex`}>BibTeX</a>
-              <a className="btn-secondary btn-sm" href={`/api/articles/${a.slug}/cite?format=ris`}>RIS</a>
-              <a className="btn-secondary btn-sm" href={`/api/articles/${a.slug}/jats`}>JATS XML</a>
-            </div>
-          </div>
+          <section id="rights" className="mt-12 scroll-mt-24 text-[15px]">
+            <h2 className={H2}>Rights and permissions</h2>
+            <p className="mt-3 text-ink/80">
+              {lic ? <><strong>Open Access.</strong> This article is licensed under the {licUrl ? <a className="link" href={licUrl} rel="license noopener" target="_blank">{lic}</a> : lic} licence, which permits use, sharing, adaptation, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source.</> : "All rights reserved."}
+            </p>
+            <p className="mt-2 text-sm text-muted">© {a.publishedAt ? new Date(a.publishedAt).getUTCFullYear() : ""} {a.copyrightHolder || "The Author(s)"}</p>
+          </section>
 
-          <div className="card p-5">
-            <h2 className="mb-3 text-sm font-semibold text-navy">Share</h2>
-            <div className="flex flex-wrap gap-2 text-sm">
-              <a className="btn-secondary btn-sm" target="_blank" rel="noopener" href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}>LinkedIn</a>
-              <a className="btn-secondary btn-sm" target="_blank" rel="noopener" href={`https://x.com/intent/post?text=${shareText}&url=${shareUrl}`}>X</a>
-              <a className="btn-secondary btn-sm" target="_blank" rel="noopener" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}>Facebook</a>
-              <a className="btn-secondary btn-sm" href={`mailto:?subject=${shareText}&body=${shareUrl}`}>Email</a>
-              <CopyButton text={url} label="Copy link" />
+          <section id="about" className="mt-12 scroll-mt-24">
+            <h2 className={H2}>About this article</h2>
+            <div className="mt-5 grid gap-6 rounded-lg border border-line p-5 sm:grid-cols-[1fr_auto]">
+              <div>
+                <h3 className="text-sm font-semibold">Cite this article</h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink/85">{FORMATS.apa.fn(cite, j)}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <a className="btn-secondary btn-sm" href={`/api/articles/${a.slug}/cite?format=ris`}><Icon name="download" size={13} />RIS</a>
+                  <a className="btn-secondary btn-sm" href={`/api/articles/${a.slug}/cite?format=bibtex`}><Icon name="download" size={13} />BibTeX</a>
+                  <a className="btn-secondary btn-sm" href={`/api/articles/${a.slug}/jats`}><Icon name="download" size={13} />JATS XML</a>
+                </div>
+                <details className="mt-4 text-sm">
+                  <summary className="cursor-pointer font-medium text-brand">Other citation styles</summary>
+                  <div className="mt-3 space-y-3">
+                    {Object.entries(FORMATS).filter(([k]) => k !== "apa").map(([k, f]) => {
+                      const text = f.fn(cite, j);
+                      return <div key={k}><p className="text-xs font-bold uppercase tracking-wide text-muted">{f.label}</p><p className="mt-1">{text}</p><div className="mt-1"><CopyButton text={text} /></div></div>;
+                    })}
+                  </div>
+                </details>
+              </div>
+              {a.issue && <Link href={`/archives/${a.issue.year}/${a.issue.slug}`} className="hidden w-24 sm:block"><IssueCover issue={a.issue} /></Link>}
+            </div>
+            <dl className="mt-6 grid gap-x-8 gap-y-4 text-sm sm:grid-cols-3">
+              {a.receivedAt && <div><dt className="text-muted">Received</dt><dd className="font-medium">{formatDate(a.receivedAt)}</dd></div>}
+              {a.acceptedAt && <div><dt className="text-muted">Accepted</dt><dd className="font-medium">{formatDate(a.acceptedAt)}</dd></div>}
+              {a.publishedAt && <div><dt className="text-muted">Published</dt><dd className="font-medium">{formatDate(a.publishedAt)}</dd></div>}
+              {a.issue && <div><dt className="text-muted">Issue date</dt><dd className="font-medium">{formatDate(a.issue.publishedAt ?? a.publishedAt, { month: "long", year: "numeric" })}</dd></div>}
+              {reg && <div className="sm:col-span-2"><dt className="text-muted">DOI</dt><dd className="font-medium"><a className="link" href={`https://doi.org/${a.doi}`}>https://doi.org/{a.doi}</a></dd></div>}
+            </dl>
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold">Keywords</h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {splitKeywords(a.keywords).map((k) => <li key={k}><Link href={`/articles?q=${encodeURIComponent(k)}`} className="inline-block rounded-full border border-line px-3 py-1 text-xs hover:border-brand hover:text-brand">{k}</Link></li>)}
+              </ul>
+            </div>
+          </section>
+        </article>
+
+        {/* Right rail */}
+        <aside className="space-y-6">
+          <div className="sticky top-6 space-y-6">
+            <div className="space-y-2">
+              {pdf ? (
+                <>
+                  <a href={`/api/articles/${a.slug}/pdf`} className="btn-primary w-full py-3 text-base"><Icon name="download" size={18} /> Download PDF</a>
+                  <a href={`/api/articles/${a.slug}/pdf?inline=1`} target="_blank" className="btn-secondary w-full">View PDF in browser{pdf.file ? ` · ${fileSize(pdf.file.size)}` : ""}</a>
+                </>
+              ) : <p className="rounded-md bg-surface p-3 text-sm text-muted">PDF version in preparation.</p>}
+            </div>
+
+            <div className="rounded-lg border border-line p-4">
+              <h2 className="text-sm font-semibold">Share this article</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <a className="btn-secondary btn-sm" target="_blank" rel="noopener" href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}>LinkedIn</a>
+                <a className="btn-secondary btn-sm" target="_blank" rel="noopener" href={`https://x.com/intent/post?text=${shareText}&url=${shareUrl}`}>X</a>
+                <a className="btn-secondary btn-sm" target="_blank" rel="noopener" href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}>Facebook</a>
+                <a className="btn-secondary btn-sm" href={`mailto:?subject=${shareText}&body=${shareUrl}`}>Email</a>
+                <CopyButton text={url} label="Copy link" />
+              </div>
+            </div>
+
+            {a.category && (
+              <div className="rounded-lg border border-line p-4">
+                <h2 className="text-sm font-semibold">Subject</h2>
+                <Link href={`/articles?category=${a.category.slug}`} className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline">{a.category.name} <Icon name="arrowRight" size={13} /></Link>
+              </div>
+            )}
+
+            <div className="rounded-lg bg-navy p-5 text-white">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#9cc3ee]">Publish with us</p>
+              <p className="mt-2 font-display text-lg font-semibold leading-snug">Submit your research to {j.shortName}</p>
+              <Link href="/submit" className="btn mt-4 w-full bg-white text-navy hover:bg-brand-light">Submit manuscript</Link>
             </div>
           </div>
         </aside>

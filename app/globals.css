@@ -12,6 +12,9 @@
   --color-line: #E5E7EB;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
+  --font-display: var(--font-display), Georgia, "Times New Roman", serif;
+  --color-accent: #C8102E;
+  --color-app: #F3F5F9;
 }
 
 html { scroll-behavior: smooth; }
@@ -30,10 +33,17 @@ body { background: #fff; color: var(--color-ink); }
 @utility input { @apply block w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink shadow-sm placeholder:text-gray-400 focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand; }
 @utility label { @apply mb-1 block text-sm font-medium text-ink; }
 @utility hint { @apply mt-1 text-xs text-muted; }
-@utility card { @apply rounded-lg border border-line bg-white; }
+@utility card { @apply rounded-xl border border-line bg-white; }
 @utility link { @apply text-brand hover:text-navy hover:underline underline-offset-2; }
 
 /*t*/.table { @apply w-full text-left text-sm; }
-.table th { @apply border-b border-line bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted; }
-.table td { @apply border-b border-line px-3 py-2 align-top; }
+.table th { @apply border-b border-line bg-app px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted; }
+.table td { @apply border-b border-line px-4 py-3 align-top; }
+.table tbody tr:hover td { @apply bg-app/60; }
+.table tbody tr:last-child td { @apply border-b-0; }
 
+
+@utility kicker { @apply text-[11px] font-bold uppercase tracking-[0.14em] text-brand; }
+@utility section-title { @apply font-display text-2xl font-semibold text-ink sm:text-[28px]; }
+@utility rule-top { @apply border-t-2 border-ink pt-3; }
+@utility app-card { @apply rounded-xl border border-line bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]; }

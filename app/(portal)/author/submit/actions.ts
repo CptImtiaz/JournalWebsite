@@ -10,6 +10,16 @@ import { back } from "@/lib/actions-util";
 import { str, optStr, bool, appUrl, normalizeOrcid, splitKeywords } from "@/lib/utils";
 import { ARTICLE_TYPES, MANUSCRIPT_EXT, SUPPLEMENTARY_EXT } from "@/lib/constants";
 
+function parseReviewers(raw: string, max: number) {
+  try {
+    const arr = JSON.parse(raw || "[]");
+    if (!Array.isArray(arr)) return [];
+    return arr.slice(0, max).map((r) => ({ name: String(r.name ?? "").slice(0, 200), email: String(r.email ?? "").slice(0, 200), institution: String(r.institution ?? "").slice(0, 300), reason: String(r.reason ?? "").slice(0, 500) })).filter((r) => r.name.trim());
+  } catch {
+    return [];
+  }
+}
+
 type AuthorIn = { fullName: string; email: string; affiliation: string; country: string; orcid: string };
 
 export async function submitManuscript(fd: FormData) {
@@ -21,7 +31,7 @@ export async function submitManuscript(fd: FormData) {
   if (!ARTICLE_TYPES.includes(articleType)) back(B, { error: "Please choose an article type." });
   if (splitKeywords(keywords).length < 3) back(B, { error: "Please provide at least 3 keywords, separated by commas or semicolons." });
   if (!conflictOfInterest || !fundingStatement) back(B, { error: "Conflict of interest and funding declarations are required." });
-  if (!bool(fd, "originality")) back(B, { error: "You must confirm the originality declaration." });
+  if (!bool(fd, "originality") || !bool(fd, "authorsAgree") || !bool(fd, "policies")) back(B, { error: "Please confirm all required declarations." });
   const ethicsRequired = bool(fd, "ethicsApprovalRequired");
   if (ethicsRequired && !str(fd, "ethicsStatement")) back(B, { error: "Please provide ethics approval details." });
 
@@ -62,6 +72,9 @@ export async function submitManuscript(fd: FormData) {
           coverLetter: optStr(fd, "coverLetter"), conflictOfInterest, fundingStatement,
           ethicsApprovalRequired: ethicsRequired, ethicsStatement: ethicsRequired ? optStr(fd, "ethicsStatement") : null,
           originalityDeclared: true, aiUsageDisclosure: optStr(fd, "aiUsageDisclosure"),
+          dataAvailability: optStr(fd, "dataAvailability"), previouslySubmitted: optStr(fd, "previouslySubmitted"),
+          suggestedReviewers: parseReviewers(str(fd, "suggestedReviewersJson"), 5),
+          opposedReviewers: parseReviewers(str(fd, "opposedReviewersJson"), 3),
           authors: { create: authors.map((a, i) => ({ order: i + 1, fullName: a.fullName.trim(), email: a.email.trim().toLowerCase(), affiliation: a.affiliation.trim(), country: a.country?.trim() || null, orcid: normalizeOrcid(a.orcid), isCorresponding: i === corr })) },
           files: { create: stored.map((s) => ({ fileId: s.fileId, kind: s.kind, revision: 0 })) },
           statusEvents: { create: [{ status: "SUBMITTED", actorId: u.id, note: "Manuscript submitted" }] },

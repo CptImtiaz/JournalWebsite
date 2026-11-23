@@ -91,6 +91,10 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
               <div><dt className="text-muted">Ethics approval</dt><dd>{m.ethicsApprovalRequired ? m.ethicsStatement : "Not applicable (declared)"}</dd></div>
               <div><dt className="text-muted">AI usage</dt><dd>{m.aiUsageDisclosure || "None declared"}</dd></div>
               <div><dt className="text-muted">Originality declaration</dt><dd>{m.originalityDeclared ? "Confirmed" : "No"}</dd></div>
+              {m.dataAvailability && <div className="sm:col-span-2"><dt className="text-muted">Data availability</dt><dd>{m.dataAvailability}</dd></div>}
+              {m.previouslySubmitted && <div><dt className="text-muted">Previous submission</dt><dd>{m.previouslySubmitted}</dd></div>}
+              {Array.isArray(m.suggestedReviewers) && m.suggestedReviewers.length > 0 && <div className="sm:col-span-2"><dt className="text-muted">Suggested reviewers</dt><dd><ul className="list-disc pl-5">{(m.suggestedReviewers as { name: string; email: string; institution: string; reason: string }[]).map((r, i) => <li key={i}><strong>{r.name}</strong> {r.institution && `· ${r.institution}`} {r.email && `· ${r.email}`} {r.reason && <span className="text-muted">— {r.reason}</span>}</li>)}</ul></dd></div>}
+              {Array.isArray(m.opposedReviewers) && m.opposedReviewers.length > 0 && <div className="sm:col-span-2"><dt className="text-muted">Opposed reviewers</dt><dd><ul className="list-disc pl-5">{(m.opposedReviewers as { name: string; institution: string; reason: string }[]).map((r, i) => <li key={i}><strong>{r.name}</strong> {r.institution && `· ${r.institution}`} {r.reason && <span className="text-muted">— {r.reason}</span>}</li>)}</ul></dd></div>}
               {m.coverLetter && <div className="sm:col-span-2"><dt className="text-muted">Cover letter</dt><dd className="whitespace-pre-line">{m.coverLetter}</dd></div>}
             </dl>
             <h3 className="mt-5 text-sm font-semibold text-navy">Authors</h3>

@@ -2,70 +2,131 @@ import Link from "next/link";
 import { requirePermission } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { PTitle } from "@/components/portal";
-import { Stat, Card, StatusBadge } from "@/components/ui";
+import { Stat, Card, StatusBadge, Empty } from "@/components/ui";
+import { ColumnChart } from "@/components/charts";
+import { Icon } from "@/components/icons";
 import { formatDateTime, formatDate } from "@/lib/utils";
 import { smtpConfigured } from "@/lib/email";
 import { crossrefConfigured } from "@/lib/crossref";
 import { getJournal } from "@/lib/journal";
+import { submissionsByMonth } from "@/lib/stats";
+import { MANUSCRIPT_STATUSES } from "@/lib/constants";
 
 export default async function AdminDashboard() {
-  await requirePermission("admin.access");
+  const u = await requirePermission("admin.access");
   const weekAgo = new Date(Date.now() - 7 * 864e5);
-  const [total, fresh, review, awaiting, accepted, rejected, published, authors, reviewers, board, recentM, logs, failedEmails, j] = await Promise.all([
+  const [total, fresh, review, awaiting, accepted, rejected, published, authors, reviewers, board, recentM, logs, failedEmails, j, monthly, byStatus, views] = await Promise.all([
     db.manuscript.count(),
     db.manuscript.count({ where: { submittedAt: { gte: weekAgo } } }),
     db.manuscript.count({ where: { status: "UNDER_REVIEW" } }),
-    db.manuscript.count({ where: { status: { in: ["REVISED_SUBMITTED"] } } }).then(async (n) => n + (await db.manuscript.count({ where: { status: "UNDER_REVIEW", assignments: { some: { status: "COMPLETED" }, none: { status: { in: ["INVITED", "ACCEPTED"] } } } } }))),
+    db.manuscript.count({ where: { OR: [{ status: "REVISED_SUBMITTED" }, { status: "UNDER_REVIEW", assignments: { some: { status: "COMPLETED" }, none: { status: { in: ["INVITED", "ACCEPTED"] } } } }] } }),
     db.manuscript.count({ where: { status: { in: ["ACCEPTED", "IN_PRODUCTION", "PUBLISHED"] } } }),
     db.manuscript.count({ where: { status: "REJECTED" } }),
     db.article.count({ where: { status: "PUBLISHED" } }),
     db.user.count({ where: { roles: { some: { role: { key: "AUTHOR" } } } } }),
     db.user.count({ where: { roles: { some: { role: { key: "REVIEWER" } } } } }),
     db.editorialBoardMember.count({ where: { isPublished: true } }),
-    db.manuscript.findMany({ orderBy: { submittedAt: "desc" }, take: 6 }),
+    db.manuscript.findMany({ orderBy: { submittedAt: "desc" }, take: 6, include: { submitter: { select: { fullName: true } } } }),
     db.auditLog.findMany({ orderBy: { createdAt: "desc" }, take: 8, include: { actor: { select: { fullName: true } } } }),
     db.emailNotification.count({ where: { status: "FAILED" } }),
     getJournal(),
+    submissionsByMonth(12),
+    db.manuscript.groupBy({ by: ["status"], _count: true }),
+    db.article.aggregate({ _sum: { views: true, downloads: true } }),
   ]);
+  const decided = accepted + rejected;
   const checks = [
-    { ok: smtpConfigured(), label: "SMTP email delivery", fix: "Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD environment variables." },
-    { ok: !!process.env.BLOB_READ_WRITE_TOKEN, label: "Secure file storage (Vercel Blob)", fix: "Connect a private Vercel Blob store (BLOB_READ_WRITE_TOKEN)." },
-    { ok: crossrefConfigured(), label: "Crossref DOI deposits", fix: "Set CROSSREF_USERNAME / CROSSREF_PASSWORD after Crossref membership." },
-    { ok: !!(j.eIssn || j.printIssn), label: "ISSN recorded", fix: "Enter officially assigned ISSN in Journal settings." },
-    { ok: !!j.contactEmail, label: "Contact email set", fix: "Add an editorial contact email in Journal settings." },
-    { ok: !!process.env.CRON_SECRET, label: "Scheduled reminders secured", fix: "Set CRON_SECRET so the daily reminder job is authenticated." },
+    { ok: smtpConfigured(), label: "Email delivery (SMTP)", fix: "Set SMTP environment variables." },
+    { ok: !!process.env.BLOB_READ_WRITE_TOKEN, label: "Secure file storage", fix: "Connect a private Vercel Blob store." },
+    { ok: crossrefConfigured(), label: "Crossref DOI deposits", fix: "Add Crossref credentials after membership." },
+    { ok: !!(j.eIssn || j.printIssn), label: "ISSN recorded", fix: "Enter the officially assigned ISSN in settings." },
+    { ok: !!j.contactEmail, label: "Contact email", fix: "Add an editorial contact email in settings." },
+    { ok: board > 0, label: "Editorial board published", fix: "Add confirmed board members." },
   ];
+  const ready = checks.filter((c) => c.ok).length;
+  const pipeline = (["SUBMITTED", "TECHNICAL_CHECK", "AWAITING_EDITOR", "EDITOR_ASSIGNED", "UNDER_REVIEW", "REVISION_REQUIRED", "REVISED_SUBMITTED", "ACCEPTED", "IN_PRODUCTION"] as const).map((s) => ({ s, n: byStatus.find((x) => x.status === s)?._count ?? 0 }));
+  const pmax = Math.max(1, ...pipeline.map((p) => p.n));
+  const hour = new Date().getUTCHours();
+
   return (
     <>
-      <PTitle title="Administrator dashboard" subtitle={j.name} />
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-        <Stat label="Total submissions" value={total} href="/editor/manuscripts" />
-        <Stat label="New (7 days)" value={fresh} href="/editor/manuscripts?status=SUBMITTED" />
-        <Stat label="Under review" value={review} href="/editor/manuscripts?status=UNDER_REVIEW" />
-        <Stat label="Awaiting decision" value={awaiting} href="/editor/dashboard" />
-        <Stat label="Accepted" value={accepted} href="/editor/manuscripts?status=ACCEPTED" />
-        <Stat label="Rejected" value={rejected} href="/editor/manuscripts?status=REJECTED" />
-        <Stat label="Published articles" value={published} href="/admin/articles" />
+      <PTitle title={`Good ${hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening"}, ${u.fullName.split(" ")[0]}`} subtitle={`${j.name} · administration overview`} actions={<><Link href="/admin/articles/new" className="btn-secondary"><Icon name="plus" size={16} />New article</Link><Link href="/editor/manuscripts" className="btn-primary">Open manuscripts</Link></>} />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Stat icon="inbox" label="Total submissions" value={total} hint={`${fresh} new in the last 7 days`} href="/editor/manuscripts" />
+        <Stat icon="review" tone="blue" label="Under review" value={review} hint={`${awaiting} awaiting a decision`} href="/editor/manuscripts?status=UNDER_REVIEW" />
+        <Stat icon="check" tone="green" label="Accepted" value={accepted} hint={decided ? `${Math.round((accepted / decided) * 100)}% acceptance rate (${rejected} rejected)` : `${rejected} rejected`} href="/editor/manuscripts?status=ACCEPTED" />
+        <Stat icon="book" tone="amber" label="Published articles" value={published} hint={`${(views._sum.views ?? 0).toLocaleString()} views · ${(views._sum.downloads ?? 0).toLocaleString()} downloads`} href="/admin/articles" />
+      </div>
+      <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat label="Registered authors" value={authors} href="/admin/users?role=AUTHOR" />
         <Stat label="Registered reviewers" value={reviewers} href="/admin/users?role=REVIEWER" />
-        <Stat label="Active board members" value={board} href="/admin/board" />
+        <Stat label="Board members" value={board} href="/admin/board" />
+        <Stat label="New this week" value={fresh} href="/editor/manuscripts?status=SUBMITTED" />
       </div>
-      <div className="mt-8 grid gap-6 xl:grid-cols-2">
-        <Card title="System readiness">
-          <ul className="space-y-2 text-sm">
-            {checks.map((c) => (
-              <li key={c.label} className="flex gap-2"><span className={c.ok ? "text-emerald-600" : "text-amber-600"}>{c.ok ? "✓" : "!"}</span><span><strong>{c.label}</strong>{!c.ok && <span className="block text-xs text-muted">{c.fix}</span>}</span></li>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+        <Card title="Submissions per month" subtitle="Last 12 months">
+          <ColumnChart data={monthly} />
+        </Card>
+        <Card title="Editorial pipeline" subtitle="Manuscripts currently at each stage">
+          <ul className="space-y-2.5">
+            {pipeline.map((p) => (
+              <li key={p.s}>
+                <Link href={`/editor/manuscripts?status=${p.s}`} className="group grid grid-cols-[1fr_auto] items-center gap-x-3 text-sm">
+                  <span className="truncate text-ink group-hover:text-brand">{MANUSCRIPT_STATUSES[p.s]}</span>
+                  <span className="font-semibold tabular-nums">{p.n}</span>
+                  <span className="col-span-2 mt-1 h-1.5 overflow-hidden rounded-full bg-app"><span className="block h-full rounded-full bg-brand" style={{ width: `${(p.n / pmax) * 100}%` }} /></span>
+                </Link>
+              </li>
             ))}
-            {failedEmails > 0 && <li className="flex gap-2"><span className="text-red-600">!</span><Link className="link" href="/admin/email?status=FAILED">{failedEmails} failed email(s)</Link></li>}
           </ul>
         </Card>
-        <Card title="Recent submissions">
-          <ul className="divide-y divide-line text-sm">{recentM.map((m) => <li key={m.id} className="flex items-center justify-between gap-2 py-2"><Link className="link" href={`/editor/manuscripts/${m.id}`}><span className="font-mono text-xs">{m.code}</span> {m.title.slice(0, 70)}</Link><span className="flex items-center gap-2 text-xs text-muted">{formatDate(m.submittedAt)} <StatusBadge status={m.status} /></span></li>)}</ul>
+      </div>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-[1.6fr_1fr]">
+        <Card title="Recent submissions" actions={<Link className="text-sm font-medium text-brand hover:underline" href="/editor/manuscripts">View all</Link>} flush>
+          {recentM.length === 0 ? <div className="p-5"><Empty title="No submissions yet" /></div> : (
+            <div className="overflow-x-auto">
+              <table className="table">
+                <thead><tr><th>Manuscript</th><th>Author</th><th>Submitted</th><th>Status</th></tr></thead>
+                <tbody>{recentM.map((m) => (
+                  <tr key={m.id}>
+                    <td className="min-w-64"><Link className="font-medium text-ink hover:text-brand" href={`/editor/manuscripts/${m.id}`}>{m.title.length > 70 ? m.title.slice(0, 70) + "…" : m.title}</Link><div className="font-mono text-[11px] text-muted">{m.code}</div></td>
+                    <td className="whitespace-nowrap">{m.submitter.fullName}</td>
+                    <td className="whitespace-nowrap text-muted">{formatDate(m.submittedAt)}</td>
+                    <td><StatusBadge status={m.status} /></td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+          )}
         </Card>
-        <Card title="Recent activity" actions={<Link className="link text-sm" href="/admin/audit">Audit log →</Link>} className="xl:col-span-2">
-          <ul className="divide-y divide-line text-sm">{logs.map((l) => <li key={l.id} className="flex flex-wrap justify-between gap-2 py-2"><span><span className="font-mono text-xs">{l.action}</span> {l.entityType && <span className="text-muted">on {l.entityType}</span>}</span><span className="text-xs text-muted">{l.actor?.fullName ?? "system"} · {formatDateTime(l.createdAt)}</span></li>)}</ul>
+        <Card title="Launch readiness" subtitle={`${ready} of ${checks.length} complete`}>
+          <div className="mb-4 h-2 overflow-hidden rounded-full bg-app"><div className="h-full rounded-full bg-emerald-600" style={{ width: `${(ready / checks.length) * 100}%` }} /></div>
+          <ul className="space-y-3 text-sm">
+            {checks.map((c) => (
+              <li key={c.label} className="flex gap-3">
+                <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}><Icon name={c.ok ? "check" : "alert"} size={12} /></span>
+                <span><span className="font-medium">{c.label}</span>{!c.ok && <span className="block text-xs text-muted">{c.fix}</span>}</span>
+              </li>
+            ))}
+            {failedEmails > 0 && <li className="flex gap-3"><span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-700"><Icon name="alert" size={12} /></span><Link className="link" href="/admin/email?status=FAILED">{failedEmails} failed email(s)</Link></li>}
+          </ul>
         </Card>
       </div>
+
+      <Card title="Recent activity" className="mt-6" actions={<Link className="text-sm font-medium text-brand hover:underline" href="/admin/audit">Audit log</Link>}>
+        <ol className="relative space-y-4 border-l border-line pl-6">
+          {logs.map((l) => (
+            <li key={l.id} className="relative">
+              <span className="absolute -left-[29px] top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-brand ring-1 ring-line" />
+              <div className="text-sm"><span className="font-medium">{l.actor?.fullName ?? "System"}</span> <span className="text-muted">—</span> <span className="font-mono text-xs">{l.action}</span> {l.entityType && <span className="text-muted">({l.entityType})</span>}</div>
+              <div className="text-xs text-muted">{formatDateTime(l.createdAt)}</div>
+            </li>
+          ))}
+        </ol>
+      </Card>
     </>
   );
 }

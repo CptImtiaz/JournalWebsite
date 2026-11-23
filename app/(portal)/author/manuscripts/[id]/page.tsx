@@ -6,6 +6,7 @@ import { PTitle } from "@/components/portal";
 import { Card, StatusBadge, TextArea, Field, Badge } from "@/components/ui";
 import { SubmitButton } from "@/components/client";
 import { Tracker } from "@/components/tracker";
+import { ClearDraft } from "@/components/submission-wizard";
 import { formatDate, formatDateTime, fileSize, appUrl, str } from "@/lib/utils";
 import { FILE_KINDS, MANUSCRIPT_STATUSES, RECOMMENDATIONS, MANUSCRIPT_EXT, SUPPLEMENTARY_EXT } from "@/lib/constants";
 import { storeFile, isRealFile, UploadError } from "@/lib/storage";
@@ -93,6 +94,7 @@ export default async function AuthorManuscript({ params }: { params: Promise<{ i
 
   return (
     <>
+      <ClearDraft />
       <PTitle back={{ href: "/author/dashboard", label: "My submissions" }} title={m.title} subtitle={<span className="font-mono">{m.code}</span>} actions={<StatusBadge status={m.status} />} />
       <div className="space-y-6">
         <Card title="Manuscript tracking">
