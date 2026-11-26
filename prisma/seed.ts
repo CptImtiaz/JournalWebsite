@@ -36,8 +36,9 @@ async function main() {
     },
   });
 
+  await db.researchCategory.updateMany({ where: { name: "Human-Computer Interaction" }, data: { name: "Human Computer Interaction" } });
   for (const [i, name] of CATEGORIES.entries()) {
-    await db.researchCategory.upsert({ where: { slug: slug(name) }, update: {}, create: { name, slug: slug(name), sortOrder: i } });
+    if (!(await db.researchCategory.findFirst({ where: { OR: [{ name }, { slug: slug(name) }, { slug: slug(name.replace("Human Computer", "Human-Computer")) }] } }))) await db.researchCategory.create({ data: { name, slug: slug(name), sortOrder: i } });
   }
   for (const [i, p] of PAGES.entries()) {
     const existing = await db.page.findUnique({ where: { slug: p.slug } });

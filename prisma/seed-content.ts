@@ -9,7 +9,7 @@ export const CATEGORIES = [
   "Internet of Things",
   "Cloud and Edge Computing",
   "Robotics and Autonomous Systems",
-  "Human-Computer Interaction",
+  "Human Computer Interaction",
   "Algorithms and Computational Intelligence",
   "Distributed Systems",
   "Database Technologies",
