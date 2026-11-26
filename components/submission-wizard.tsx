@@ -194,7 +194,6 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
                 <Icon name="file" size={18} className="text-brand" />
                 <span className="flex-1">Use the journal template to format your manuscript.</span>
                 <a href="/templates/IJCST-manuscript-template.docx" className="font-medium text-brand hover:underline">Word (.docx)</a>
-                <a href="/templates/IJCST-latex-template.zip" className="font-medium text-brand hover:underline">LaTeX (.zip)</a>
               </div>
               <Section title="Before you begin">
                 <ul className="grid gap-2 text-sm text-ink/80 sm:grid-cols-2">

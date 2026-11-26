@@ -56,6 +56,8 @@ export const FILE_KINDS: Record<string, string> = {
   COVER_LETTER: "Cover letter",
   REVISION: "Revised manuscript",
   RESPONSE_LETTER: "Response to reviewers",
+  TRACKED_CHANGES: "Revised manuscript (tracked changes)",
+  PROOF: "Article proof",
   SIMILARITY_REPORT: "Similarity report",
   EDITORIAL: "Editorial document",
   ACCEPTED: "Accepted manuscript",

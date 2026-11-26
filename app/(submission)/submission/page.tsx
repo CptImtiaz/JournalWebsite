@@ -57,7 +57,7 @@ export default async function SubmissionHome() {
             <div>
               <h3 className="font-semibold">Prepare your file</h3>
               <p className="mt-2 text-sm text-ink/80">Use the journal template. If you upload a Word file, we can fill in your title, abstract and keywords for you.</p>
-              <div className="mt-3 flex flex-wrap gap-3 text-sm"><a className="link" href="/templates/IJCST-manuscript-template.docx">Word template</a><a className="link" href="/templates/IJCST-latex-template.zip">LaTeX template</a><Link className="link" href="/for-authors" target="_blank">Guidelines</Link></div>
+              <div className="mt-3 flex flex-wrap gap-3 text-sm"><a className="link" href="/templates/IJCST-manuscript-template.docx">Word template</a><Link className="link" href="/for-authors" target="_blank">Guidelines</Link></div>
             </div>
           </div>
           <div className="border-t border-line bg-surface px-5 py-4">

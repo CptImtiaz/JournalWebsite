@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 
-export function FileDrop({ name, accept, multiple, label, hint }: { name: string; accept: string; multiple?: boolean; label: string; hint: string }) {
+export function FileDrop({ name, accept, multiple, label, hint, note = "Uploaded when you save this step" }: { name: string; accept: string; multiple?: boolean; label: string; hint: string; note?: string }) {
   const [names, setNames] = useState<string[]>([]);
   const [over, setOver] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
@@ -14,7 +14,7 @@ export function FileDrop({ name, accept, multiple, label, hint }: { name: string
     >
       <input ref={ref} type="file" name={name} accept={accept} multiple={multiple} aria-label={label} className="absolute inset-0 cursor-pointer opacity-0" onChange={(e) => setNames(Array.from(e.target.files ?? []).map((f) => f.name))} />
       {names.length ? (
-        <div className="text-sm"><div className="font-semibold text-emerald-800">{names.length} file{names.length > 1 ? "s" : ""} ready to upload</div><div className="mt-1 text-xs text-ink/70">{names.join(", ")}</div><div className="mt-1 text-xs text-muted">Uploaded when you save this step</div></div>
+        <div className="text-sm"><div className="font-semibold text-emerald-800">{names.length} file{names.length > 1 ? "s" : ""} ready to upload</div><div className="mt-1 text-xs text-ink/70">{names.join(", ")}</div><div className="mt-1 text-xs text-muted">{note}</div></div>
       ) : (
         <div className="text-sm"><span className="font-semibold text-link underline underline-offset-2">Choose {multiple ? "files" : "a file"}</span> <span className="text-ink/70">or drag {multiple ? "them" : "it"} here</span><div className="mt-1 text-xs text-muted">{hint}</div></div>
       )}

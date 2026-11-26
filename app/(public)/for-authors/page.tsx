@@ -9,7 +9,6 @@ export const metadata = { title: "Submission guidelines", description: "Manuscri
 
 const TEMPLATES = [
   { href: "/templates/IJCST-manuscript-template.docx", title: "Microsoft Word template", meta: "DOCX · styles, headings, tables, figures, IEEE references", icon: "file" as const },
-  { href: "/templates/IJCST-latex-template.zip", title: "LaTeX template", meta: "ZIP · main.tex, ijcst.sty and references.bib. Upload it to Overleaf", icon: "download" as const },
   { href: "/templates/IJCST-manuscript-template.pdf", title: "Template preview", meta: "PDF · see the expected layout before you start", icon: "page" as const },
 ];
 

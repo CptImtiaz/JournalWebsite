@@ -163,7 +163,6 @@ export default async function Home() {
             <p className="text-sm text-ink/80">Use the journal template, then submit online. Submission and review are free.</p>
             <ul id="templates" className="mt-3 space-y-2 text-sm">
               <li><a href="/templates/IJCST-manuscript-template.docx" className="flex items-center gap-2 font-medium text-link hover:underline"><Icon name="download" size={15} />Word template (.docx)</a></li>
-              <li><a href="/templates/IJCST-latex-template.zip" className="flex items-center gap-2 font-medium text-link hover:underline"><Icon name="download" size={15} />LaTeX template (.zip)</a></li>
               <li><Link href="/for-authors" className="flex items-center gap-2 font-medium text-link hover:underline"><Icon name="file" size={15} />Submission guidelines</Link></li>
             </ul>
             <Link href="/submit" className="btn-accent mt-4 w-full">Submit manuscript</Link>

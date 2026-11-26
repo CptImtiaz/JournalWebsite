@@ -165,12 +165,15 @@ export async function decisionAction(fd: FormData) {
     await db.reviewReport.updateMany({ where: { assignment: { manuscriptId: m.id, revision: m.currentRevision } }, data: { releasedToAuthor: true } });
   }
   const status: ManuscriptStatus = decision === "ACCEPT" ? "ACCEPTED" : decision === "REJECT" ? "REJECTED" : "REVISION_REQUIRED";
-  await db.manuscript.update({ where: { id: m.id }, data: { decidedAt: status === "REVISION_REQUIRED" ? null : new Date() } });
+  const days = decision === "MINOR_REVISION" ? 21 : 45;
+  const revisionDueAt = status === "REVISION_REQUIRED" ? new Date(Date.now() + days * 86400000) : null;
+  await db.manuscript.update({ where: { id: m.id }, data: { decidedAt: status === "REVISION_REQUIRED" ? null : new Date(), revisionDueAt } });
+  const fullLetter = revisionDueAt ? `${letter}\n\nPlease submit your revised manuscript by ${revisionDueAt.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}. Use the link below to open the revision workspace.` : letter;
   await setStatus(m.id, status, u.id, `Decision: ${RECOMMENDATIONS[decision as keyof typeof RECOMMENDATIONS]}`, false);
   await audit(u.id, "manuscript.decision", "Manuscript", m.id, { decision });
   const tpl = decision === "ACCEPT" ? "decision_accept" : decision === "REJECT" ? "decision_reject" : "revision_requested";
   const authorsEmails = [m.submitter.email];
-  await sendTemplate(tpl, authorsEmails, { name: m.submitter.fullName, title: m.title, manuscript_id: m.code, decision: RECOMMENDATIONS[decision as keyof typeof RECOMMENDATIONS], letter, url: `${appUrl()}/author/manuscripts/${m.id}` });
+  await sendTemplate(tpl, authorsEmails, { name: m.submitter.fullName, title: m.title, manuscript_id: m.code, decision: RECOMMENDATIONS[decision as keyof typeof RECOMMENDATIONS], letter: fullLetter, url: revisionDueAt ? `${appUrl()}/submission/revise/${m.id}` : `${appUrl()}/author/manuscripts/${m.id}` });
   back(here, { ok: "Decision issued and the author has been notified." });
 }
 

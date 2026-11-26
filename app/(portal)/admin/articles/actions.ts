@@ -9,6 +9,7 @@ import { storeFile, isRealFile, UploadError, deleteStoredFile } from "@/lib/stor
 import { sendTemplate } from "@/lib/email";
 import { setStatus } from "@/lib/manuscripts";
 import { notifySubscribers } from "@/lib/alerts";
+import { sendProofs, sendPaymentRequest, markInvoicePaid } from "@/lib/production";
 import { str, optStr, int, slugify, normalizeOrcid, appUrl } from "@/lib/utils";
 import { ARTICLE_TYPES, IMAGE_EXT, SUPPLEMENTARY_EXT } from "@/lib/constants";
 
@@ -126,5 +127,40 @@ export async function publishAction(fd: FormData) {
     await audit(u.id, "article.deleted", "Article", id);
     redirect("/admin/articles?ok=Draft+deleted.");
   }
+  back(here, {});
+}
+
+// ── Proofs and payment ──
+export async function proofAction(fd: FormData) {
+  const u = await requirePermission("publishing.manage");
+  const id = str(fd, "id"), op = str(fd, "op");
+  const here = `/admin/articles/${id}#production`;
+  if (op === "upload") {
+    const f = fd.get("proof");
+    if (!isRealFile(f)) back(here, { error: "Choose the proof PDF." });
+    try {
+      const s = await storeFile(f, { allowed: [".pdf"], folder: "proofs", uploadedById: u.id });
+      await db.article.update({ where: { id }, data: { proofFileId: s.id } });
+    } catch (e) { if (e instanceof UploadError) back(here, { error: e.message }); throw e; }
+    await audit(u.id, "article.proof_uploaded", "Article", id);
+    back(here, { ok: "Proof uploaded. Click Send proofs to email the author." });
+  }
+  if (op === "send") {
+    try { const to = await sendProofs(id, u.id); back(here, { ok: `Proofs emailed to ${to}.` }); }
+    catch (e) { if ((e as Error).message?.startsWith("NEXT_REDIRECT")) throw e; back(here, { error: (e as Error).message }); }
+  }
+  back(here, {});
+}
+
+export async function invoiceAction(fd: FormData) {
+  const u = await requirePermission("publishing.manage");
+  const id = str(fd, "id"), op = str(fd, "op");
+  const here = `/admin/articles/${id}#production`;
+  if (op === "create") { const inv = await sendPaymentRequest(id); back(here, inv ? { ok: `Invoice ${inv.number} sent to ${inv.email}.` } : { error: "Could not create the invoice. Check the author email and the APC setting." }); }
+  const inv = await db.invoice.findUnique({ where: { articleId: id } });
+  if (!inv) back(here, { error: "No invoice yet." });
+  if (op === "resend") { await db.invoice.update({ where: { id: inv.id }, data: { status: inv.status === "CANCELLED" ? "PENDING" : inv.status } }); await sendPaymentRequest(id); back(here, { ok: "Payment link emailed again." }); }
+  if (op === "paid") { await markInvoicePaid(inv.id, str(fd, "method") || "bank transfer", optStr(fd, "note") ?? undefined); await audit(u.id, "invoice.marked_paid", "Invoice", inv.id); back(here, { ok: "Invoice marked as paid." }); }
+  if (op === "waive") { await db.invoice.update({ where: { id: inv.id }, data: { status: "WAIVED", note: optStr(fd, "note") } }); await audit(u.id, "invoice.waived", "Invoice", inv.id); back(here, { ok: "APC waived." }); }
   back(here, {});
 }

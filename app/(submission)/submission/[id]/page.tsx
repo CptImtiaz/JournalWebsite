@@ -67,6 +67,7 @@ export default async function SubmissionStep({ params, searchParams }: { params:
   const isDocx = !!d.manuscriptFileId && d.files[d.manuscriptFileId]?.originalName.toLowerCase().endsWith(".docx");
   const done = STEPS.map((s) => stepComplete(d, s.n));
   const ready = [0, 1, 2, 4].every((i) => done[i]);
+  const pct = Math.round((done.filter(Boolean).length / STEPS.length) * 100);
   const cat = cats.find((c) => c.id === x.categoryId)?.name;
 
   return (
@@ -75,6 +76,10 @@ export default async function SubmissionStep({ params, searchParams }: { params:
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted">New submission · draft saved {formatDateTime(d.updatedAt)}</p>
           <h1 className="mt-1 font-display text-[28px] font-semibold leading-tight">{x.title || "Untitled manuscript"}</h1>
+        </div>
+        <div className="w-full max-w-60">
+          <div className="flex justify-between text-xs"><span className="font-semibold">{pct}% complete</span><span className="text-muted">{done.filter(Boolean).length} of 6 steps</span></div>
+          <div className="mt-1.5 h-1.5 bg-ink/10"><div className={`h-full transition-all ${pct === 100 ? "bg-emerald-600" : "bg-gold"}`} style={{ width: `${pct}%` }} /></div>
         </div>
       </div>
 

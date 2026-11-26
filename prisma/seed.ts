@@ -4,6 +4,7 @@ import { ROLES, ROLE_DESCRIPTIONS, PERMISSIONS, ROLE_PERMISSIONS } from "../lib/
 import { CATEGORIES, PAGES, EMAIL_TEMPLATES } from "./seed-content.ts";
 import { PAGES as PAGES_V1 } from "./seed-content-v1.ts";
 import { PAGES as PAGES_V2, EMAIL_TEMPLATES as EMAIL_V2 } from "./seed-content-v2.ts";
+import { PAGES as PAGES_V3 } from "./seed-content-v3.ts";
 
 const db = new PrismaClient();
 const slug = (s: string) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -47,7 +48,7 @@ async function main() {
       continue;
     }
     // Content upgrade: replace text only if it is still the previous default (never overwrite admin edits).
-    const olds = [PAGES_V1, PAGES_V2].map((v) => v.find((o) => o.slug === p.slug)?.body).filter(Boolean);
+    const olds = [PAGES_V1, PAGES_V2, PAGES_V3].map((v) => v.find((o) => o.slug === p.slug)?.body).filter(Boolean);
     if (olds.includes(existing.body) && existing.body !== p.body) {
       await db.page.update({ where: { slug: p.slug }, data: { title: p.title, body: p.body, seoDescription: p.seo ?? existing.seoDescription } });
       console.log(`Updated default content for /${p.slug}`);

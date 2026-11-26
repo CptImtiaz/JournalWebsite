@@ -9,7 +9,9 @@ import { SubmitButton } from "@/components/client";
 import { ArticleAuthorsEditor } from "@/components/article-authors-editor";
 import { ARTICLE_TYPES } from "@/lib/constants";
 import { fileSize } from "@/lib/utils";
-import { saveArticleAction, uploadArticleFileAction, deleteArticleFileAction, publishAction } from "../actions";
+import { saveArticleAction, uploadArticleFileAction, deleteArticleFileAction, publishAction, proofAction, invoiceAction } from "../actions";
+import { money, stripeEnabled } from "@/lib/production";
+import { formatDateTime } from "@/lib/utils";
 
 const d = (x?: Date | null) => (x ? x.toISOString().slice(0, 10) : "");
 
@@ -18,6 +20,9 @@ export default async function ArticleEdit({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const a = id === "new" ? null : await db.article.findUnique({ where: { id }, include: { authors: { orderBy: { order: "asc" } }, references: { orderBy: { order: "asc" } }, files: { include: { file: true }, orderBy: [{ kind: "asc" }, { sortOrder: "asc" }] }, doiRecords: { orderBy: { createdAt: "desc" } }, manuscript: { select: { id: true, code: true } } } });
   if (id !== "new" && !a) notFound();
+  const invoice = a ? await db.invoice.findUnique({ where: { articleId: a.id } }) : null;
+  const proofFile = a?.proofFileId ? await db.storedFile.findUnique({ where: { id: a.proofFileId } }) : null;
+  const PROOF_LABEL: Record<string, string> = { NONE: "Not sent", SENT: "Waiting for author", CORRECTIONS: "Corrections requested", APPROVED: "Approved by author" };
   const [cats, issues, j] = await Promise.all([
     db.researchCategory.findMany({ orderBy: { sortOrder: "asc" } }),
     db.issue.findMany({ include: { volume: true }, orderBy: [{ year: "desc" }, { number: "desc" }] }),
@@ -44,6 +49,50 @@ export default async function ArticleEdit({ params }: { params: Promise<{ id: st
               {a.authors.length === 0 && <span className="text-xs text-amber-700">No authors yet. The article will show “Author details are being verified”.</span>}
               {!a.files.some((f) => f.kind === "PDF") && <span className="text-xs text-amber-700">No PDF uploaded yet.</span>}
             </form>
+          </Card>
+        )}
+
+        {a && (
+          <Card title="Production: proofs and payment" subtitle="Accepted article → proof sent → author approves → APC paid → publish">
+            <div id="production" className="grid gap-6 lg:grid-cols-2">
+              <div>
+                <h3 className="text-sm font-semibold">Proofs</h3>
+                <p className="mt-1 text-sm">Status: <Badge tone={a.proofStatus === "APPROVED" ? "green" : a.proofStatus === "CORRECTIONS" ? "red" : a.proofStatus === "SENT" ? "amber" : "gray"}>{PROOF_LABEL[a.proofStatus] ?? a.proofStatus}</Badge>{a.proofRound > 0 && <span className="ml-2 text-xs text-muted">round {a.proofRound}{a.proofSentAt ? `, sent ${formatDateTime(a.proofSentAt)}` : ""}</span>}</p>
+                {proofFile && <p className="mt-1 text-sm">Current proof: <a className="link" href={`/api/files/${proofFile.id}?inline=1`} target="_blank">{proofFile.originalName}</a></p>}
+                {a.proofCorrections && <div className="mt-2 whitespace-pre-line border-l-4 border-amber-400 bg-amber-50 p-3 text-sm"><strong>Author&apos;s corrections:</strong>{"\n"}{a.proofCorrections}</div>}
+                <form action={proofAction} encType="multipart/form-data" className="mt-3 flex flex-wrap items-center gap-2">
+                  <input type="hidden" name="id" value={a.id} /><input type="hidden" name="op" value="upload" />
+                  <input type="file" name="proof" accept=".pdf" className="input w-auto max-w-xs" />
+                  <SubmitButton className="btn-secondary btn-sm">Upload proof PDF</SubmitButton>
+                </form>
+                <form action={proofAction} className="mt-2"><input type="hidden" name="id" value={a.id} /><SubmitButton name="op" value="send" className="btn-primary btn-sm" confirm="Email the proofs to the author?">{a.proofRound ? "Send new proofs" : "Send proofs to author"}</SubmitButton></form>
+                <p className="hint">The author gets an email with a secure link to approve the proof or list corrections. No login is needed.</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold">Article processing charge</h3>
+                {invoice ? (
+                  <>
+                    <p className="mt-1 text-sm">Invoice <strong>{invoice.number}</strong> · {money(invoice.amount, invoice.currency)} · <Badge tone={invoice.status === "PAID" ? "green" : invoice.status === "WAIVED" ? "blue" : "amber"}>{invoice.status.toLowerCase()}</Badge></p>
+                    <p className="text-xs text-muted">To {invoice.payerName} &lt;{invoice.email}&gt;{invoice.paidAt ? ` · paid ${formatDateTime(invoice.paidAt)} by ${invoice.method}` : ""}{invoice.note ? ` · ${invoice.note}` : ""}</p>
+                    <p className="mt-1 text-xs"><a className="link" href={`/pay/${invoice.token}`} target="_blank">Open payment page</a></p>
+                    {invoice.status === "PENDING" && (
+                      <div className="mt-3 space-y-2">
+                        <form action={invoiceAction}><input type="hidden" name="id" value={a.id} /><SubmitButton name="op" value="resend" className="btn-secondary btn-sm">Email payment link again</SubmitButton></form>
+                        <form action={invoiceAction} className="flex flex-wrap items-center gap-2"><input type="hidden" name="id" value={a.id} /><select name="method" className="input w-auto py-1 text-sm"><option>bank transfer</option><option>card (manual)</option><option>other</option></select><input name="note" placeholder="Reference (optional)" className="input w-44 py-1 text-sm" /><SubmitButton name="op" value="paid" className="btn-secondary btn-sm" confirm="Mark this invoice as paid?">Mark paid</SubmitButton></form>
+                        <form action={invoiceAction} className="flex flex-wrap items-center gap-2"><input type="hidden" name="id" value={a.id} /><input name="note" placeholder="Waiver reason" className="input w-56 py-1 text-sm" /><SubmitButton name="op" value="waive" className="btn-secondary btn-sm" confirm="Waive the APC for this article?">Waive APC</SubmitButton></form>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-1 text-sm text-muted">No invoice yet. It is created and emailed automatically when the author approves the proof.</p>
+                    <form action={invoiceAction} className="mt-2"><input type="hidden" name="id" value={a.id} /><SubmitButton name="op" value="create" className="btn-secondary btn-sm">Create and send invoice now</SubmitButton></form>
+                  </>
+                )}
+                <p className="hint">Online card payment: {stripeEnabled() ? "Stripe is connected." : "Stripe is not connected yet. Authors see the bank transfer details from Journal settings."}</p>
+              </div>
+            </div>
+            {a.status === "DRAFT" && invoice?.status === "PENDING" && <p className="mt-4 border-t border-line pt-3 text-sm text-amber-800">The APC for this article has not been paid yet.</p>}
           </Card>
         )}
 

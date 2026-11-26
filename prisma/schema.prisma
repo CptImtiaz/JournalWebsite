@@ -195,6 +195,7 @@ model Manuscript {
   opposedReviewers      Json?
   previouslySubmitted   String?
   currentRevision       Int       @default(0)
+  revisionDueAt         DateTime?
   submittedAt           DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   decidedAt             DateTime?
@@ -354,6 +355,9 @@ model Journal {
   footerLinks        Json?
   homepage           Json?
   requireMfaForStaff Boolean  @default(false)
+  apcAmount          Int      @default(150)
+  apcCurrency        String   @default("USD")
+  paymentInstructions String? @db.Text
   updatedAt          DateTime @updatedAt
 }
 
@@ -417,6 +421,13 @@ model Article {
   acceptedAt         DateTime?
   publishedAt        DateTime?
   status             String    @default("DRAFT") // DRAFT, PUBLISHED, RETRACTED
+  proofFileId        String?
+  proofStatus        String    @default("NONE") // NONE, SENT, CORRECTIONS, APPROVED
+  proofToken         String?
+  proofRound         Int       @default(0)
+  proofSentAt        DateTime?
+  proofRespondedAt   DateTime?
+  proofCorrections   String?   @db.Text
   isSample           Boolean   @default(false)
   views              Int       @default(0)
   downloads          Int       @default(0)
@@ -601,4 +612,22 @@ model SubmissionDraft {
   updatedAt            DateTime @updatedAt
 
   @@index([userId])
+}
+
+model Invoice {
+  id              String    @id @default(cuid())
+  number          String    @unique
+  articleId       String    @unique
+  email           String
+  payerName       String
+  amount          Int // smallest currency unit (cents)
+  currency        String    @default("USD")
+  status          String    @default("PENDING") // PENDING, PAID, WAIVED, CANCELLED
+  token           String    @default(cuid())
+  stripeSessionId String?
+  method          String?
+  paidAt          DateTime?
+  note            String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }

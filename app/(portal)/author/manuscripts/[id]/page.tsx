@@ -14,6 +14,7 @@ import { setStatus } from "@/lib/manuscripts";
 import { sendTemplate } from "@/lib/email";
 import { back } from "@/lib/actions-util";
 import { audit } from "@/lib/audit";
+import { money } from "@/lib/production";
 
 const DECISION_LABEL: Record<string, string> = { ...RECOMMENDATIONS, ACCEPT: "Accepted", REJECT: "Rejected", MINOR_REVISION: "Minor revision required", MAJOR_REVISION: "Major revision required" };
 
@@ -22,42 +23,6 @@ async function own(id: string) {
   const m = await db.manuscript.findUnique({ where: { id }, include: { handlingEditor: true } });
   if (!m || m.submitterId !== u.id) notFound();
   return { u, m };
-}
-
-async function uploadRevision(fd: FormData) {
-  "use server";
-  const id = str(fd, "id");
-  const { u, m } = await own(id);
-  const here = `/author/manuscripts/${id}`;
-  if (m.status !== "REVISION_REQUIRED") back(here, { error: "This manuscript is not awaiting revision." });
-  const file = fd.get("revisionFile");
-  if (!isRealFile(file)) back(here, { error: "Please upload the revised manuscript." });
-  const response = str(fd, "response");
-  if (!response) back(here, { error: "Please provide a response to the reviewers." });
-  const rev = m.currentRevision + 1;
-  try {
-    const f = await storeFile(file, { allowed: MANUSCRIPT_EXT, folder: "manuscripts", uploadedById: u.id });
-    await db.manuscriptFile.create({ data: { manuscriptId: id, fileId: f.id, kind: "REVISION", revision: rev } });
-    const rl = fd.get("responseFile");
-    if (isRealFile(rl)) {
-      const f2 = await storeFile(rl, { allowed: MANUSCRIPT_EXT, folder: "manuscripts", uploadedById: u.id });
-      await db.manuscriptFile.create({ data: { manuscriptId: id, fileId: f2.id, kind: "RESPONSE_LETTER", revision: rev } });
-    }
-    for (const s of fd.getAll("supplementaryFiles").filter(isRealFile)) {
-      const f3 = await storeFile(s, { allowed: SUPPLEMENTARY_EXT, folder: "manuscripts", uploadedById: u.id });
-      await db.manuscriptFile.create({ data: { manuscriptId: id, fileId: f3.id, kind: "SUPPLEMENTARY", revision: rev } });
-    }
-  } catch (e) {
-    if (e instanceof UploadError) back(here, { error: e.message });
-    throw e;
-  }
-  await db.manuscriptRevision.create({ data: { manuscriptId: id, number: rev, responseToReviewers: response } });
-  await db.manuscript.update({ where: { id }, data: { currentRevision: rev } });
-  await setStatus(id, "REVISED_SUBMITTED", u.id, `Revision ${rev} submitted`, false);
-  const vars = { title: m.title, manuscript_id: m.code, revision: String(rev) };
-  await sendTemplate("revision_received", u.email, { ...vars, url: `${appUrl()}/author/manuscripts/${id}` });
-  if (m.handlingEditor) await sendTemplate("revision_received", m.handlingEditor.email, { ...vars, url: `${appUrl()}/editor/manuscripts/${id}` });
-  back(here, { ok: `Revision ${rev} submitted successfully.` });
 }
 
 async function withdraw(fd: FormData) {
@@ -84,12 +49,13 @@ export default async function AuthorManuscript({ params }: { params: Promise<{ i
       decisions: { where: { isRecommendation: false }, orderBy: { createdAt: "asc" } },
       statusEvents: { orderBy: { createdAt: "asc" } },
       assignments: { where: { report: { releasedToAuthor: true } }, include: { report: { include: { annotatedFile: true } } }, orderBy: { invitedAt: "asc" } },
-      article: { select: { slug: true, status: true } },
+      article: { select: { id: true, slug: true, status: true, proofStatus: true, proofToken: true } },
     },
   });
   // Reviewer identities are never exposed: reviewers are numbered per revision round.
   const rounds = new Map<number, typeof m.assignments>();
   for (const a of m.assignments) rounds.set(a.revision, [...(rounds.get(a.revision) ?? []), a]);
+  const invoice = m.article ? await db.invoice.findUnique({ where: { articleId: m.article.id } }) : null;
   const canWithdraw = !["ACCEPTED", "IN_PRODUCTION", "PUBLISHED", "REJECTED", "WITHDRAWN"].includes(m.status);
 
   return (
@@ -109,15 +75,31 @@ export default async function AuthorManuscript({ params }: { params: Promise<{ i
         </Card>
 
         {m.status === "REVISION_REQUIRED" && (
-          <Card title="Submit your revision" className="border-amber-300">
-            <form action={uploadRevision} className="grid gap-4" encType="multipart/form-data">
-              <input type="hidden" name="id" value={m.id} />
-              <Field label="Revised manuscript (anonymised)" name="revisionFile" required><input id="revisionFile" name="revisionFile" type="file" required accept=".doc,.docx,.pdf" className="input" /></Field>
-              <TextArea label="Response to reviewers" name="response" required rows={6} hint="Point-by-point response to each reviewer comment." />
-              <Field label="Response letter file (optional)" name="responseFile"><input id="responseFile" name="responseFile" type="file" accept=".doc,.docx,.pdf" className="input" /></Field>
-              <Field label="Updated supplementary files (optional)" name="supplementaryFiles"><input id="supplementaryFiles" name="supplementaryFiles" type="file" multiple className="input" /></Field>
-              <div><SubmitButton>Submit revision</SubmitButton></div>
-            </form>
+          <section className="flex flex-wrap items-center justify-between gap-4 border border-amber-300 border-l-4 border-l-gold bg-amber-50/60 px-5 py-4">
+            <div>
+              <h2 className="font-semibold">Revision requested</h2>
+              <p className="text-sm text-ink/80">Read the comments and upload your revised manuscript{m.revisionDueAt ? ` by ${formatDate(m.revisionDueAt)}` : ""}.</p>
+            </div>
+            <Link href={`/submission/revise/${m.id}`} className="btn-accent">Open revision workspace</Link>
+          </section>
+        )}
+
+        {m.article && m.article.proofStatus !== "NONE" && (
+          <Card title="Proofs and payment">
+            <div className="grid gap-4 text-sm sm:grid-cols-2">
+              <div>
+                <div className="text-muted">Proof</div>
+                <div className="font-medium">{m.article.proofStatus === "SENT" ? "Awaiting your check" : m.article.proofStatus === "APPROVED" ? "Approved" : "Corrections being made"}</div>
+                {m.article.proofStatus === "SENT" && m.article.proofToken && <Link href={`/proof/${m.article.proofToken}`} className="btn-primary btn-sm mt-2">Check proof</Link>}
+              </div>
+              {invoice && (
+                <div>
+                  <div className="text-muted">Article processing charge · {invoice.number}</div>
+                  <div className="font-medium">{money(invoice.amount, invoice.currency)} · {invoice.status === "PAID" ? "Paid" : invoice.status === "WAIVED" ? "Waived" : "Due"}</div>
+                  <Link href={`/pay/${invoice.token}`} className={`${invoice.status === "PENDING" ? "btn-accent" : "btn-secondary"} btn-sm mt-2`}>{invoice.status === "PENDING" ? "Pay now" : "View receipt"}</Link>
+                </div>
+              )}
+            </div>
           </Card>
         )}
 

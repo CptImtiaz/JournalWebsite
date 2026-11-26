@@ -56,6 +56,7 @@ async function save(fd: FormData) {
       footerText: optStr(fd, "footerText"), copyrightStatement: optStr(fd, "copyrightStatement"),
       emailSenderName: optStr(fd, "emailSenderName"), emailSenderAddress: optStr(fd, "emailSenderAddress"), editorialOfficeEmail: optStr(fd, "editorialOfficeEmail"),
       requireMfaForStaff: bool(fd, "requireMfaForStaff"),
+      apcAmount: Math.max(0, int(fd, "apcAmount", 150)), apcCurrency: (str(fd, "apcCurrency") || "USD").toUpperCase().slice(0, 3), paymentInstructions: optStr(fd, "paymentInstructions"),
       homepage: { ...homepageOf(j), headline: optStr(fd, "headline") ?? undefined, description: optStr(fd, "heroDescription") ?? undefined, heroImageAlt: optStr(fd, "heroImageAlt") ?? undefined, ...(heroImageFileId ? { heroImageFileId } : {}), ...(bool(fd, "removeHeroImage") ? { heroImageFileId: null } : {}) },
       ...(logoFileId ? { logoFileId } : {}), ...(bool(fd, "removeLogo") ? { logoFileId: null } : {}),
     },
@@ -145,6 +146,15 @@ export default async function Settings() {
             <TextField label="Sender email (journal domain)" name="emailSenderAddress" type="email" defaultValue={j.emailSenderAddress ?? ""} />
             <TextField label="Editorial office notification email" name="editorialOfficeEmail" type="email" defaultValue={j.editorialOfficeEmail ?? ""} hint="Blank = all Editors in Chief & Managing Editors" />
           </div>
+        </Card>
+        <Card title="Article processing charge">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <TextField label="APC amount" name="apcAmount" type="number" min={0} defaultValue={j.apcAmount} hint="Whole currency units. 0 means no charge." />
+            <TextField label="Currency" name="apcCurrency" defaultValue={j.apcCurrency} hint="Three letter code, e.g. USD" />
+            <div />
+            <div className="sm:col-span-3"><TextArea label="Bank transfer instructions (shown on invoices)" name="paymentInstructions" rows={4} defaultValue={j.paymentInstructions ?? ""} hint="Account name, bank, account number, SWIFT. Markdown allowed." /></div>
+          </div>
+          <p className="hint mt-2">Card payments use Stripe once STRIPE_SECRET_KEY is set in the hosting environment.</p>
         </Card>
         <Card title="Submissions & security">
           <div className="grid gap-4 sm:grid-cols-3">

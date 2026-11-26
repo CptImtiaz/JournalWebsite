@@ -295,14 +295,16 @@ All traffic uses HTTPS. Passwords are stored with strong one way hashing. Access
     slug: "publication-fees",
     title: "Publication fees",
     kind: "POLICY",
-    body: `*(Administrators: replace this line with your actual fee, or state that there is no fee.)*
+    body: `Submission and peer review are free. Readers never pay to read articles.
 
-Submission and peer review are free. Readers never pay to read articles.
+## Article processing charge
+The article processing charge (APC) is **US$150** per accepted article. It is charged only after acceptance, once the author has approved the final proof. The APC covers copy editing, typesetting, hosting, metadata and DOI registration, and long term archiving.
 
-If an article processing charge applies, it is due only after acceptance. It covers editing, typesetting, hosting and long term archiving.
+## How to pay
+After you approve your proof, we email you an invoice with a secure payment link. You can pay by card online. Bank transfer is also possible; the invoice explains how.
 
 ## Waivers
-Authors without funding and authors in low and middle income countries can ask for a full or partial waiver when they submit. Waiver requests are handled by the editorial office. Editors and reviewers never see them.
+Authors without funding and authors in low and middle income countries can ask for a full or partial waiver when they submit. Waiver requests are handled by the editorial office. Editors and reviewers never see them, and they have no effect on editorial decisions.
 
 There are no page charges or colour figure charges.`,
   },
@@ -334,5 +336,9 @@ export const EMAIL_TEMPLATES: { key: string; name: string; subject: string; body
   { key: "status_changed", name: "Status update (Author)", subject: "Status update for {{manuscript_id}}: {{status}}", body: "<p>Dear {{name}},</p><p>The status of your manuscript \"{{title}}\" ({{manuscript_id}}) is now <strong>{{status}}</strong>.</p><p><a href=\"{{url}}\">Track your submission</a></p>" },
   { key: "alert_confirm", name: "Article alerts: confirm subscription", subject: "Confirm your article alerts from {{journal_name}}", body: "<p>Thank you for signing up for new article alerts from {{journal_name}}.</p><p>Please confirm your email address:</p><p><a href=\"{{confirm_url}}\">{{confirm_url}}</a></p><p>If you did not sign up, you can ignore this email.</p>" },
   { key: "alert_new_article", name: "Article alerts: new article", subject: "New in {{journal_name}}: {{title}}", body: "<p><strong>{{title}}</strong></p><p>{{authors}}</p><p>{{abstract}}</p><p><a href=\"{{url}}\">Read the full article</a></p><p style=\"font-size:12px;color:#6B7280\">You receive this because you signed up for article alerts. <a href=\"{{unsubscribe_url}}\">Unsubscribe</a></p>" },
+  { key: "proof_ready", name: "Proofs ready (Author)", subject: "Proofs ready for your article {{manuscript_id}}", body: "<p>Dear {{name}},</p><p>The proofs of your accepted article <strong>\"{{title}}\"</strong> are ready.</p><p>Please check them carefully and either approve them or list any corrections within 3 working days:</p><p><a href=\"{{url}}\">{{url}}</a></p><p>Only corrections of errors can be made at this stage.</p>" },
+  { key: "proof_response", name: "Proof response (Editorial office)", subject: "Proof {{decision}}: {{manuscript_id}}", body: "<p>The author has responded to the proofs of \"{{title}}\" ({{manuscript_id}}): <strong>{{decision}}</strong>.</p><p>{{corrections}}</p><p><a href=\"{{url}}\">Open the article</a></p>" },
+  { key: "payment_request", name: "Payment request (Author)", subject: "Invoice {{invoice_number}} for your article in {{journal_name}}", body: "<p>Dear {{name}},</p><p>Thank you for approving the proofs of \"{{title}}\".</p><p>The article processing charge is <strong>{{amount}}</strong>. You can pay securely online here:</p><p><a href=\"{{url}}\">{{url}}</a></p><p>Your article will be published once payment is received. If you need a waiver, reply to this email.</p>" },
+  { key: "payment_received", name: "Payment received (Author)", subject: "Payment received: invoice {{invoice_number}}", body: "<p>Dear {{name}},</p><p>We have received your payment of <strong>{{amount}}</strong> for \"{{title}}\". Thank you.</p><p>Your article will now be scheduled for publication.</p><p><a href=\"{{url}}\">View receipt</a></p>" },
   { key: "contact_message", name: "Contact form (Editorial office)", subject: "Contact form: {{subject}}", body: "<p><strong>From:</strong> {{name}} &lt;{{email}}&gt;</p><p>{{message}}</p>" },
 ];
