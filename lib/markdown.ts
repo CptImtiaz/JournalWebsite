@@ -2,11 +2,16 @@ import { marked } from "marked";
 import sanitizeHtml from "sanitize-html";
 
 const SANITIZE: sanitizeHtml.IOptions = {
-  allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "h1", "h2", "h3", "h4", "figure", "figcaption", "sup", "sub", "table", "thead", "tbody", "tr", "th", "td", "caption"]),
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img", "h1", "h2", "h3", "h4", "h5", "figure", "figcaption", "sup", "sub", "table", "thead", "tbody", "tr", "th", "td", "caption", "span", "div", "math", "semantics", "annotation", "mrow", "mi", "mn", "mo", "ms", "mtext", "mspace", "msub", "msup", "msubsup", "mfrac", "msqrt", "mroot", "mover", "munder", "munderover", "mtable", "mtr", "mtd", "mstyle", "mpadded", "mphantom", "menclose", "merror"]),
   allowedAttributes: {
     a: ["href", "name", "target", "rel", "id"],
     img: ["src", "alt", "title", "width", "height", "loading"],
     "*": ["id", "class"],
+    math: ["display", "xmlns"],
+    annotation: ["encoding"],
+    mo: ["stretchy", "fence", "form", "separator", "lspace", "rspace", "largeop", "movablelimits", "accent"],
+    mi: ["mathvariant"], mn: ["mathvariant"], mtext: ["mathvariant"], mover: ["accent"], munder: ["accentunder"],
+    mstyle: ["displaystyle", "scriptlevel", "mathvariant"], mspace: ["width"], mtable: ["columnalign", "rowspacing", "columnspacing"], mtd: ["columnalign"], mpadded: ["width", "lspace"],
     th: ["colspan", "rowspan", "scope"],
     td: ["colspan", "rowspan"],
   },
@@ -43,4 +48,10 @@ export function withHeadingIds(html: string) {
 
 export function headingsOf(html: string) {
   return [...html.matchAll(/<h2 id="([^"]+)">(.*?)<\/h2>/g)].map((m) => ({ id: m[1], label: m[2].replace(/<[^>]+>/g, "") }));
+}
+
+/** Article bodies may be stored as raw HTML (e.g. converted from LaTeX) when they start with this marker. */
+export const HTML_MARKER = "<!-- html -->";
+export function renderBody(src: string) {
+  return src.trimStart().startsWith(HTML_MARKER) ? sanitize(src) : renderMarkdown(src);
 }

@@ -76,7 +76,7 @@ export default async function ArticleEdit({ params }: { params: Promise<{ id: st
             <ArticleAuthorsEditor initial={a?.authors.map((x) => ({ fullName: x.fullName, givenName: x.givenName ?? "", familyName: x.familyName ?? "", email: x.email ?? "", affiliation: x.affiliation ?? "", rorId: x.rorId ?? "", country: x.country ?? "", orcid: x.orcid ?? "", isCorresponding: x.isCorresponding })) ?? []} />
           </Card>
           <Card title="Full text (HTML)">
-            <TextArea label="Article body (Markdown)" name="bodyMarkdown" rows={18} defaultValue={a?.bodyMarkdown ?? ""} hint="Use ## for section headings, **bold**, *italic*, tables, and ![caption](/api/files/<id>) for uploaded figures. Converted to sanitised HTML." />
+            <TextArea label="Article body (Markdown)" name="bodyMarkdown" rows={18} defaultValue={a?.bodyMarkdown ?? ""} hint="Use ## for section headings, **bold**, *italic*, tables, and ![caption](/api/files/<id>) for uploaded figures. To paste HTML instead (for example converted from LaTeX), start the text with <!-- html -->." />
           </Card>
           <Card title="References">
             <TextArea label="One reference per line" name="references" rows={10} defaultValue={a?.references.map((r) => r.citation).join("\n") ?? ""} hint="DOIs inside a reference (10.xxxx/...) are detected automatically and linked." />

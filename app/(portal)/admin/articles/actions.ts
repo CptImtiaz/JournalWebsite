@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { requirePermission } from "@/lib/auth";
 import { back } from "@/lib/actions-util";
 import { audit } from "@/lib/audit";
-import { renderMarkdown } from "@/lib/markdown";
+import { renderBody } from "@/lib/markdown";
 import { storeFile, isRealFile, UploadError, deleteStoredFile } from "@/lib/storage";
 import { sendTemplate } from "@/lib/email";
 import { setStatus } from "@/lib/manuscripts";
@@ -30,14 +30,15 @@ export async function saveArticleAction(fd: FormData) {
   let authors: AuthorIn[] = [];
   try { authors = JSON.parse(str(fd, "authorsJson") || "[]"); } catch {}
   authors = authors.filter((a) => a.fullName?.trim());
-  if (!authors.length) back(here, { error: "At least one author is required." });
+  const current = id ? await db.article.findUnique({ where: { id }, select: { status: true } }) : null;
+  if (!authors.length && current && current.status !== "DRAFT") back(here, { error: "A published article needs at least one author." });
   const refs = str(fd, "references").split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((l) => l.replace(/^\[\d+\]\s*|^\d+\.\s+/, ""));
   const body = str(fd, "bodyMarkdown");
   const existing = id ? await db.article.findUnique({ where: { id } }) : null;
   const data = {
     title, slug, abstract, keywords, articleType,
     categoryId: optStr(fd, "categoryId"), issueId: optStr(fd, "issueId"), pages: optStr(fd, "pages"), articleNumber: optStr(fd, "articleNumber"), doi,
-    bodyMarkdown: body || null, bodyHtml: body ? renderMarkdown(body) : null,
+    bodyMarkdown: body || null, bodyHtml: body ? renderBody(body) : null,
     fundingStatement: optStr(fd, "fundingStatement"), conflictOfInterest: optStr(fd, "conflictOfInterest"), dataAvailability: optStr(fd, "dataAvailability"),
     licenseName: optStr(fd, "licenseName"), licenseUrl: optStr(fd, "licenseUrl"), copyrightHolder: optStr(fd, "copyrightHolder"), seoDescription: optStr(fd, "seoDescription"),
     receivedAt: date(str(fd, "receivedAt")), acceptedAt: date(str(fd, "acceptedAt")), publishedAt: date(str(fd, "publishedAt")) ?? existing?.publishedAt ?? null,
@@ -105,6 +106,7 @@ export async function publishAction(fd: FormData) {
   const here = `/admin/articles/${id}`;
   const a = await db.article.findUniqueOrThrow({ where: { id }, include: { manuscript: { include: { submitter: true } } } });
   if (op === "publish") {
+    if (!(await db.articleAuthor.count({ where: { articleId: id } }))) back(here, { error: "Add at least one author before publishing." });
     await db.article.update({ where: { id }, data: { status: "PUBLISHED", publishedAt: a.publishedAt ?? new Date() } });
     if (a.manuscript && a.manuscript.status !== "PUBLISHED") {
       await setStatus(a.manuscript.id, "PUBLISHED", u.id, "Article published", false);
