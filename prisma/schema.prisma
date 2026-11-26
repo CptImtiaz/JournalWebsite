@@ -43,6 +43,7 @@ model User {
   editorialNotes      EditorialNote[]
   auditLogs           AuditLog[]
   uploadedFiles       StoredFile[]
+  submissionDrafts    SubmissionDraft[]
 }
 
 model Role {
@@ -586,4 +587,18 @@ model AuditLog {
   createdAt  DateTime @default(now())
 
   @@index([createdAt])
+}
+
+model SubmissionDraft {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data                 Json     @default("{}")
+  manuscriptFileId     String?
+  coverLetterFileId    String?
+  supplementaryFileIds String[] @default([])
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([userId])
 }

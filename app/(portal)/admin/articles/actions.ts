@@ -23,7 +23,9 @@ export async function saveArticleAction(fd: FormData) {
   const title = str(fd, "title"), abstract = str(fd, "abstract"), keywords = str(fd, "keywords"), articleType = str(fd, "articleType");
   if (!title || !abstract || !keywords) back(here, { error: "Title, abstract and keywords are required." });
   if (!ARTICLE_TYPES.includes(articleType)) back(here, { error: "Invalid article type." });
-  const slug = slugify(str(fd, "slug") || title);
+  const current0 = id ? await db.article.findUnique({ where: { id }, select: { slug: true } }) : null;
+  const rawSlug = str(fd, "slug");
+  const slug = current0 && rawSlug === current0.slug ? current0.slug : slugify(rawSlug || title);
   const clash = await db.article.findFirst({ where: { slug, id: { not: id || undefined } } });
   if (clash) back(here, { error: "Another article already uses this URL slug." });
   const doi = optStr(fd, "doi")?.replace(/^https?:\/\/(dx\.)?doi\.org\//i, "") ?? null;

@@ -12,7 +12,7 @@ export default async function Account() {
     db.manuscript.count({ where: { submitterId: u.id, status: "REVISION_REQUIRED" } }),
   ]);
   const rows: { href: string; title: string; text: string; meta?: string; show: boolean }[] = [
-    { href: "/author/submit", title: "Submit a manuscript", text: "Start a new submission to the journal.", show: can(u, "submissions.create") },
+    { href: "/submission", title: "Submit a manuscript", text: "Start a new submission to the journal.", show: can(u, "submissions.create") },
     { href: "/author/dashboard", title: "My submissions", text: "Status, decisions and revisions.", meta: `${subs} submission${subs === 1 ? "" : "s"}${revision ? `, ${revision} awaiting revision` : ""}`, show: true },
     { href: "/reviewer/dashboard", title: "Review assignments", text: "Invitations and review reports.", meta: `${reviews} open`, show: hasRole(u, "REVIEWER") },
     { href: "/editor/dashboard", title: "Editor dashboard", text: "Submissions, reviewers and decisions.", show: can(u, "manuscripts.view_all") || can(u, "manuscripts.view_assigned") },

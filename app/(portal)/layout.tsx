@@ -20,7 +20,7 @@ export default async function PortalLayout({ children }: { children: React.React
     { title: "Workspace", links: [{ href: "/account", label: "Overview", icon: "home" }] },
   ];
   if (can(u, "submissions.create"))
-    sections.push({ title: "Author", links: [{ href: "/author/dashboard", label: "My submissions", icon: "file", badge: revisionDue }, { href: "/author/submit", label: "New submission", icon: "upload" }] });
+    sections.push({ title: "Author", links: [{ href: "/author/dashboard", label: "My submissions", icon: "file", badge: revisionDue }, { href: "/submission", label: "New submission", icon: "upload" }] });
   if (hasRole(u, "REVIEWER")) sections.push({ title: "Reviewer", links: [{ href: "/reviewer/dashboard", label: "Review assignments", icon: "review", badge: invites }] });
   if (can(u, "manuscripts.view_all") || can(u, "manuscripts.view_assigned"))
     sections.push({ title: "Editorial office", links: [{ href: "/editor/dashboard", label: "Editor dashboard", icon: "inbox" }, { href: "/editor/manuscripts", label: "Manuscripts", icon: "list", badge: newSubs }, ...(can(u, "manuscripts.manage_reviews") ? [{ href: "/editor/reviewers", label: "Reviewer pool", icon: "users" as const }] : [])] });

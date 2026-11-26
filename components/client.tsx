@@ -76,9 +76,9 @@ export function MobileNav({ children }: { children: ReactNode }) {
 }
 
 type AuthorRow = { fullName: string; email: string; affiliation: string; country: string; orcid: string };
-export function AuthorsEditor({ initial }: { initial: AuthorRow[] }) {
+export function AuthorsEditor({ initial, initialCorresponding = 0 }: { initial: AuthorRow[]; initialCorresponding?: number }) {
   const [rows, setRows] = useState<AuthorRow[]>(initial.length ? initial : [{ fullName: "", email: "", affiliation: "", country: "", orcid: "" }]);
-  const [corr, setCorr] = useState(0);
+  const [corr, setCorr] = useState(initialCorresponding);
   const update = (i: number, k: keyof AuthorRow, v: string) => setRows(rows.map((r, j) => (j === i ? { ...r, [k]: v } : r)));
   const move = (i: number, d: number) => {
     const j = i + d;

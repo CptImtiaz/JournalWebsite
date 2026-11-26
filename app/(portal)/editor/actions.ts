@@ -183,7 +183,7 @@ export async function createArticleFromManuscriptAction(fd: FormData) {
   const full = await db.manuscript.findUniqueOrThrow({ where: { id: m.id }, include: { authors: { orderBy: { order: "asc" } } } });
   const j = await db.journal.findUnique({ where: { id: "journal" } });
   let slug = slugify(full.title);
-  if (await db.article.findUnique({ where: { slug } })) slug = `${slug}-${full.code.toLowerCase()}`;
+  if (await db.article.findUnique({ where: { slug } })) slug = `${slugify(full.title, 64)}-${full.code.toLowerCase()}`;
   const a = await db.article.create({
     data: {
       slug, title: full.title, abstract: full.abstract, keywords: full.keywords, articleType: full.articleType, categoryId: full.categoryId, manuscriptId: full.id,
