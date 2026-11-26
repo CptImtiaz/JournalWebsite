@@ -62,7 +62,7 @@ export const issueInclude = {
   volume: true,
   articles: {
     where: { status: { in: ["PUBLISHED", "RETRACTED"] } },
-    orderBy: { sortOrder: "asc" as const },
+    orderBy: [{ sortOrder: "asc" as const }, { publishedAt: "asc" as const }],
     include: { authors: { orderBy: { order: "asc" as const }, select: { fullName: true } }, files: { select: { kind: true } }, doiRecords: { select: { status: true } } },
   },
 };

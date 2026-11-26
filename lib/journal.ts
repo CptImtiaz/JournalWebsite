@@ -51,7 +51,7 @@ export function homepageOf(j: { homepage: unknown }): HomepageConfig {
 export const getCurrentIssue = cache(async () => {
   const include = {
     volume: true,
-    articles: { where: { status: "PUBLISHED" }, orderBy: { sortOrder: "asc" as const }, include: { authors: { orderBy: { order: "asc" as const } } } },
+    articles: { where: { status: "PUBLISHED" }, orderBy: [{ sortOrder: "asc" as const }, { publishedAt: "asc" as const }], include: { authors: { orderBy: { order: "asc" as const } } } },
   };
   return (
     (await db.issue.findFirst({ where: { isPublished: true, isCurrent: true }, include })) ??
