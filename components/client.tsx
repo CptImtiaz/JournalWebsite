@@ -43,7 +43,7 @@ export function Flash() {
   useEffect(() => setShow(true), [ok, err]);
   if (!show || (!ok && !err)) return null;
   return (
-    <div role={err ? "alert" : "status"} className={`mb-4 flex items-start justify-between gap-4 rounded-md border px-4 py-3 text-sm ${err ? "border-red-200 bg-red-50 text-red-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
+    <div role={err ? "alert" : "status"} className={`mb-4 flex items-start justify-between gap-4 rounded-md border px-4 py-3 text-sm ${err ? "border-[#E2C98F] bg-[#FBF6EA] text-[#7A5A12]" : "border-navy/30 bg-[#EEF1F6] text-navy"}`}>
       <span>{err ?? ok}</span>
       <button type="button" onClick={() => setShow(false)} className="text-current opacity-60 hover:opacity-100" aria-label="Dismiss">×</button>
     </div>
@@ -104,7 +104,7 @@ export function AuthorsEditor({ initial, initialCorresponding = 0 }: { initial: 
               <button type="button" className="btn-secondary btn-sm" onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">↑</button>
               <button type="button" className="btn-secondary btn-sm" onClick={() => move(i, 1)} disabled={i === rows.length - 1} aria-label="Move down">↓</button>
               {rows.length > 1 && (
-                <button type="button" className="btn-secondary btn-sm text-red-700" onClick={() => { setRows(rows.filter((_, j) => j !== i)); if (corr >= rows.length - 1) setCorr(0); }}>Remove</button>
+                <button type="button" className="btn-secondary btn-sm text-[#7A5A12]" onClick={() => { setRows(rows.filter((_, j) => j !== i)); if (corr >= rows.length - 1) setCorr(0); }}>Remove</button>
               )}
             </div>
           </div>

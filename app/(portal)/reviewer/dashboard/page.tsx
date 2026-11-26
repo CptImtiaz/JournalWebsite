@@ -20,7 +20,7 @@ export default async function ReviewerDashboard() {
       <tr>
         <td className="min-w-72"><Link href={`/reviewer/assignments/${a.id}`} className="font-medium text-ink hover:text-link hover:underline">{a.manuscript.title}</Link><div className="font-mono text-[11px] text-muted">{a.manuscript.code} · round {a.revision + 1} · {a.manuscript.articleType}</div></td>
         <td><Badge tone={TONE[a.status as keyof typeof TONE] ?? "gray"}>{LABEL[a.status as keyof typeof LABEL] ?? a.status}</Badge></td>
-        <td className="whitespace-nowrap text-sm">{formatDate(a.dueAt)}{open.includes(a) && d !== null && <div className={`text-[11px] ${d < 0 ? "font-semibold text-red-700" : d <= 3 ? "text-amber-700" : "text-muted"}`}>{d < 0 ? `${-d} days overdue` : `${d} days left`}</div>}</td>
+        <td className="whitespace-nowrap text-sm">{formatDate(a.dueAt)}{open.includes(a) && d !== null && <div className={`text-[11px] ${d < 0 ? "font-semibold text-[#7A5A12]" : d <= 3 ? "text-amber-700" : "text-muted"}`}>{d < 0 ? `${-d} days overdue` : `${d} days left`}</div>}</td>
         <td className="whitespace-nowrap text-right"><Link href={`/reviewer/assignments/${a.id}`} className={open.includes(a) ? "btn-primary btn-sm" : "text-sm text-link hover:underline"}>{a.status === "INVITED" ? "Respond" : a.status === "ACCEPTED" ? "Write review" : "View"}</Link></td>
       </tr>
     );

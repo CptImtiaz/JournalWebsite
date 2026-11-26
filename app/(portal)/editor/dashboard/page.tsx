@@ -78,7 +78,7 @@ export default async function EditorDashboard() {
                       </td>
                       <td className="whitespace-nowrap text-sm">{q.task}</td>
                       <td><StatusBadge status={q.status} /></td>
-                      <td className="whitespace-nowrap text-right text-sm tabular-nums"><span className={days(q.since) > 14 ? "font-semibold text-red-700" : ""}>{days(q.since)} d</span><div className="text-[11px] text-muted">since {formatDate(q.since, { day: "numeric", month: "short" })}</div></td>
+                      <td className="whitespace-nowrap text-right text-sm tabular-nums"><span className={days(q.since) > 14 ? "font-semibold text-[#7A5A12]" : ""}>{days(q.since)} d</span><div className="text-[11px] text-muted">since {formatDate(q.since, { day: "numeric", month: "short" })}</div></td>
                     </tr>
                   ))}
                 </tbody>

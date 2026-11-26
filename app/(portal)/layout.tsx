@@ -61,7 +61,7 @@ export default async function PortalLayout({ children }: { children: React.React
                 <div className="border-b border-line px-4 py-3"><div className="text-sm font-semibold">{u.fullName}</div><div className="truncate text-xs text-muted">{u.email}</div><div className="mt-1 text-[11px] text-muted">{roleNames}</div></div>
                 <Link href="/account/profile" className="block px-4 py-2 text-sm hover:bg-surface">Profile</Link>
                 <Link href="/account/security" className="block px-4 py-2 text-sm hover:bg-surface">Security and 2FA</Link>
-                <form action="/logout" method="post" className="border-t border-line"><button className="w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50">Sign out</button></form>
+                <form action="/logout" method="post" className="border-t border-line"><button className="w-full px-4 py-2 text-left text-sm text-[#7A5A12] hover:bg-[#FBF6EA]">Sign out</button></form>
               </div>
             </details>
           </div>

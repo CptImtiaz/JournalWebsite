@@ -76,7 +76,7 @@ export async function saveStep(fd: FormData) {
   if (nav === "back") go(id, Math.max(1, step - 1));
   if (nav === "stay") go(id, step, { ok: "Draft saved." });
   if (nav.startsWith("goto:")) go(id, parseInt(nav.slice(5), 10) || step);
-  if (nav === "exit") redirect("/author/dashboard?ok=Your+submission+is+saved.+Continue+it+any+time+from+this+page.");
+  if (nav === "exit") redirect("/submission?ok=Your+submission+is+saved.+Continue+it+any+time+from+this+page.");
   const fresh = await loadDraft(id, u.id);
   if (fresh && step < 6 && step !== 4 && !stepComplete(fresh, step)) go(id, step, { error: "Please complete the required fields before continuing." });
   go(id, Math.min(6, step + 1));
@@ -116,7 +116,7 @@ export async function deleteDraft(fd: FormData) {
     for (const f of [d.manuscriptFileId, d.coverLetterFileId, ...d.supplementaryFileIds].filter(Boolean) as string[]) { await deleteStoredFile(f); await db.storedFile.delete({ where: { id: f } }).catch(() => {}); }
     await db.submissionDraft.delete({ where: { id: d.id } });
   }
-  redirect("/author/dashboard?ok=Draft+deleted.");
+  redirect("/submission?ok=Draft+deleted.");
 }
 
 export async function submitDraft(fd: FormData) {

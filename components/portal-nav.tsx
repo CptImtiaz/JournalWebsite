@@ -21,7 +21,7 @@ function Links({ sections, onNav }: { sections: NavSection[]; onNav?: () => void
                 <li key={l.href}>
                   <Link href={l.href} onClick={onNav} className={`flex items-center justify-between border-l-[3px] py-1.5 pl-[13px] pr-4 text-[13.5px] ${active ? "border-navy bg-surface font-semibold text-navy" : "border-transparent text-ink/80 hover:bg-surface hover:text-ink"}`}>
                     <span>{l.label}</span>
-                    {!!l.badge && <span className="text-xs font-semibold text-[#C8102E]">({l.badge})</span>}
+                    {!!l.badge && <span className="text-xs font-semibold text-[#7A5A12]">({l.badge})</span>}
                   </Link>
                 </li>
               );

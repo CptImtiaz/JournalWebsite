@@ -140,14 +140,14 @@ export default async function ArticlePage({ params }: P) {
           <header>
             <div className="flex flex-wrap items-center gap-x-2 text-xs">
               <span className="font-bold text-ink">{a.articleType}</span>
-              {j.isOpenAccess && <><span className="text-line">|</span><span className="inline-flex items-center gap-1 font-semibold text-emerald-700"><Icon name="lock" size={12} />Open access</span></>}
+              {j.isOpenAccess && <><span className="text-line">|</span><span className="inline-flex items-center gap-1 font-semibold text-navy"><Icon name="lock" size={12} />Open access</span></>}
               {a.publishedAt && <><span className="text-line">|</span><span className="text-muted">Published: {formatDate(a.publishedAt, { day: "numeric", month: "long", year: "numeric" })}</span></>}
             </div>
             {a.isSample && (
               <div className="mt-4 flex gap-3 rounded-md border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900"><Icon name="alert" size={18} className="mt-0.5 shrink-0" /><span><strong>Sample article.</strong> This is demonstration content showing how articles appear on this website. It is not a peer reviewed publication; authors and institutions are fictional.</span></div>
             )}
             {a.status === "RETRACTED" && (
-              <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800"><strong>This article has been retracted.</strong> See the journal&apos;s <Link className="underline" href="/retraction-policy">Retraction Policy</Link>.</div>
+              <div className="mt-4 rounded-md border border-[#E2C98F] bg-[#FBF6EA] p-4 text-sm text-[#7A5A12]"><strong>This article has been retracted.</strong> See the journal&apos;s <Link className="underline" href="/retraction-policy">Retraction Policy</Link>.</div>
             )}
             <h1 className="mt-4 font-display text-3xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-[42px]">{a.title}</h1>
             <p className="mt-5 text-[15px] leading-relaxed text-ink">

@@ -43,7 +43,7 @@ export default async function ArticleEdit({ params }: { params: Promise<{ id: st
               <input type="hidden" name="id" value={a.id} />
               {a.status !== "PUBLISHED" && <SubmitButton name="op" value="publish" confirm="Publish this article publicly?">Publish article</SubmitButton>}
               {a.status === "PUBLISHED" && <SubmitButton name="op" value="unpublish" className="btn-secondary" confirm="Unpublish this article?">Unpublish</SubmitButton>}
-              {a.status === "PUBLISHED" && <SubmitButton name="op" value="retract" className="btn-secondary text-red-700" confirm="Mark as retracted? A retraction notice should also be published.">Mark retracted</SubmitButton>}
+              {a.status === "PUBLISHED" && <SubmitButton name="op" value="retract" className="btn-secondary text-[#7A5A12]" confirm="Mark as retracted? A retraction notice should also be published.">Mark retracted</SubmitButton>}
               {a.status === "DRAFT" && <SubmitButton name="op" value="delete" className="btn-danger" confirm="Delete this draft permanently?">Delete draft</SubmitButton>}
               {!a.issueId && <span className="text-xs text-amber-700">Tip: assign the article to an issue before publishing.</span>}
               {a.authors.length === 0 && <span className="text-xs text-amber-700">No authors yet. The article will show “Author details are being verified”.</span>}
@@ -142,7 +142,7 @@ export default async function ArticleEdit({ params }: { params: Promise<{ id: st
                 <form key={f.id} action={deleteArticleFileAction} className="flex flex-wrap items-center justify-between gap-2 rounded border border-line p-2 text-sm">
                   <input type="hidden" name="id" value={a.id} /><input type="hidden" name="fileRowId" value={f.id} />
                   <span><Badge>{f.kind}</Badge> <a className="link" href={`/api/files/${f.fileId}`}>{f.label || f.file.originalName}</a> <span className="text-xs text-muted">{fileSize(f.file.size)} · file id {f.fileId}</span></span>
-                  <SubmitButton className="btn-secondary btn-sm text-red-700" confirm="Remove this file?">Remove</SubmitButton>
+                  <SubmitButton className="btn-secondary btn-sm text-[#7A5A12]" confirm="Remove this file?">Remove</SubmitButton>
                 </form>
               ))}
             </div>

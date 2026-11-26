@@ -135,7 +135,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
             return (
               <li key={s.id}>
                 <button type="button" onClick={() => (i <= step || done.has(i) ? go(i) : go(i))} className={`flex w-full items-start gap-3 rounded-sm px-3 py-2.5 text-left ${i === step ? "bg-brand-light" : "hover:bg-app"}`}>
-                  <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${i === step ? "bg-brand text-white" : isDone ? "bg-emerald-600 text-white" : "border border-line bg-white text-muted"}`}>{isDone ? <Icon name="check" size={13} /> : i + 1}</span>
+                  <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${i === step ? "bg-brand text-white" : isDone ? "bg-navy text-white" : "border border-line bg-white text-muted"}`}>{isDone ? <Icon name="check" size={13} /> : i + 1}</span>
                   <span><span className={`block text-sm ${i === step ? "font-semibold text-ink" : "font-medium text-ink"}`}>{s.title}</span><span className="block text-xs text-muted">{s.desc}</span></span>
                 </button>
               </li>
@@ -198,7 +198,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
               <Section title="Before you begin">
                 <ul className="grid gap-2 text-sm text-ink/80 sm:grid-cols-2">
                   {["Manuscript file anonymised (no author names)", "Names, emails and affiliations of all coauthors", "Abstract (150 to 300 words) and 4 to 8 keywords", "Funding and conflict-of-interest statements", "Ethics approval details, if applicable", `Files in DOC, DOCX or PDF, up to ${maxMb} MB each`].map((t) => (
-                    <li key={t} className="flex gap-2"><Icon name="check" size={16} className="mt-0.5 shrink-0 text-emerald-600" />{t}</li>
+                    <li key={t} className="flex gap-2"><Icon name="check" size={16} className="mt-0.5 shrink-0 text-navy" />{t}</li>
                   ))}
                 </ul>
               </Section>
@@ -276,14 +276,14 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
             <Panel i={6} step={step}>
               <p className="mb-5 text-sm text-muted">Please check your submission carefully. You can go back to any step to make changes.</p>
               <div className="divide-y divide-line rounded-sm border border-line">
-                <Sum label="Article type" onEdit={() => go(0)}>{summary.articleType} · {cat ?? <em className="text-red-700">no field selected</em>}</Sum>
+                <Sum label="Article type" onEdit={() => go(0)}>{summary.articleType} · {cat ?? <em className="text-[#7A5A12]">no field selected</em>}</Sum>
                 <Sum label="Title" onEdit={() => go(1)}><span className="font-display text-base font-semibold">{summary.title}</span></Sum>
                 <Sum label="Abstract" onEdit={() => go(1)}><span className="line-clamp-4">{summary.abstract}</span><span className="text-xs text-muted">{words(summary.abstract ?? "")} words</span></Sum>
                 <Sum label="Keywords" onEdit={() => go(1)}><span className="flex flex-wrap gap-1.5">{(summary.keywords ?? "").split(/[;,]/).map((k) => k.trim()).filter(Boolean).map((k) => <span key={k} className="bg-app px-2.5 py-0.5 text-xs">{k}</span>)}</span></Sum>
                 <Sum label="Authors" onEdit={() => go(2)}>
                   <ol className="space-y-1">{authorsSummary.map((a, i) => <li key={i}>{i + 1}. <strong>{a.fullName}</strong>{i === corrIdx && <span className="ml-1 rounded bg-brand-light px-1.5 text-[11px] text-brand">corresponding</span>} <span className="text-muted">· {a.affiliation}</span></li>)}</ol>
                 </Sum>
-                <Sum label="Files" onEdit={() => go(3)}>{files.main ? <span className="flex items-center gap-1.5"><Icon name="file" size={15} />{files.main}</span> : <em className="text-red-700">No manuscript file selected</em>}{files.supp.length > 0 && <span className="mt-1 block text-xs text-muted">+ {files.supp.length} supplementary file(s)</span>}</Sum>
+                <Sum label="Files" onEdit={() => go(3)}>{files.main ? <span className="flex items-center gap-1.5"><Icon name="file" size={15} />{files.main}</span> : <em className="text-[#7A5A12]">No manuscript file selected</em>}{files.supp.length > 0 && <span className="mt-1 block text-xs text-muted">+ {files.supp.length} supplementary file(s)</span>}</Sum>
                 <Sum label="Reviewers" onEdit={() => go(4)}>{suggested.length} suggested · {opposed.length} opposed</Sum>
                 <Sum label="Declarations" onEdit={() => go(5)}>
                   <span className="block">Competing interests: {summary.conflictOfInterest}</span>
@@ -311,13 +311,13 @@ function Panel({ i, step, children }: { i: number; step: number; children: React
 function Section({ title, required, hint, children }: { title: string; required?: boolean; hint?: ReactNode; children: ReactNode }) {
   return (
     <div>
-      <div className="mb-2"><span className="text-sm font-semibold text-ink">{title}{required && <span className="text-red-600"> *</span>}</span>{hint && <p className="mt-0.5 text-xs text-muted">{hint}</p>}</div>
+      <div className="mb-2"><span className="text-sm font-semibold text-ink">{title}{required && <span className="text-[#7A5A12]"> *</span>}</span>{hint && <p className="mt-0.5 text-xs text-muted">{hint}</p>}</div>
       {children}
     </div>
   );
 }
 function Check({ name, saved, children }: { name: string; saved: string; children: ReactNode }) {
-  return <label className="flex items-start gap-3 text-sm"><input type="checkbox" name={name} required defaultChecked={saved === "on"} className="mt-0.5 h-4 w-4 accent-[#2864A5]" /><span>{children} <span className="text-red-600">*</span></span></label>;
+  return <label className="flex items-start gap-3 text-sm"><input type="checkbox" name={name} required defaultChecked={saved === "on"} className="mt-0.5 h-4 w-4 accent-[#2864A5]" /><span>{children} <span className="text-[#7A5A12]">*</span></span></label>;
 }
 function Sum({ label, children, onEdit }: { label: string; children: ReactNode; onEdit: () => void }) {
   return (
@@ -340,12 +340,12 @@ function DropZone({ name, accept, multiple, required, label, picked, onPick, com
         e.preventDefault(); setOver(false);
         if (ref.current && e.dataTransfer.files.length) { ref.current.files = e.dataTransfer.files; onPick(Array.from(e.dataTransfer.files).map((f) => f.name)); }
       }}
-      className={`relative rounded-sm border-2 border-dashed text-center transition ${over ? "border-brand bg-brand-light/60" : picked.length ? "border-emerald-400 bg-emerald-50/50" : "border-line bg-app/40 hover:border-brand/60"} ${compact ? "px-4 py-4" : "px-6 py-8"}`}
+      className={`relative rounded-sm border-2 border-dashed text-center transition ${over ? "border-brand bg-brand-light/60" : picked.length ? "border-navy/30 bg-[#EEF1F6]/50" : "border-line bg-app/40 hover:border-brand/60"} ${compact ? "px-4 py-4" : "px-6 py-8"}`}
     >
       <input ref={ref} type="file" name={name} accept={accept} multiple={multiple} required={required} className="absolute inset-0 cursor-pointer opacity-0" onChange={(e) => onPick(Array.from(e.target.files ?? []).map((f) => f.name))} aria-label={label} />
       {!compact && <Icon name="upload" size={26} className="mx-auto text-brand" />}
       {picked.length ? (
-        <div className="mt-2 space-y-1 text-sm">{picked.map((p) => <div key={p} className="flex items-center justify-center gap-1.5 font-medium text-emerald-800"><Icon name="check" size={14} />{p}</div>)}<div className="text-xs text-muted">Click to change</div></div>
+        <div className="mt-2 space-y-1 text-sm">{picked.map((p) => <div key={p} className="flex items-center justify-center gap-1.5 font-medium text-navy"><Icon name="check" size={14} />{p}</div>)}<div className="text-xs text-muted">Click to change</div></div>
       ) : (
         <div className={compact ? "text-sm text-muted" : "mt-2"}><span className="text-sm font-medium text-ink">{label}</span>{!compact && <span className="block text-xs text-muted">{accept.replace(/\./g, "").toUpperCase().split(",").join(", ")}</span>}</div>
       )}
@@ -365,7 +365,7 @@ function ReviewerList({ title, name, rows, setRows, max, reasonLabel }: { title:
             <input data-nosave="1" className="input" placeholder="Full name" value={r.name} onChange={(e) => upd(i, "name", e.target.value)} />
             <input data-nosave="1" className="input" type="email" placeholder="Institutional email" value={r.email} onChange={(e) => upd(i, "email", e.target.value)} />
             <input data-nosave="1" className="input" placeholder="Institution" value={r.institution} onChange={(e) => upd(i, "institution", e.target.value)} />
-            <div className="flex gap-2"><input data-nosave="1" className="input" placeholder={reasonLabel} value={r.reason} onChange={(e) => upd(i, "reason", e.target.value)} /><button type="button" className="btn-secondary btn-sm text-red-700" onClick={() => setRows(rows.filter((_, j) => j !== i))}>Remove</button></div>
+            <div className="flex gap-2"><input data-nosave="1" className="input" placeholder={reasonLabel} value={r.reason} onChange={(e) => upd(i, "reason", e.target.value)} /><button type="button" className="btn-secondary btn-sm text-[#7A5A12]" onClick={() => setRows(rows.filter((_, j) => j !== i))}>Remove</button></div>
           </div>
         ))}
       </div>

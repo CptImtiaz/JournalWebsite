@@ -28,7 +28,7 @@ function Meta({ a }: { a: CardArticle }) {
       <span className="font-bold text-ink">{a.articleType}</span>
       <span className="text-line">|</span>
       <span className="text-muted">Open Access</span>
-      {a.status === "RETRACTED" && <span className="font-semibold text-red-700">· Retracted</span>}
+      {a.status === "RETRACTED" && <span className="font-semibold text-[#7A5A12]">· Retracted</span>}
       {a.isSample && <span className="rounded bg-amber-100 px-1.5 py-px text-[10px] font-bold uppercase tracking-wide text-amber-800" title="Demonstration content">Sample</span>}
       {a.publishedAt && <><span className="text-line">|</span><time className="text-muted" dateTime={a.publishedAt.toISOString()}>{formatDate(a.publishedAt, { day: "numeric", month: "short", year: "numeric" })}</time></>}
     </div>

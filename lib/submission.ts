@@ -15,7 +15,7 @@ export type DraftData = {
 };
 
 export const STEPS = [
-  { n: 1, key: "files", title: "Type and files", help: "Choose the article type and research field, then upload your anonymised manuscript. Word files let us fill in the title and abstract for you." },
+  { n: 1, key: "files", title: "Type and files", help: "Choose the article type and subject area, then upload your anonymised manuscript. Word files let us fill in the title and abstract for you." },
   { n: 2, key: "details", title: "Title and abstract", help: "Use a concise, specific title. The abstract should be one paragraph of 150 to 300 words with no citations." },
   { n: 3, key: "authors", title: "Authors", help: "List every author in publication order and choose one corresponding author. Reviewers never see this information." },
   { n: 4, key: "additional", title: "Additional information", help: "Add a cover letter and, if you wish, suggest or exclude reviewers. Suggested reviewers must be independent of you and your coauthors." },

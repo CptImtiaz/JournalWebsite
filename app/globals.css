@@ -13,7 +13,7 @@
   --font-sans: "Helvetica Neue", Helvetica, Arial, var(--font-inter), sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
   --font-display: var(--font-display), Georgia, "Times New Roman", serif;
-  --color-accent: #C8102E;
+  --color-accent: #7A5A12;
   --color-gold: #F2B33D;
   --color-gold-dark: #D99A1E;
   --color-link: #006699;
@@ -29,7 +29,7 @@ body { background: #fff; color: var(--color-ink); }
 @utility btn-primary { @apply btn bg-navy text-white hover:bg-navy-dark; }
 @utility btn-secondary { @apply btn border border-line bg-white text-ink hover:bg-surface; }
 @utility btn-brand { @apply btn bg-brand text-white hover:bg-navy; }
-@utility btn-danger { @apply btn bg-red-700 text-white hover:bg-red-800; }
+@utility btn-danger { @apply btn bg-ink text-white hover:bg-ink; }
 @utility btn-ghost { @apply btn text-brand hover:bg-brand-light; }
 @utility btn-sm { @apply px-2.5 py-1 text-xs; }
 
@@ -54,3 +54,11 @@ body { background: #fff; color: var(--color-ink); }
 @utility tab-link { @apply whitespace-nowrap border-b-[3px] border-transparent px-3 py-3 text-[15px] text-ink hover:border-line hover:text-link; }
 @utility panel-head { @apply flex items-center justify-between gap-2 border-b border-line bg-surface px-4 py-2.5; }
 @utility panel-title { @apply text-[11px] font-bold uppercase tracking-[0.12em] text-ink; }
+
+/* Submission workspace: quiet editorial styling */
+.sx .input { border-radius: 4px; border-color: #C9CDD3; padding: .6rem .75rem; box-shadow: none; transition: border-color .15s, box-shadow .15s; }
+.sx .input:hover { border-color: #9AA1AB; }
+.sx .input:focus { border-color: var(--color-navy); box-shadow: 0 0 0 1px var(--color-navy); outline: none; }
+.sx :is(.btn-primary,.btn-secondary,.btn-accent,.btn-danger,.btn-brand,.btn-ghost) { border-radius: 3px; }
+.sx-card { background: #fff; border: 1px solid #DDE0E4; border-radius: 4px; }
+.sx-rule { border-color: #E6E8EB; }

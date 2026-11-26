@@ -70,7 +70,7 @@ export default async function EmailAdmin({ searchParams }: { searchParams: Promi
               <tr key={l.id}>
                 <td className="whitespace-nowrap text-xs">{formatDateTime(l.createdAt)}</td>
                 <td className="text-xs">{l.toEmail}</td>
-                <td className="text-xs">{l.subject}{l.error && <div className="text-red-700">{l.error}</div>}</td>
+                <td className="text-xs">{l.subject}{l.error && <div className="text-[#7A5A12]">{l.error}</div>}</td>
                 <td><Badge tone={l.status === "SENT" ? "green" : l.status === "FAILED" ? "red" : "amber"}>{l.status.toLowerCase()}</Badge></td>
                 <td>{l.status !== "SENT" && <form action={retry}><input type="hidden" name="id" value={l.id} /><SubmitButton className="btn-secondary btn-sm">Retry</SubmitButton></form>}</td>
               </tr>

@@ -120,15 +120,15 @@ export default async function AdminDashboard() {
           )}
         </Card>
         <Card title="Launch readiness" subtitle={`${ready} of ${checks.length} complete`}>
-          <div className="mb-4 h-1.5 overflow-hidden bg-app"><div className="h-full bg-emerald-600" style={{ width: `${(ready / checks.length) * 100}%` }} /></div>
+          <div className="mb-4 h-1.5 overflow-hidden bg-app"><div className="h-full bg-navy" style={{ width: `${(ready / checks.length) * 100}%` }} /></div>
           <ul className="space-y-3 text-sm">
             {checks.map((c) => (
               <li key={c.label} className="flex gap-3">
-                <span className={`mt-0.5 w-12 shrink-0 text-[11px] font-bold uppercase ${c.ok ? "text-emerald-700" : "text-amber-700"}`}>{c.ok ? "Done" : "To do"}</span>
+                <span className={`mt-0.5 w-12 shrink-0 text-[11px] font-bold uppercase ${c.ok ? "text-navy" : "text-amber-700"}`}>{c.ok ? "Done" : "To do"}</span>
                 <span><span className="font-medium">{c.label}</span>{!c.ok && <span className="block text-xs text-muted">{c.fix}</span>}</span>
               </li>
             ))}
-            {failedEmails > 0 && <li className="flex gap-3"><span className="mt-0.5 w-12 shrink-0 text-[11px] font-bold uppercase text-red-700">Alert</span><Link className="link" href="/admin/email?status=FAILED">{failedEmails} failed email(s)</Link></li>}
+            {failedEmails > 0 && <li className="flex gap-3"><span className="mt-0.5 w-12 shrink-0 text-[11px] font-bold uppercase text-[#7A5A12]">Alert</span><Link className="link" href="/admin/email?status=FAILED">{failedEmails} failed email(s)</Link></li>}
           </ul>
         </Card>
       </div>

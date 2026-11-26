@@ -25,7 +25,7 @@ export function ArticleAuthorsEditor({ initial }: { initial: Partial<Row>[] }) {
               <label className="flex items-center gap-1 text-xs"><input type="checkbox" checked={r.isCorresponding} onChange={(e) => set(i, "isCorresponding", e.target.checked)} /> Corresponding</label>
               <button type="button" className="btn-secondary btn-sm" onClick={() => move(i, -1)}>↑</button>
               <button type="button" className="btn-secondary btn-sm" onClick={() => move(i, 1)}>↓</button>
-              <button type="button" className="btn-secondary btn-sm text-red-700" onClick={() => setRows(rows.filter((_, j) => j !== i))}>Remove</button>
+              <button type="button" className="btn-secondary btn-sm text-[#7A5A12]" onClick={() => setRows(rows.filter((_, j) => j !== i))}>Remove</button>
             </div>
           </div>
           <div className="grid gap-2 sm:grid-cols-3">

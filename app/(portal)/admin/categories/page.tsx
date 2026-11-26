@@ -49,7 +49,7 @@ export default async function Categories() {
               <SubmitButton name="op" value="up" className="btn-secondary btn-sm">↑</SubmitButton>
               <SubmitButton name="op" value="down" className="btn-secondary btn-sm">↓</SubmitButton>
               <SubmitButton name="op" value="toggle" className="btn-secondary btn-sm">{c.isActive ? "Deactivate" : "Activate"}</SubmitButton>
-              <SubmitButton name="op" value="delete" className="btn-secondary btn-sm text-red-700" confirm="Delete category?">Delete</SubmitButton>
+              <SubmitButton name="op" value="delete" className="btn-secondary btn-sm text-[#7A5A12]" confirm="Delete category?">Delete</SubmitButton>
             </div>
           </form>
         ))}

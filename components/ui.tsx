@@ -45,8 +45,8 @@ export function Badge({ children, tone = "gray" }: { children: ReactNode; tone?:
   const t = {
     gray: "bg-gray-100 text-gray-700",
     blue: "bg-brand-light text-brand",
-    green: "bg-emerald-50 text-emerald-700",
-    red: "bg-red-50 text-red-700",
+    green: "bg-[#EEF1F6] text-navy",
+    red: "bg-[#FBF6EA] text-[#7A5A12]",
     amber: "bg-amber-50 text-amber-800",
     navy: "bg-navy text-white",
   }[tone];
@@ -82,7 +82,7 @@ export function Field({ label, name, hint, required, children }: { label: string
   return (
     <div>
       <label className="label" htmlFor={name}>
-        {label} {required && <span className="text-red-600" aria-hidden>*</span>}
+        {label} {required && <span className="text-[#7A5A12]" aria-hidden>*</span>}
       </label>
       {children}
       {hint && <p className="hint">{hint}</p>}
@@ -125,7 +125,7 @@ export function Checkbox({ label, name, defaultChecked, required, hint }: { labe
     <div>
       <label className="flex items-start gap-2 text-sm">
         <input type="checkbox" name={name} defaultChecked={defaultChecked} required={required} className="mt-0.5 h-4 w-4 rounded border-line text-brand" />
-        <span>{label}{required && <span className="text-red-600"> *</span>}</span>
+        <span>{label}{required && <span className="text-[#7A5A12]"> *</span>}</span>
       </label>
       {hint && <p className="hint ml-6">{hint}</p>}
     </div>
@@ -142,7 +142,7 @@ export function Empty({ title, children }: { title: string; children?: ReactNode
 }
 
 export function Stat({ label, value, href, hint, tone }: { label: string; value: number | string; href?: string; icon?: IconName; hint?: string; tone?: "navy" | "blue" | "green" | "amber" | "red" }) {
-  const accent = tone === "red" ? "text-red-700" : tone === "amber" ? "text-amber-700" : tone === "green" ? "text-emerald-700" : "text-ink";
+  const accent = tone === "red" ? "text-[#7A5A12]" : tone === "amber" ? "text-amber-700" : tone === "green" ? "text-navy" : "text-ink";
   const inner = (
     <div className="h-full bg-white px-4 py-3.5">
       <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted">{label}</div>

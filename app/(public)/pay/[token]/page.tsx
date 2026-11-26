@@ -34,12 +34,12 @@ export default async function Pay({ params, searchParams }: { params: Promise<{ 
         <Suspense><Flash /></Suspense>
         {sp.cancelled && !paid && <div className="mb-4 border border-amber-300 bg-amber-50 px-4 py-3 text-sm">Payment was cancelled. You can try again below.</div>}
         <section className="border border-line bg-white">
-          <div className={`flex flex-wrap items-start justify-between gap-4 border-b border-line border-t-4 px-6 py-5 ${paid ? "border-t-emerald-600" : waived ? "border-t-brand" : "border-t-gold"}`}>
+          <div className={`flex flex-wrap items-start justify-between gap-4 border-b border-line border-t-4 px-6 py-5 ${paid ? "border-t-navy" : waived ? "border-t-brand" : "border-t-gold"}`}>
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-muted">{j.name}</p>
               <h1 className="mt-1 font-display text-[26px] font-semibold">{paid ? "Receipt" : "Invoice"} {inv.number}</h1>
             </div>
-            <span className={`px-2 py-1 text-xs font-bold uppercase tracking-wide ${paid ? "bg-emerald-50 text-emerald-800" : waived ? "bg-brand-light text-brand" : "bg-amber-50 text-amber-800"}`}>{paid ? "Paid" : waived ? "Waived" : inv.status === "CANCELLED" ? "Cancelled" : "Payment due"}</span>
+            <span className={`px-2 py-1 text-xs font-bold uppercase tracking-wide ${paid ? "bg-[#EEF1F6] text-navy" : waived ? "bg-brand-light text-brand" : "bg-amber-50 text-amber-800"}`}>{paid ? "Paid" : waived ? "Waived" : inv.status === "CANCELLED" ? "Cancelled" : "Payment due"}</span>
           </div>
           <dl className="grid gap-px bg-line sm:grid-cols-2">
             <div className="bg-white px-6 py-3"><dt className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted">Billed to</dt><dd className="mt-0.5">{inv.payerName}<div className="text-sm text-muted">{inv.email}</div></dd></div>
@@ -67,7 +67,7 @@ export default async function Pay({ params, searchParams }: { params: Promise<{ 
               </div>
             </div>
           )}
-          {paid && <p className="border-t border-line px-6 py-4 text-sm text-emerald-800">Thank you. Your payment was received and your article will be published shortly.</p>}
+          {paid && <p className="border-t border-line px-6 py-4 text-sm text-navy">Thank you. Your payment was received and your article will be published shortly.</p>}
         </section>
       </div>
     </div>

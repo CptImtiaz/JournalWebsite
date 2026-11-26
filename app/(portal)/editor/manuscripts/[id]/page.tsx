@@ -138,7 +138,7 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
                         <div className="mt-3 space-y-2 rounded bg-surface p-3">
                           <div>Recommendation: <strong>{RECOMMENDATIONS[a.report.recommendation as keyof typeof RECOMMENDATIONS]}</strong> · {formatDateTime(a.report.submittedAt)} · {a.report.releasedToAuthor ? <Badge tone="green">Released to author</Badge> : <Badge>Not released</Badge>}</div>
                           <details open><summary className="cursor-pointer font-medium">Comments for author</summary><p className="mt-1 whitespace-pre-line">{a.report.commentsToAuthor}</p></details>
-                          {a.report.confidentialComments && <details><summary className="cursor-pointer font-medium text-red-800">Confidential comments to editor</summary><p className="mt-1 whitespace-pre-line">{a.report.confidentialComments}</p></details>}
+                          {a.report.confidentialComments && <details><summary className="cursor-pointer font-medium text-[#7A5A12]">Confidential comments to editor</summary><p className="mt-1 whitespace-pre-line">{a.report.confidentialComments}</p></details>}
                           {a.report.annotatedFile && <a className="link text-xs" href={`/api/files/${a.report.annotatedFile.id}`}>Annotated file: {a.report.annotatedFile.originalName}</a>}
                         </div>
                       )}
@@ -148,7 +148,7 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
                             <>
                               <form action={assignmentAction}><input type="hidden" name="id" value={m.id} /><input type="hidden" name="assignmentId" value={a.id} /><SubmitButton name="op" value="remind" className="btn-secondary btn-sm">Send reminder</SubmitButton></form>
                               <form action={assignmentAction} className="flex items-center gap-1"><input type="hidden" name="id" value={m.id} /><input type="hidden" name="assignmentId" value={a.id} /><input type="hidden" name="op" value="deadline" /><input type="date" name="dueAt" min={today} defaultValue={a.dueAt?.toISOString().slice(0, 10)} className="input py-1 text-xs" /><SubmitButton className="btn-secondary btn-sm">Set deadline</SubmitButton></form>
-                              <form action={assignmentAction}><input type="hidden" name="id" value={m.id} /><input type="hidden" name="assignmentId" value={a.id} /><SubmitButton name="op" value="cancel" className="btn-secondary btn-sm text-red-700" confirm="Cancel this review assignment?">Cancel</SubmitButton></form>
+                              <form action={assignmentAction}><input type="hidden" name="id" value={m.id} /><input type="hidden" name="assignmentId" value={a.id} /><SubmitButton name="op" value="cancel" className="btn-secondary btn-sm text-[#7A5A12]" confirm="Cancel this review assignment?">Cancel</SubmitButton></form>
                             </>
                           )}
                           {a.report && <form action={assignmentAction}><input type="hidden" name="id" value={m.id} /><input type="hidden" name="assignmentId" value={a.id} /><SubmitButton name="op" value="release" className="btn-secondary btn-sm">{a.report.releasedToAuthor ? "Withhold from author" : "Release to author"}</SubmitButton></form>}
