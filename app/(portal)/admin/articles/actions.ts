@@ -106,7 +106,6 @@ export async function publishAction(fd: FormData) {
   const here = `/admin/articles/${id}`;
   const a = await db.article.findUniqueOrThrow({ where: { id }, include: { manuscript: { include: { submitter: true } } } });
   if (op === "publish") {
-    if (!(await db.articleAuthor.count({ where: { articleId: id } }))) back(here, { error: "Add at least one author before publishing." });
     await db.article.update({ where: { id }, data: { status: "PUBLISHED", publishedAt: a.publishedAt ?? new Date() } });
     if (a.manuscript && a.manuscript.status !== "PUBLISHED") {
       await setStatus(a.manuscript.id, "PUBLISHED", u.id, "Article published", false);

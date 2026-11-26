@@ -41,6 +41,7 @@ export default async function ArticleEdit({ params }: { params: Promise<{ id: st
               {a.status === "PUBLISHED" && <SubmitButton name="op" value="retract" className="btn-secondary text-red-700" confirm="Mark as retracted? A retraction notice should also be published.">Mark retracted</SubmitButton>}
               {a.status === "DRAFT" && <SubmitButton name="op" value="delete" className="btn-danger" confirm="Delete this draft permanently?">Delete draft</SubmitButton>}
               {!a.issueId && <span className="text-xs text-amber-700">Tip: assign the article to an issue before publishing.</span>}
+              {a.authors.length === 0 && <span className="text-xs text-amber-700">No authors yet. The article will show “Author details are being verified”.</span>}
               {!a.files.some((f) => f.kind === "PDF") && <span className="text-xs text-amber-700">No PDF uploaded yet.</span>}
             </form>
           </Card>

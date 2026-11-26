@@ -40,7 +40,7 @@ export function IssueView({ issue }: { issue: IssueFull }) {
                   <Link href={`/article/${a.slug}`} className="text-base font-semibold text-ink hover:text-brand">{a.title}</Link>
                   {a.status === "RETRACTED" && <span className="ml-2"><Badge tone="red">Retracted</Badge></span>}
                   {a.isSample && <span className="ml-2"><Badge tone="amber">Sample</Badge></span>}
-                  <p className="mt-1 text-sm text-ink">{a.authors.map((x) => x.fullName).join(", ")}</p>
+                  <p className="mt-1 text-sm text-ink">{a.authors.length ? a.authors.map((x) => x.fullName).join(", ") : <span className="text-muted">Author details are being verified</span>}</p>
                   <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted">
                     {a.pages && <span>pp. {a.pages}</span>}
                     {a.articleNumber && <span>Article {a.articleNumber}</span>}

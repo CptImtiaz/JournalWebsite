@@ -18,6 +18,7 @@ export function isDoiRegistered(a: { doi: string | null; doiRecords?: { status: 
 
 function authorLine(a: CardArticle, max = 4) {
   const n = a.authors.map((x) => x.fullName);
+  if (!n.length) return "Author details are being verified";
   return n.length > max ? `${n.slice(0, max - 1).join(", ")}, … ${n[n.length - 1]}` : n.join(", ");
 }
 

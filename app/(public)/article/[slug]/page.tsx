@@ -151,6 +151,7 @@ export default async function ArticlePage({ params }: P) {
             )}
             <h1 className="mt-4 font-display text-3xl font-semibold leading-[1.15] tracking-tight text-ink sm:text-[42px]">{a.title}</h1>
             <p className="mt-5 text-[15px] leading-relaxed text-ink">
+              {a.authors.length === 0 && <span className="text-muted">Author details are being verified.</span>}
               {a.authors.map((x, i) => (
                 <span key={x.id}>
                   <span className="font-medium">{x.fullName}</span>
@@ -225,6 +226,7 @@ export default async function ArticlePage({ params }: P) {
             {a.dataAvailability && <div><h3 className="font-semibold">Data availability</h3><p className="mt-1 text-ink/80">{a.dataAvailability}</p></div>}
             <div id="corresponding" className="scroll-mt-24">
               <h3 className="font-semibold">Author information</h3>
+              {affs.length === 0 && <p className="mt-1 text-ink/80">Author details are being verified.</p>}
               <ol className="mt-1 space-y-0.5 text-ink/80">{affs.map((af, i) => <li key={af}><sup>{i + 1}</sup> {af}</li>)}</ol>
               {corr && <p className="mt-2 text-ink/80">Correspondence to {corr.fullName}{corr.email ? <> (<a className="link" href={`mailto:${corr.email}`}>{corr.email}</a>)</> : null}.</p>}
             </div>
