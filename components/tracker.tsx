@@ -11,7 +11,7 @@ export function Tracker({ status }: { status: string }) {
         return (
           <li key={s.label} className="flex items-center gap-2 sm:flex-col sm:items-start">
             <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${done ? "bg-emerald-600 text-white" : cur ? (terminal ? "bg-red-600 text-white" : "bg-brand text-white") : "bg-gray-100 text-muted"}`}>{done ? "✓" : i + 1}</span>
-            <span className={`text-xs ${cur ? "font-semibold text-navy" : "text-muted"}`}>{s.label}</span>
+            <span className={`text-xs ${cur ? "font-semibold text-ink" : "text-muted"}`}>{s.label}</span>
           </li>
         );
       })}

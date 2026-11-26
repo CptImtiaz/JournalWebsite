@@ -139,7 +139,7 @@ export default async function AuthorManuscript({ params }: { params: Promise<{ i
             <div className="space-y-6">
               {[...rounds.entries()].map(([rev, list]) => (
                 <div key={rev}>
-                  <h3 className="mb-2 text-sm font-semibold text-navy">Review round {rev + 1}</h3>
+                  <h3 className="mb-2 text-sm font-semibold text-ink">Review round {rev + 1}</h3>
                   <div className="space-y-3">
                     {list.map((a, i) => (
                       <div key={a.id} className="rounded-md bg-surface p-4 text-sm">

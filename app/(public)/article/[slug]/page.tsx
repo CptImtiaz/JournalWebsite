@@ -179,7 +179,7 @@ export default async function ArticlePage({ params }: P) {
             <p className="mt-4 font-serif text-[18px] leading-[1.7] text-ink">{a.abstract}</p>
           </section>
 
-          {body && <section aria-label="Main text" className="mt-10 prose prose-slate prose-lg max-w-none font-serif prose-headings:scroll-mt-24 prose-headings:font-display prose-headings:text-ink prose-h2:text-2xl prose-a:text-brand prose-img:rounded" dangerouslySetInnerHTML={{ __html: body }} />}
+          {body && <section aria-label="Main text" className="mt-10 prose prose-slate prose-lg max-w-none font-serif prose-headings:scroll-mt-24 prose-headings:font-display prose-headings:text-ink prose-h2:text-2xl prose-a:text-link prose-img:rounded" dangerouslySetInnerHTML={{ __html: body }} />}
 
           {figures.length > 0 && (
             <section id="figures" className="mt-12 scroll-mt-24">

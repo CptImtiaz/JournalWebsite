@@ -96,7 +96,7 @@ export function AuthorsEditor({ initial }: { initial: AuthorRow[] }) {
       {rows.map((r, i) => (
         <div key={i} className="rounded-md border border-line p-4">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <span className="text-sm font-semibold text-navy">Author {i + 1}</span>
+            <span className="text-sm font-semibold text-ink">Author {i + 1}</span>
             <div className="flex flex-wrap items-center gap-2">
               <label className="flex items-center gap-1 text-xs">
                 <input type="radio" checked={corr === i} onChange={() => setCorr(i)} /> Corresponding author

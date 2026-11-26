@@ -85,7 +85,7 @@ export async function SiteHeader() {
         <div className="container-x flex h-16 items-center gap-4">
           <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label={`${j.name} home`}>
             <Logo logoUrl={fileUrl(j.logoFileId)} size={36} />
-            <span className="font-display text-xl font-bold tracking-tight text-navy">{j.shortName}</span>
+            <span className="font-display text-xl font-bold tracking-tight text-ink">{j.shortName}</span>
           </Link>
           <form action="/articles" role="search" className="mx-auto hidden max-w-xl flex-1 md:block">
             <label className="relative block">

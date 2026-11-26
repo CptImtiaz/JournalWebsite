@@ -136,7 +136,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
               <li key={s.id}>
                 <button type="button" onClick={() => (i <= step || done.has(i) ? go(i) : go(i))} className={`flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left ${i === step ? "bg-brand-light" : "hover:bg-app"}`}>
                   <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${i === step ? "bg-brand text-white" : isDone ? "bg-emerald-600 text-white" : "border border-line bg-white text-muted"}`}>{isDone ? <Icon name="check" size={13} /> : i + 1}</span>
-                  <span><span className={`block text-sm ${i === step ? "font-semibold text-navy" : "font-medium text-ink"}`}>{s.title}</span><span className="block text-xs text-muted">{s.desc}</span></span>
+                  <span><span className={`block text-sm ${i === step ? "font-semibold text-ink" : "font-medium text-ink"}`}>{s.title}</span><span className="block text-xs text-muted">{s.desc}</span></span>
                 </button>
               </li>
             );

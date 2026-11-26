@@ -30,17 +30,17 @@ export default async function Contact() {
       <PageHeader title="Contact" crumbs={[{ label: "Contact" }]} />
       <div className="container-x grid gap-10 py-10 lg:grid-cols-2">
         <div>
-          {page && <div className="prose prose-slate max-w-none prose-headings:text-navy prose-headings:font-semibold prose-a:text-brand prose-h2:mt-8 prose-h2:text-xl" dangerouslySetInnerHTML={{ __html: renderMarkdown(page.body) }} />}
+          {page && <div className="prose prose-slate max-w-none prose-headings:text-ink prose-headings:font-semibold prose-a:text-link prose-h2:mt-8 prose-h2:text-xl" dangerouslySetInnerHTML={{ __html: renderMarkdown(page.body) }} />}
           <dl className="card mt-6 space-y-3 p-5 text-sm">
-            <div><dt className="font-semibold text-navy">Journal</dt><dd>{j.name}</dd></div>
-            {j.publisherName && <div><dt className="font-semibold text-navy">Publisher</dt><dd>{j.publisherName}</dd></div>}
-            {j.contactEmail && <div><dt className="font-semibold text-navy">Editorial office email</dt><dd><a className="link" href={`mailto:${j.contactEmail}`}>{j.contactEmail}</a></dd></div>}
-            {j.contactPhone && <div><dt className="font-semibold text-navy">Telephone</dt><dd>{j.contactPhone}</dd></div>}
-            {(j.contactAddress || j.publisherAddress) && <div><dt className="font-semibold text-navy">Address</dt><dd className="whitespace-pre-line">{j.contactAddress || j.publisherAddress}</dd></div>}
+            <div><dt className="font-semibold text-ink">Journal</dt><dd>{j.name}</dd></div>
+            {j.publisherName && <div><dt className="font-semibold text-ink">Publisher</dt><dd>{j.publisherName}</dd></div>}
+            {j.contactEmail && <div><dt className="font-semibold text-ink">Editorial office email</dt><dd><a className="link" href={`mailto:${j.contactEmail}`}>{j.contactEmail}</a></dd></div>}
+            {j.contactPhone && <div><dt className="font-semibold text-ink">Telephone</dt><dd>{j.contactPhone}</dd></div>}
+            {(j.contactAddress || j.publisherAddress) && <div><dt className="font-semibold text-ink">Address</dt><dd className="whitespace-pre-line">{j.contactAddress || j.publisherAddress}</dd></div>}
           </dl>
         </div>
         <form action={send} className="card space-y-4 p-6">
-          <h2 className="text-lg font-semibold text-navy">Send a message</h2>
+          <h2 className="text-lg font-semibold text-ink">Send a message</h2>
           <Suspense><Flash /></Suspense>
           <TextField label="Your name" name="name" required maxLength={200} />
           <TextField label="Email" name="email" type="email" required maxLength={200} />

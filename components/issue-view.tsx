@@ -27,9 +27,9 @@ export function IssueView({ issue }: { issue: IssueFull }) {
         {issue.pdfFileId && <a href={`/api/files/${issue.pdfFileId}`} className="btn-primary w-full">Download issue PDF</a>}
       </aside>
       <div>
-        {issue.title && <h2 className="text-xl font-semibold text-navy">{issue.title}</h2>}
-        {issue.description && <div className="prose prose-slate max-w-none prose-headings:text-navy prose-headings:font-semibold prose-a:text-brand prose-h2:mt-8 prose-h2:text-xl mb-6 mt-2" dangerouslySetInnerHTML={{ __html: renderMarkdown(issue.description) }} />}
-        <h2 className="mb-4 border-b border-line pb-2 text-lg font-semibold text-navy">Table of Contents</h2>
+        {issue.title && <h2 className="text-xl font-semibold text-ink">{issue.title}</h2>}
+        {issue.description && <div className="prose prose-slate max-w-none prose-headings:text-ink prose-headings:font-semibold prose-a:text-link prose-h2:mt-8 prose-h2:text-xl mb-6 mt-2" dangerouslySetInnerHTML={{ __html: renderMarkdown(issue.description) }} />}
+        <h2 className="mb-4 border-b border-line pb-2 text-lg font-semibold text-ink">Table of Contents</h2>
         {issue.articles.length === 0 && <Empty title="No articles in this issue yet" />}
         {[...byType.entries()].map(([type, list]) => (
           <section key={type} className="mb-8">
@@ -37,7 +37,7 @@ export function IssueView({ issue }: { issue: IssueFull }) {
             <ol className="divide-y divide-line">
               {list.map((a) => (
                 <li key={a.id} className="py-4">
-                  <Link href={`/article/${a.slug}`} className="text-base font-semibold text-navy hover:text-brand">{a.title}</Link>
+                  <Link href={`/article/${a.slug}`} className="text-base font-semibold text-ink hover:text-brand">{a.title}</Link>
                   {a.status === "RETRACTED" && <span className="ml-2"><Badge tone="red">Retracted</Badge></span>}
                   {a.isSample && <span className="ml-2"><Badge tone="amber">Sample</Badge></span>}
                   <p className="mt-1 text-sm text-ink">{a.authors.map((x) => x.fullName).join(", ")}</p>

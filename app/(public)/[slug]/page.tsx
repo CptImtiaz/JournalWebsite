@@ -25,13 +25,13 @@ export default async function CmsPage({ params }: P) {
       <PageHeader title={p.title} crumbs={p.kind === "POLICY" ? [{ label: "Policies", href: "/policies" }, { label: p.title }] : [{ label: p.title }]} />
       <div className={`container-x py-10 ${policies.length ? "grid gap-10 lg:grid-cols-[1fr_260px]" : ""}`}>
         <div>
-          <div className="prose prose-slate max-w-none prose-headings:text-navy prose-headings:font-semibold prose-a:text-brand prose-h2:mt-8 prose-h2:text-xl" dangerouslySetInnerHTML={{ __html: renderMarkdown(p.body) }} />
+          <div className="prose prose-slate max-w-none prose-headings:text-ink prose-headings:font-semibold prose-a:text-link prose-h2:mt-8 prose-h2:text-xl" dangerouslySetInnerHTML={{ __html: renderMarkdown(p.body) }} />
           <p className="mt-10 text-xs text-muted">Last updated {formatDate(p.updatedAt)}</p>
         </div>
         {policies.length > 0 && (
           <aside>
             <nav className="card sticky top-4 p-4" aria-label="Policies">
-              <h2 className="mb-2 text-sm font-semibold text-navy">Journal Policies</h2>
+              <h2 className="mb-2 text-sm font-semibold text-ink">Journal Policies</h2>
               <ul className="space-y-1 text-sm">
                 {policies.map((x) => (
                   <li key={x.slug}><Link href={`/${x.slug}`} className={x.slug === slug ? "font-semibold text-brand" : "text-ink hover:text-brand"}>{x.title}</Link></li>

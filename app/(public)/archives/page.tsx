@@ -20,12 +20,12 @@ export default async function Archives() {
         {years.length === 0 && <Empty title="No issues have been published yet" />}
         {years.map((y) => (
           <section key={y} id={`y${y}`}>
-            <h2 className="mb-4 border-b border-line pb-2 text-xl font-semibold text-navy">{y}</h2>
+            <h2 className="mb-4 border-b border-line pb-2 text-xl font-semibold text-ink">{y}</h2>
             <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
               {issues.filter((i) => i.year === y).map((i) => (
                 <Link key={i.id} href={issuePath(i)} className="group">
                   <IssueCover issue={i} />
-                  <div className="mt-2 text-sm font-semibold text-navy group-hover:text-brand">Volume {i.volume.number}, Issue {i.number}</div>
+                  <div className="mt-2 text-sm font-semibold text-ink group-hover:text-brand">Volume {i.volume.number}, Issue {i.number}</div>
                   <div className="text-xs text-muted">{i._count.articles} articles{i.title ? ` · ${i.title}` : ""}</div>
                 </Link>
               ))}

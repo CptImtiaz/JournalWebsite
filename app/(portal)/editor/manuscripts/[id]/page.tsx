@@ -97,7 +97,7 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
               {Array.isArray(m.opposedReviewers) && m.opposedReviewers.length > 0 && <div className="sm:col-span-2"><dt className="text-muted">Opposed reviewers</dt><dd><ul className="list-disc pl-5">{(m.opposedReviewers as { name: string; institution: string; reason: string }[]).map((r, i) => <li key={i}><strong>{r.name}</strong> {r.institution && `· ${r.institution}`} {r.reason && <span className="text-muted">— {r.reason}</span>}</li>)}</ul></dd></div>}
               {m.coverLetter && <div className="sm:col-span-2"><dt className="text-muted">Cover letter</dt><dd className="whitespace-pre-line">{m.coverLetter}</dd></div>}
             </dl>
-            <h3 className="mt-5 text-sm font-semibold text-navy">Authors</h3>
+            <h3 className="mt-5 text-sm font-semibold text-ink">Authors</h3>
             <ol className="mt-2 space-y-1 text-sm">
               {m.authors.map((a) => <li key={a.id}>{a.order}. <strong>{a.fullName}</strong>{a.isCorresponding && " (corresponding)"} — {a.affiliation}{a.country ? `, ${a.country}` : ""} · {a.email}{a.orcid && <> · <a className="link" href={`https://orcid.org/${a.orcid}`} target="_blank" rel="noopener">{a.orcid}</a></>}</li>)}
             </ol>
@@ -124,7 +124,7 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
             const list = m.assignments.filter((a) => a.revision === r);
             return (
               <div key={r} className="mb-6">
-                <h3 className="mb-2 text-sm font-semibold text-navy">Round {r + 1}{r === m.currentRevision ? " (current)" : ""}</h3>
+                <h3 className="mb-2 text-sm font-semibold text-ink">Round {r + 1}{r === m.currentRevision ? " (current)" : ""}</h3>
                 {list.length === 0 && <p className="text-sm text-muted">No reviewers assigned for this round.</p>}
                 <div className="space-y-3">
                   {list.map((a) => (
@@ -163,7 +163,7 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
           {can(u, "manuscripts.manage_reviews") && open && (
             <form action={inviteReviewerAction} className="mt-4 grid gap-3 rounded-md border border-dashed border-line p-4 md:grid-cols-2">
               <input type="hidden" name="id" value={m.id} />
-              <h3 className="text-sm font-semibold text-navy md:col-span-2">Invite a reviewer for round {m.currentRevision + 1}</h3>
+              <h3 className="text-sm font-semibold text-ink md:col-span-2">Invite a reviewer for round {m.currentRevision + 1}</h3>
               <div className="md:col-span-2">
                 <SelectField label="From reviewer pool" name="reviewerId" placeholder="— or invite a new reviewer below —" options={reviewers.map((r) => ({ value: r.id, label: `${r.fullName} — ${r.reviewerProfile?.expertise ?? r.researchInterests ?? "no expertise listed"} (${r.reviewerProfile?.availability?.toLowerCase() ?? "available"}, ${r._count.reviewAssignments} active)` }))} />
               </div>

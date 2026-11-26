@@ -38,7 +38,7 @@ export default async function ManuscriptList({ searchParams }: { searchParams: P
               {ms.map((m) => (
                 <tr key={m.id}>
                   <td className="whitespace-nowrap font-mono text-xs"><Link className="link" href={`/editor/manuscripts/${m.id}`}>{m.code}</Link></td>
-                  <td className="min-w-64"><Link href={`/editor/manuscripts/${m.id}`} className="font-medium text-navy hover:text-brand">{m.title}</Link><div className="text-xs text-muted">{m.articleType} · {m.category?.name}</div></td>
+                  <td className="min-w-64"><Link href={`/editor/manuscripts/${m.id}`} className="font-medium text-ink hover:text-brand">{m.title}</Link><div className="text-xs text-muted">{m.articleType} · {m.category?.name}</div></td>
                   <td className="whitespace-nowrap">{formatDate(m.submittedAt)}</td>
                   <td>{m.handlingEditor?.fullName ?? <span className="text-muted">—</span>}</td>
                   <td>{m._count.assignments}</td>

@@ -14,7 +14,7 @@ export default async function Board() {
         {groups.length === 0 && <Empty title="The editorial board is being constituted">Board members will be listed here once their appointments are confirmed.</Empty>}
         {groups.map((g) => (
           <section key={g.label}>
-            <h2 className="mb-5 border-b border-line pb-2 text-xl font-semibold text-navy">{g.label}</h2>
+            <h2 className="mb-5 border-b border-line pb-2 text-xl font-semibold text-ink">{g.label}</h2>
             <div className="grid gap-5 md:grid-cols-2">
               {g.items.map((m) => (
                 <article key={m.id} className="card flex gap-4 p-5" itemScope itemType="https://schema.org/Person">
@@ -25,7 +25,7 @@ export default async function Board() {
                     <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-md bg-surface text-2xl font-semibold text-navy">{m.fullName.split(/\s+/).map((x) => x[0]).slice(0, 2).join("")}</div>
                   )}
                   <div className="min-w-0 text-sm">
-                    <h3 className="text-base font-semibold text-navy" itemProp="name">{m.fullName}</h3>
+                    <h3 className="text-base font-semibold text-ink" itemProp="name">{m.fullName}</h3>
                     {m.designation && <p className="text-ink" itemProp="jobTitle">{m.designation}</p>}
                     <p className="text-muted">{[m.department, m.affiliation, m.country].filter(Boolean).join(", ")}</p>
                     {m.researchInterests && <p className="mt-2"><span className="font-medium">Research interests:</span> {m.researchInterests}</p>}
