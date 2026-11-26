@@ -139,7 +139,7 @@ export default async function ArticlePage({ params }: P) {
         <article className="min-w-0">
           <header>
             <div className="flex flex-wrap items-center gap-x-2 text-xs">
-              <span className="font-bold uppercase tracking-wide text-brand">{a.articleType}</span>
+              <span className="font-bold text-ink">{a.articleType}</span>
               {j.isOpenAccess && <><span className="text-line">|</span><span className="inline-flex items-center gap-1 font-semibold text-emerald-700"><Icon name="lock" size={12} />Open access</span></>}
               {a.publishedAt && <><span className="text-line">|</span><span className="text-muted">Published: {formatDate(a.publishedAt, { day: "numeric", month: "long", year: "numeric" })}</span></>}
             </div>
@@ -317,7 +317,7 @@ export default async function ArticlePage({ params }: P) {
             )}
 
             <div className="rounded-lg bg-navy p-5 text-white">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#9cc3ee]">Publish with us</p>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#a8a8a8]">Publish with us</p>
               <p className="mt-2 font-display text-lg font-semibold leading-snug">Submit your research to {j.shortName}</p>
               <Link href="/submit" className="btn mt-4 w-full bg-white text-navy hover:bg-brand-light">Submit manuscript</Link>
             </div>

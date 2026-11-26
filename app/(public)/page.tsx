@@ -70,7 +70,7 @@ export default async function Home() {
             {issue ? <IssueCover issue={issue} /> : <JournalCover />}
           </Link>
           <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold">{j.isOpenAccess ? "Open access · " : ""}Peer-reviewed international journal</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#FF6B6B]">{j.isOpenAccess ? "Open access · " : ""}Peer-reviewed international journal</p>
             <h1 className="mt-2 font-display text-[32px] font-semibold leading-[1.1] sm:text-[44px]">{hp.headline || j.tagline || "Advancing Research in Computing and Emerging Technologies."}</h1>
             <p className="mt-4 max-w-xl text-[17px] leading-relaxed text-white/80">{hp.description || j.description}</p>
             <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-sm text-white/75">

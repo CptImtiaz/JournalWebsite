@@ -19,8 +19,8 @@ function Links({ sections, onNav }: { sections: NavSection[]; onNav?: () => void
               const active = path === l.href || (!root && path.startsWith(l.href + "/"));
               return (
                 <li key={l.href}>
-                  <Link href={l.href} onClick={onNav} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${active ? "bg-white/12 font-medium text-white shadow-[inset_3px_0_0_#7FB0E6]" : "text-white/70 hover:bg-white/6 hover:text-white"}`}>
-                    <Icon name={l.icon} size={17} className={active ? "text-[#9cc3ee]" : "text-white/50"} />
+                  <Link href={l.href} onClick={onNav} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition ${active ? "bg-white/12 font-medium text-white shadow-[inset_3px_0_0_#e6e6e6]" : "text-white/70 hover:bg-white/6 hover:text-white"}`}>
+                    <Icon name={l.icon} size={17} className={active ? "text-[#a8a8a8]" : "text-white/50"} />
                     <span className="flex-1">{l.label}</span>
                     {!!l.badge && <span className="rounded-full bg-[#C8102E] px-1.5 text-[10px] font-bold leading-4 text-white">{l.badge}</span>}
                   </Link>

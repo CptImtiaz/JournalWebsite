@@ -24,9 +24,9 @@ function authorLine(a: CardArticle, max = 4) {
 function Meta({ a }: { a: CardArticle }) {
   return (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-      <span className="font-bold uppercase tracking-wide text-brand">{a.articleType}</span>
+      <span className="font-bold text-ink">{a.articleType}</span>
       <span className="text-line">|</span>
-      <span className="font-semibold text-emerald-700">Open Access</span>
+      <span className="text-muted">Open Access</span>
       {a.status === "RETRACTED" && <span className="font-semibold text-red-700">· Retracted</span>}
       {a.isSample && <span className="rounded bg-amber-100 px-1.5 py-px text-[10px] font-bold uppercase tracking-wide text-amber-800" title="Demonstration content">Sample</span>}
       {a.publishedAt && <><span className="text-line">|</span><time className="text-muted" dateTime={a.publishedAt.toISOString()}>{formatDate(a.publishedAt, { day: "numeric", month: "short", year: "numeric" })}</time></>}
@@ -57,7 +57,7 @@ export function ArticleRow({ a, snippet = false }: { a: CardArticle; snippet?: b
     <article className="border-b border-line py-5 first:pt-0 last:border-0">
       <Meta a={a} />
       <h3 className="mt-1.5 font-display text-[19px] font-semibold leading-snug text-ink">
-        <Link href={`/article/${a.slug}`} className="text-link hover:underline decoration-1 underline-offset-4">{a.title}</Link>
+        <Link href={`/article/${a.slug}`} className="text-ink hover:text-link hover:underline decoration-1 underline-offset-4">{a.title}</Link>
       </h3>
       {snippet && <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink/75">{a.abstract}</p>}
       <p className="mt-1.5 text-sm text-muted">{authorLine(a)}</p>

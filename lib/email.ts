@@ -27,12 +27,12 @@ function fill(tpl: string, vars: Record<string, string>, html: boolean) {
 }
 
 function wrap(body: string, journalName: string) {
-  return `<!doctype html><html><body style="margin:0;background:#F5F7FA;font-family:Inter,Arial,sans-serif;color:#202B38">
+  return `<!doctype html><html><body style="margin:0;background:#F6F6F6;font-family:Inter,Arial,sans-serif;color:#222222">
 <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:24px">
-<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border:1px solid #E5E7EB;border-radius:8px">
-<tr><td style="background:#142D4E;color:#fff;padding:18px 24px;font-size:16px;font-weight:600;border-radius:8px 8px 0 0">${escapeXml(journalName)}</td></tr>
+<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border:1px solid #DADADA;border-radius:8px">
+<tr><td style="background:#191919;color:#fff;padding:18px 24px;font-size:16px;font-weight:600;border-radius:8px 8px 0 0">${escapeXml(journalName)}</td></tr>
 <tr><td style="padding:24px;font-size:14px;line-height:1.6">${body}</td></tr>
-<tr><td style="padding:16px 24px;border-top:1px solid #E5E7EB;font-size:12px;color:#6B7280">This is an automated message from the ${escapeXml(journalName)} editorial system. <a href="${appUrl()}" style="color:#2864A5">${appUrl()}</a></td></tr>
+<tr><td style="padding:16px 24px;border-top:1px solid #DADADA;font-size:12px;color:#626262">This is an automated message from the ${escapeXml(journalName)} editorial system. <a href="${appUrl()}" style="color:#006699">${appUrl()}</a></td></tr>
 </table></td></tr></table></body></html>`;
 }
 

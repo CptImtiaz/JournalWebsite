@@ -2,26 +2,27 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-navy: #142D4E;
-  --color-navy-dark: #0d1f37;
-  --color-brand: #2864A5;
-  --color-brand-light: #e8f0fa;
-  --color-surface: #F5F7FA;
-  --color-ink: #202B38;
-  --color-muted: #6B7280;
-  --color-line: #E5E7EB;
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --color-navy: #191919;
+  --color-navy-dark: #000000;
+  --color-brand: #006699;
+  --color-brand-light: #E6F0F5;
+  --color-surface: #F6F6F6;
+  --color-ink: #222222;
+  --color-muted: #626262;
+  --color-line: #DADADA;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, var(--font-inter), sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
   --font-display: var(--font-display), Georgia, "Times New Roman", serif;
   --color-accent: #C8102E;
-  --color-gold: #F2B33D;
-  --color-gold-dark: #D99A1E;
-  --color-link: #025E8D;
-  --color-app: #F3F5F9;
+  --color-gold: #C8102E;
+  --color-gold-dark: #A00D25;
+  --color-link: #006699;
+  --color-app: #F2F2F2;
 }
 
 html { scroll-behavior: smooth; }
 body { background: #fff; color: var(--color-ink); }
+::selection { background: #E6F0F5; }
 
 @utility container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
 
@@ -46,9 +47,9 @@ body { background: #fff; color: var(--color-ink); }
 .table tbody tr:last-child td { @apply border-b-0; }
 
 
-@utility kicker { @apply text-[11px] font-bold uppercase tracking-[0.14em] text-brand; }
+@utility kicker { @apply text-[11px] font-bold uppercase tracking-[0.14em] text-accent; }
 @utility section-title { @apply font-display text-2xl font-semibold text-ink sm:text-[28px]; }
 @utility rule-top { @apply border-t-2 border-ink pt-3; }
 @utility app-card { @apply rounded-xl border border-line bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]; }
-@utility btn-accent { @apply btn bg-gold text-navy font-semibold hover:bg-gold-dark; }
+@utility btn-accent { @apply btn bg-link text-white font-semibold hover:bg-navy; }
 @utility tab-link { @apply whitespace-nowrap border-b-[3px] border-transparent px-3 py-3 text-[15px] text-ink hover:border-line hover:text-link; }

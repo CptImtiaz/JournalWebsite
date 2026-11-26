@@ -15,8 +15,8 @@ export function ColumnChart({ data, height = 200, unit = "" }: { data: { label: 
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={`Column chart: ${data.map((d) => `${d.full ?? d.label} ${d.value}`).join(", ")}`}>
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={L} x2={W} y1={y(t)} y2={y(t)} stroke="#E5E7EB" strokeWidth={1} />
-            <text x={L - 8} y={y(t) + 4} textAnchor="end" fontSize="11" fill="#6B7280">{Number.isInteger(t) ? t : ""}</text>
+            <line x1={L} x2={W} y1={y(t)} y2={y(t)} stroke="#DADADA" strokeWidth={1} />
+            <text x={L - 8} y={y(t) + 4} textAnchor="end" fontSize="11" fill="#626262">{Number.isInteger(t) ? t : ""}</text>
           </g>
         ))}
         {data.map((d, i) => {
@@ -26,8 +26,8 @@ export function ColumnChart({ data, height = 200, unit = "" }: { data: { label: 
           return (
             <g key={i} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
               <rect x={L + i * bw} y={T} width={bw} height={H - T - B} fill="transparent" />
-              {d.value > 0 && <path d={`M${x},${H - B} v${-Math.max(h - 4, 0)} q0,-4 4,-4 h${w - 8} q4,0 4,4 v${Math.max(h - 4, 0)} z`} fill={hover === i ? "#142D4E" : "#2864A5"} />}
-              <text x={L + i * bw + bw / 2} y={H - 8} textAnchor="middle" fontSize="11" fill="#6B7280">{d.label}</text>
+              {d.value > 0 && <path d={`M${x},${H - B} v${-Math.max(h - 4, 0)} q0,-4 4,-4 h${w - 8} q4,0 4,4 v${Math.max(h - 4, 0)} z`} fill={hover === i ? "#191919" : "#006699"} />}
+              <text x={L + i * bw + bw / 2} y={H - 8} textAnchor="middle" fontSize="11" fill="#626262">{d.label}</text>
             </g>
           );
         })}
