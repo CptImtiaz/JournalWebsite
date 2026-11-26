@@ -190,6 +190,12 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
                   {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </Section>
+              <div className="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-app/60 p-4 text-sm">
+                <Icon name="file" size={18} className="text-brand" />
+                <span className="flex-1">Use the journal template to format your manuscript.</span>
+                <a href="/templates/IJCST-manuscript-template.docx" className="font-medium text-brand hover:underline">Word (.docx)</a>
+                <a href="/templates/IJCST-latex-template.zip" className="font-medium text-brand hover:underline">LaTeX (.zip)</a>
+              </div>
               <Section title="Before you begin">
                 <ul className="grid gap-2 text-sm text-ink/80 sm:grid-cols-2">
                   {["Manuscript file anonymised (no author names)", "Names, emails and affiliations of all co-authors", "Abstract (150–300 words) and 4–8 keywords", "Funding and conflict-of-interest statements", "Ethics approval details, if applicable", `Files in DOC, DOCX or PDF, up to ${maxMb} MB each`].map((t) => (

@@ -57,7 +57,7 @@ export function ArticleRow({ a, snippet = false }: { a: CardArticle; snippet?: b
     <article className="border-b border-line py-5 first:pt-0 last:border-0">
       <Meta a={a} />
       <h3 className="mt-1.5 font-display text-[19px] font-semibold leading-snug text-ink">
-        <Link href={`/article/${a.slug}`} className="hover:text-brand hover:underline decoration-1 underline-offset-4">{a.title}</Link>
+        <Link href={`/article/${a.slug}`} className="text-link hover:underline decoration-1 underline-offset-4">{a.title}</Link>
       </h3>
       {snippet && <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink/75">{a.abstract}</p>}
       <p className="mt-1.5 text-sm text-muted">{authorLine(a)}</p>

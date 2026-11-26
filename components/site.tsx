@@ -3,6 +3,7 @@ import { getJournal, navOf, footerOf, fileUrl } from "@/lib/journal";
 import { getCurrentUser, isStaff, hasRole } from "@/lib/auth";
 import { MobileNav } from "./client";
 import { Icon } from "./icons";
+import { JournalTabs } from "./journal-tabs";
 
 export function Logo({ size = 44, logoUrl, light }: { size?: number; logoUrl?: string | null; light?: boolean }) {
   if (logoUrl) {
@@ -62,84 +63,69 @@ function groups(extra: { label: string; href: string }[]): Group[] {
   return g;
 }
 
+const TABS = [
+  { label: "Journal home", href: "/" },
+  { label: "Articles", href: "/articles" },
+  { label: "Volumes and issues", href: "/archives" },
+  { label: "Editorial board", href: "/editorial-board" },
+  { label: "Aims and scope", href: "/aims-scope" },
+  { label: "Submission guidelines", href: "/for-authors" },
+  { label: "Policies", href: "/policies" },
+  { label: "About", href: "/about" },
+];
+
 export async function SiteHeader() {
   const [j, user] = await Promise.all([getJournal(), getCurrentUser()]);
   const nav = groups(navOf(j));
   const dash = !user ? null : isStaff(user) ? (hasRole(user, "SUPER_ADMIN", "JOURNAL_ADMIN") ? "/admin" : "/editor/dashboard") : hasRole(user, "REVIEWER") ? "/reviewer/dashboard" : "/author/dashboard";
-  const issn = [j.printIssn && `ISSN ${j.printIssn}`, j.eIssn && `eISSN ${j.eIssn}`].filter(Boolean).join(" · ");
   return (
     <header className="relative z-30 bg-white">
-      <div className="border-b border-line bg-surface text-xs text-muted">
-        <div className="container-x flex h-9 items-center justify-between gap-4">
-          <span className="truncate">{j.isOpenAccess ? "Open access · " : ""}Peer-reviewed international journal{issn ? ` · ${issn}` : ""}</span>
-          <div className="flex shrink-0 items-center gap-4">
+      {/* Publisher bar */}
+      <div className="border-b border-line">
+        <div className="container-x flex h-16 items-center gap-4">
+          <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label={`${j.name} home`}>
+            <Logo logoUrl={fileUrl(j.logoFileId)} size={36} />
+            <span className="font-display text-xl font-bold tracking-tight text-navy">{j.shortName}</span>
+          </Link>
+          <form action="/articles" role="search" className="mx-auto hidden max-w-xl flex-1 md:block">
+            <label className="relative block">
+              <span className="sr-only">Search articles</span>
+              <input name="q" placeholder="Search articles, authors, keywords, DOI…" className="w-full rounded-[3px] border border-ink/25 py-2 pl-3 pr-11 text-sm focus:border-link focus:outline-none focus:ring-1 focus:ring-link" />
+              <button className="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-[3px] bg-navy text-white" aria-label="Search"><Icon name="search" size={16} /></button>
+            </label>
+          </form>
+          <div className="ml-auto flex items-center gap-1 sm:gap-3">
             {user ? (
               <>
-                <Link href={dash!} className="font-medium text-ink hover:text-brand">My account</Link>
-                <form action="/logout" method="post"><button className="hover:text-ink">Sign out</button></form>
+                <Link href={dash!} className="hidden items-center gap-1.5 text-sm font-medium text-ink hover:text-link sm:inline-flex"><Icon name="user" size={16} />My account</Link>
+                <form action="/logout" method="post" className="hidden sm:block"><button className="text-sm text-muted hover:text-ink">Log out</button></form>
               </>
             ) : (
-              <>
-                <Link href="/login" className="font-medium text-ink hover:text-brand">Log in</Link>
-                <Link href="/register" className="hover:text-ink">Register</Link>
-              </>
+              <Link href="/login" className="hidden items-center gap-1.5 text-sm font-medium text-ink hover:text-link sm:inline-flex"><Icon name="user" size={16} />Log in</Link>
             )}
-          </div>
-        </div>
-      </div>
-      <div className="border-b border-line">
-        <div className="container-x flex items-center justify-between gap-4 py-4">
-          <Link href="/" className="flex min-w-0 items-center gap-3">
-            <Logo logoUrl={fileUrl(j.logoFileId)} size={46} />
-            <div className="min-w-0">
-              <div className="font-display text-xl font-semibold leading-tight tracking-tight text-ink sm:text-2xl">{j.name}</div>
-              <div className="hidden text-xs text-muted sm:block">{j.tagline}</div>
-            </div>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Link href="/articles" className="btn-ghost hidden sm:inline-flex" aria-label="Search articles"><Icon name="search" size={16} /> Search</Link>
-            <Link href="/submit" className="btn-primary hidden sm:inline-flex">Submit manuscript</Link>
             <MobileNav>
               <nav className="container-x grid gap-4 py-4 sm:grid-cols-3">
+                <form action="/articles" role="search" className="sm:col-span-3"><input name="q" placeholder="Search articles" className="input" /></form>
                 {nav.map((g) => (
                   <div key={g.label}>
                     <div className="kicker mb-1">{g.label}</div>
                     {g.links.map((l) => <Link key={l.href} href={l.href} className="block rounded px-1 py-1.5 text-sm hover:bg-surface">{l.label}</Link>)}
                   </div>
                 ))}
-                <Link href="/submit" className="btn-primary sm:col-span-3">Submit manuscript</Link>
+                <Link href={user ? dash! : "/login"} className="btn-secondary sm:col-span-3">{user ? "My account" : "Log in / Register"}</Link>
               </nav>
             </MobileNav>
           </div>
         </div>
       </div>
-      <nav className="hidden border-b border-line lg:block" aria-label="Main">
-        <div className="container-x flex items-stretch gap-1">
-          {nav.map((g) => (
-            <div key={g.label} className="group relative">
-              <button className="flex items-center gap-1 border-b-2 border-transparent px-3 py-3 text-sm font-semibold text-ink group-hover:border-brand group-focus-within:border-brand" aria-haspopup="true">
-                {g.label}
-                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className="transition group-hover:rotate-180"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" /></svg>
-              </button>
-              <div className="invisible absolute left-0 top-full w-80 translate-y-1 rounded-b-lg border border-line bg-white p-2 opacity-0 shadow-xl transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                {g.links.map((l) => (
-                  <Link key={l.href} href={l.href} className="block rounded-md px-3 py-2 hover:bg-surface">
-                    <span className="text-sm font-medium text-ink">{l.label}</span>
-                    {l.desc && <span className="block text-xs text-muted">{l.desc}</span>}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
-          <form action="/articles" className="ml-auto flex items-center py-2" role="search">
-            <label className="relative">
-              <span className="sr-only">Search articles</span>
-              <Icon name="search" size={15} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted" />
-              <input name="q" placeholder="Search articles, authors, keywords" className="w-72 rounded-full border border-line bg-surface py-1.5 pl-8 pr-3 text-sm focus:border-brand focus:bg-white focus:outline-none" />
-            </label>
-          </form>
+      {/* Journal title strip */}
+      <div className="border-b border-line bg-surface">
+        <div className="container-x flex items-center justify-between gap-4 py-3">
+          <Link href="/" className="min-w-0 font-display text-lg font-semibold leading-tight text-ink hover:text-link sm:text-[22px]">{j.name}</Link>
+          <Link href="/submit" className="btn-accent hidden shrink-0 sm:inline-flex">Submit manuscript</Link>
         </div>
-      </nav>
+      </div>
+      <JournalTabs tabs={TABS} />
     </header>
   );
 }
