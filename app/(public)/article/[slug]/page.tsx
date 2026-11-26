@@ -317,7 +317,7 @@ export default async function ArticlePage({ params }: P) {
             )}
 
             <div className="rounded-lg bg-navy p-5 text-white">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#a8a8a8]">Publish with us</p>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#9cc3ee]">Publish with us</p>
               <p className="mt-2 font-display text-lg font-semibold leading-snug">Submit your research to {j.shortName}</p>
               <Link href="/submit" className="btn mt-4 w-full bg-white text-navy hover:bg-brand-light">Submit manuscript</Link>
             </div>

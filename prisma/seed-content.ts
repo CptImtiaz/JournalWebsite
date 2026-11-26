@@ -21,81 +21,102 @@ const J = "the Journal";
 export const PAGES: { slug: string; title: string; kind: "PAGE" | "POLICY"; body: string; seo?: string }[] = [
   {
     slug: "about",
-    title: "About the Journal",
+    title: "Journal information",
     kind: "PAGE",
-    seo: "Overview, mission, vision, publication model and peer-review model of the journal.",
-    body: `## Journal Overview
-The International Journal of Computer Science and Technology is an independent, international, peer-reviewed, open-access journal publishing original research in computer science and information technology. It provides a forum for researchers, practitioners and educators worldwide to share rigorous, reproducible and impactful work.
+    seo: "Journal information for IJCST: scope, editorial criteria, double-anonymous peer review, open access and publication model.",
+    body: `**International Journal of Computer Science and Technology (IJCST)** is an open access journal publishing original research from across all areas of computer science and information technology.
 
-## Journal Mission
-To publish high-quality, original research that advances computing and emerging technologies, through a transparent, fair and timely peer-review process, and to make that research freely available to readers everywhere.
+We publish primary research, reviews and short communications that are scientifically valid and technically sound. Editors and reviewers ask whether the conclusions follow from the evidence, whether the methods are described well enough to be reproduced, and whether the work adds to what is already known. We do not reject work for being incremental, negative or of specialist interest, provided it is sound.
 
-## Vision
-To become a trusted international venue for computing research, recognised for editorial integrity, methodological rigour and openness.
+## Our mission
+To make rigorous computing research freely available to everyone, everywhere, and to give researchers at every career stage and in every country a fair, transparent route to publication.
 
-## History
-The journal was established in 2026 as an independent academic publication. *(Administrators: update this section with the journal's founding details.)*
+## What we publish
+- **Research Articles** — original studies with full methods, results and discussion.
+- **Review Articles and Surveys** — critical syntheses that organise a field and identify open problems.
+- **Short Communications and Technical Notes** — concise reports of significant findings, tools, datasets or techniques.
+- **Case Studies** — in-depth analyses of systems, deployments or projects with lessons for practice.
 
-## Publication Model
-The journal publishes continuously online and compiles articles into numbered volumes and issues. All published articles receive permanent URLs and, once the journal's DOI arrangements are in place, registered Digital Object Identifiers.
+The full list of subject areas is given in [Aims and scope](/aims-scope).
 
-## Peer-Review Model
-All research manuscripts undergo editorial screening followed by double-anonymous peer review by at least two independent experts. Final decisions are made by the Editor-in-Chief or an authorised editor. See the [Peer Review Policy](/peer-review).
+## Peer review
+Every research manuscript is assessed through **double-anonymous peer review**: reviewers do not know who the authors are, and authors do not know who reviewed their work. Each submission is evaluated by an academic editor and at least two independent reviewers with relevant expertise. Final decisions are made by the Editor-in-Chief or a Managing Editor. Read more in our [Peer review policy](/peer-review).
 
-## Open Access Statement
-All articles are published open access under a Creative Commons licence, allowing anyone to read, download, share and reuse the work with proper attribution. See the [Open Access Policy](/open-access).
+## Open access
+All articles are free to read, download and share from the day they are published. Articles are published under the [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/) licence and authors keep the copyright to their work. See [Open access](/open-access).
 
-## Publication Frequency
-See the journal information panel for the current publication frequency.
+## Publication model
+Articles are published online as soon as they are ready and are collected into numbered volumes and issues. Each article receives a permanent web address, machine-readable metadata for discovery services and, once the journal's registration with Crossref is complete, a Digital Object Identifier (DOI).
 
-## Publisher Information
-Publisher details are shown in the journal information panel and footer.
+## Editorial independence
+Editorial decisions are made by the editors alone, on the basis of the scholarly merit of the work. They are not influenced by the authors' nationality, institution, seniority or ability to pay, nor by any commercial consideration. We follow the guidance of the Committee on Publication Ethics (COPE) — see [Publication ethics](/publication-ethics).
 
-## Contact Information
-For editorial enquiries please use the [Contact](/contact) page.`,
+## Contact
+Questions about the journal or a submission can be sent through our [contact page](/contact).`,
   },
   {
     slug: "aims-scope",
-    title: "Aims & Scope",
+    title: "Aims and scope",
     kind: "PAGE",
-    seo: "Research fields accepted by the journal in computer science and information technology.",
-    body: `The journal publishes original research articles, review articles, short communications and case studies across the breadth of computer science and information technology. Submissions should present a clear contribution to knowledge, be methodologically sound and be of interest to an international readership.
+    seo: "The subject areas covered by IJCST across computer science and information technology.",
+    body: `**IJCST** publishes original research from across the full breadth of computer science and information technology — from theory and algorithms to systems, applications and the human aspects of computing.
 
-Theoretical, experimental, applied and interdisciplinary contributions are welcome. Manuscripts outside the scope below may be returned without review.`,
+Our aim is simple: to publish work that is **scientifically valid, technically sound and clearly reported**, and to make it freely available to the widest possible readership. We welcome theoretical, experimental, applied and interdisciplinary contributions, including replication studies, negative results and new datasets, benchmarks or open-source tools, when they are rigorously described.
+
+Manuscripts are assessed on the soundness of their methods and the support their evidence gives to their conclusions. Work that falls clearly outside computing, or that applies standard techniques without a methodological or empirical contribution to computer science, may be returned without review.
+
+The subject areas below describe the core of the journal's scope. If you are unsure whether your work fits, [contact the editorial office](/contact) before submitting.`,
   },
   {
     slug: "for-authors",
-    title: "For Authors",
+    title: "Submission guidelines",
     kind: "PAGE",
-    seo: "Submission instructions, manuscript preparation guidelines and author resources.",
-    body: `## Before You Submit
-- Ensure the manuscript is original, not published elsewhere and not under consideration by another journal.
-- Read the [Publication Ethics](/publication-ethics), [AI Usage Policy](/ai-usage-policy) and [Publication Fees](/publication-fees) pages.
-- All authors must have approved the submission and the author order.
+    seo: "How to prepare and submit a manuscript to IJCST: templates, formatting, anonymisation, declarations and the submission process.",
+    body: `## Before you submit
+- Your manuscript must be **original**, not published elsewhere and not under consideration by another journal. Posting a preprint (for example on arXiv) is welcome — please tell us in your cover letter.
+- All authors must have **approved the manuscript** and agree with the order of authors.
+- Read our [Publication ethics](/publication-ethics), [AI usage policy](/ai-usage-policy) and [Publication fees](/publication-fees) pages.
 
-## Manuscript Preparation
-- **Format:** DOC, DOCX or PDF. Supplementary material may be uploaded as ZIP.
-- **Anonymisation:** The journal operates double-anonymous peer review. Remove author names, affiliations, acknowledgements and self-identifying references from the manuscript file. Author details are entered separately in the submission form.
-- **Structure:** Title, abstract (150–300 words), 4–8 keywords, introduction, related work, methods, results, discussion, conclusion and references.
-- **References:** Any consistent style is accepted at submission; IEEE style is used for publication. Include DOIs where available.
-- **Figures and tables:** Embed in the manuscript at submission; high-resolution files may be requested on acceptance.
+## Preparing your manuscript
+Use the [journal template](#templates) — it sets the structure, heading levels, captions, declarations and reference style for you.
 
-## Required Declarations
-Every submission must include a conflict-of-interest statement, funding statement, originality declaration and, where applicable, ethics approval details.
+- **File format:** DOCX or PDF for review. Supplementary material (data, code, extra figures) may be uploaded as separate files or a ZIP archive.
+- **Anonymisation:** IJCST uses double-anonymous peer review. Remove author names, affiliations, acknowledgements, funding identifiers that reveal identity, and self-identifying references (“in our previous work [3]” → “in [3]”). Clear the author field in the document properties. Author details are entered separately in the submission form.
+- **Title:** concise and specific, ideally under 20 words.
+- **Abstract:** a single paragraph of 150–300 words stating the problem, approach, main results and conclusions, without citations.
+- **Keywords:** 4–8 terms that are not already in the title.
+- **Structure:** Introduction, Related work, Methods, Results, Discussion and Conclusion are recommended for research articles; reviews may use thematic sections.
+- **Figures and tables:** number them in order, cite each one in the text, and give every figure a self-contained caption. Higher-resolution files may be requested on acceptance.
+- **References:** IEEE numeric style, numbered in order of first citation. Include DOIs wherever they exist.
 
-## Submission Process
-1. [Register](/register) for an author account and verify your email address.
-2. Go to [Submit Manuscript](/submit) and complete the form.
-3. You will receive a manuscript ID (e.g. JCS-2026-00001) and can track progress from your [author dashboard](/author/dashboard).
+## Reproducibility
+We strongly encourage authors to share the data and code needed to reproduce their results in a public repository with a persistent identifier, and to describe access conditions in a **Data and code availability** statement. Reviewers may ask to see materials during review.
 
-## After Acceptance
-Accepted articles are copy-edited, typeset and published online. Authors will be asked to approve proofs before publication.`,
+## Required declarations
+Every submission includes statements on **competing interests**, **funding**, **ethics approval** (where human participants, personal data or animals are involved), **data availability** and any **use of generative AI tools**. The submission form guides you through each one.
+
+## Suggesting reviewers
+You may suggest up to five independent experts and name up to three people you would prefer not to review your work, with reasons. Suggested reviewers must not be recent collaborators or colleagues at your institutions. Editors are not obliged to follow suggestions.
+
+## How to submit
+1. [Create an account](/register) and verify your email address.
+2. Start a [new submission](/submit). The seven-step form takes about 15 minutes and saves your progress on your device.
+3. You will receive a manuscript ID (for example JCS-2026-00001) immediately, and can follow every stage of review from your [author dashboard](/author/dashboard).
+
+## After acceptance
+Accepted articles are copy-edited, typeset and published online as soon as they are ready, then assigned to the current issue. You will be asked to approve proofs and to provide final source files.`,
   },
   {
     slug: "contact",
     title: "Contact",
     kind: "PAGE",
-    body: `For questions about submissions, peer review, or the journal, please contact the editorial office using the details below or the contact form. For the status of a submitted manuscript, please log in to your author dashboard first.`,
+    body: `The editorial office is happy to help with questions about the journal's scope, the submission process or the status of a manuscript.
+
+- **Submission status:** please [log in](/login) to your author dashboard first — every stage of review is shown there in real time.
+- **Pre-submission enquiries:** describe your work in a few sentences and we will tell you whether it fits the journal's scope.
+- **Reviewers and editors:** if you would like to review for IJCST or have a question about an assignment, write to us using the form.
+
+We aim to reply to every message within three working days.`,
   },
   // ── Policies ──
   {
@@ -127,27 +148,35 @@ Suspected misconduct will be investigated. Outcomes may include rejection, corre
   },
   {
     slug: "peer-review",
-    title: "Peer Review Policy",
+    title: "Peer review policy",
     kind: "POLICY",
-    body: `## Review Model
-${J} uses **double-anonymous peer review**: reviewers do not know the identity of the authors, and authors do not know the identity of the reviewers.
+    body: `Peer review is the core of what a journal does. At IJCST it is designed to be **rigorous, fair and constructive**.
 
-## Workflow
-1. **Technical check** — the editorial office checks completeness, formatting, anonymisation and similarity.
-2. **Editorial screening** — the Editor-in-Chief or Managing Editor assesses scope and quality and may reject without review.
-3. **Editor assignment** — a handling editor with relevant expertise is assigned.
-4. **Peer review** — at least two independent reviewers are invited. Reviewers recommend: Accept, Minor Revision, Major Revision, or Reject.
-5. **Decision** — the handling editor makes a recommendation; an authorised editor issues the final decision.
-6. **Revision** — revised manuscripts must include a point-by-point response and may be re-reviewed.
+## Double-anonymous review
+Reviewers are not told who the authors are, and authors are not told who reviewed their work. This reduces bias related to authors' names, institutions, countries or career stage. Authors help by submitting an anonymised manuscript; editors check anonymisation during the technical check.
 
-## Reviewer Selection
-Reviewers are selected for expertise and independence. Reviewers must not be from the authors' institutions or recent collaborators.
+## Editorial criteria
+Editors and reviewers assess whether a manuscript is:
+- **Scientifically valid** — the conclusions are supported by the evidence and the analysis;
+- **Technically sound** — methods are appropriate, correctly applied and described in enough detail to be reproduced;
+- **Original** — it adds to existing knowledge and acknowledges prior work fairly;
+- **Clearly reported** — it can be understood by a specialist reader.
+
+## How a manuscript moves through review
+1. **Technical check** — the editorial office confirms the submission is complete, anonymised and within scope, and may run a similarity check.
+2. **Editorial assessment** — the Editor-in-Chief or a Managing Editor decides whether to send the manuscript for review and assigns a handling editor with relevant expertise.
+3. **Peer review** — at least two independent reviewers are invited. Reviewers recommend *Accept*, *Minor revision*, *Major revision* or *Reject*, write comments for the authors, and may send confidential comments to the editor.
+4. **Decision** — the handling editor makes a recommendation and the Editor-in-Chief or a Managing Editor issues the decision, with the reviewers' comments for the authors.
+5. **Revision** — authors respond point by point. Revised manuscripts may be returned to the same reviewers.
 
 ## Timelines
-Reviewers are normally asked to complete reviews within 21 days. The journal aims to give a first decision within 8 weeks.
+We ask reviewers to complete their reports within 21 days and aim to give authors a first decision within eight weeks of submission. Authors can see the current stage of their manuscript at any time in their dashboard.
+
+## Reviewer selection and conflicts of interest
+Reviewers are chosen for their expertise and independence. They must not have collaborated with the authors in the last three years, work at the same institution, or have any other competing interest. Editors with a conflict of interest are not involved in handling the manuscript.
 
 ## Appeals
-Authors may appeal a decision by writing to the editorial office with a detailed rationale. Appeals are considered by an editor not involved in the original decision.`,
+Authors who believe a decision was based on a factual error or misunderstanding may appeal by writing to the editorial office with a detailed explanation. Appeals are considered by an editor who was not involved in the original decision.`,
   },
   {
     slug: "plagiarism-policy",
@@ -165,11 +194,18 @@ Manuscripts may be screened using a legitimate similarity-checking service. Simi
   },
   {
     slug: "open-access",
-    title: "Open Access Policy",
+    title: "Open access",
     kind: "POLICY",
-    body: `${J} is a fully open-access journal. All articles are freely available online immediately upon publication, without subscription or registration barriers.
+    body: `Every article published in IJCST is **open access**: free to read, download, copy, share and reuse from the day of publication, by anyone, anywhere, with no subscription or registration.
 
-Readers may read, download, copy, distribute, print, search and link to the full texts of articles, and use them for any lawful purpose, provided the original work is properly cited, in accordance with the article licence.
+## Licence
+Articles are published under the [Creative Commons Attribution 4.0 International licence (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/). Anyone may share and adapt the work for any purpose, including commercially, provided they give appropriate credit to the authors and the original publication.
+
+## Authors keep their copyright
+Authors retain copyright and grant the journal the right to publish the article and to identify itself as the original publisher. Authors may deposit any version of their article — preprint, accepted manuscript or published version — in institutional or subject repositories without embargo.
+
+## Why open access matters
+Open access means research reaches every reader who can use it: students, practitioners, policy makers and researchers in institutions without journal subscriptions. It also lets text- and data-mining tools work with the full literature.
 
 This policy is consistent with the Budapest Open Access Initiative definition of open access.`,
   },
@@ -287,16 +323,21 @@ Data is transmitted over HTTPS, passwords are stored using strong one-way hashin
   },
   {
     slug: "publication-fees",
-    title: "Publication Fees (APC Policy)",
+    title: "Publication fees",
     kind: "POLICY",
-    body: `## Article Processing Charges
-*(Administrators: state the journal's actual APC here.)* There is no charge for submission or peer review. If an article processing charge applies, it is payable only after acceptance.
+    body: `*(Administrators: replace this paragraph with the journal's actual article processing charge, or state that no fee is charged.)*
 
-## Waivers
-Waivers or discounts may be available for authors from low- and middle-income countries or without funding. Requests should be made at submission and do not influence editorial decisions.
+## What is free
+There is **no charge** to submit a manuscript or for peer review. Readers never pay to access articles.
 
-## Other Charges
-There are no page charges, colour charges or reader subscription charges.`,
+## Article processing charge (APC)
+If an APC applies, it is payable only **after acceptance** and covers editorial management, typesetting, metadata and DOI registration, hosting and long-term preservation.
+
+## Waivers and discounts
+We do not want cost to prevent sound research from being published. Authors without funding, and authors based in low- and middle-income countries, may request a full or partial waiver at submission. Waiver requests are handled by the editorial office and are **never** seen by the editors or reviewers making decisions.
+
+## No hidden charges
+There are no page charges, colour-figure charges or fees for supplementary material.`,
   },
   {
     slug: "archiving-policy",

@@ -12,10 +12,10 @@ export function Logo({ size = 44, logoUrl, light }: { size?: number; logoUrl?: s
   }
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden className="shrink-0">
-      <rect width="48" height="48" rx="8" fill={light ? "#ffffff" : "#191919"} />
-      <path d="M12 34V14h4v20h-4Z" fill={light ? "#191919" : "#fff"} />
-      <path d="M20 34V14h4l8 12V14h4v20h-4l-8-12v12h-4Z" fill={light ? "#006699" : "#e6e6e6"} />
-      <rect x="12" y="37" width="24" height="2" rx="1" fill="#006699" />
+      <rect width="48" height="48" rx="8" fill={light ? "#ffffff" : "#142D4E"} />
+      <path d="M12 34V14h4v20h-4Z" fill={light ? "#142D4E" : "#fff"} />
+      <path d="M20 34V14h4l8 12V14h4v20h-4l-8-12v12h-4Z" fill={light ? "#2864A5" : "#7FB0E6"} />
+      <rect x="12" y="37" width="24" height="2" rx="1" fill="#2864A5" />
     </svg>
   );
 }
@@ -119,9 +119,9 @@ export async function SiteHeader() {
         </div>
       </div>
       {/* Journal title strip */}
-      <div className="border-b border-line bg-white">
-        <div className="container-x flex items-center justify-between gap-4 py-4">
-          <Link href="/" className="min-w-0 font-display text-xl font-bold leading-tight tracking-tight text-ink sm:text-[30px]">{j.name}</Link>
+      <div className="border-b border-line bg-surface">
+        <div className="container-x flex items-center justify-between gap-4 py-3">
+          <Link href="/" className="min-w-0 font-display text-xl font-bold leading-tight tracking-tight text-ink hover:text-link sm:text-[26px]">{j.name}</Link>
           <Link href="/submit" className="btn-accent hidden shrink-0 sm:inline-flex">Submit manuscript</Link>
         </div>
       </div>

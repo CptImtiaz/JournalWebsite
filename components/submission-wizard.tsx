@@ -178,7 +178,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
                 <div className="grid gap-3 sm:grid-cols-2">
                   {types.map((t, k) => (
                     <label key={t} className="group relative flex cursor-pointer gap-3 rounded-lg border border-line p-4 has-[:checked]:border-brand has-[:checked]:bg-brand-light/50 hover:border-brand/60">
-                      <input type="radio" name="articleType" value={t} required defaultChecked={v("articleType") ? v("articleType") === t : k === 0} className="mt-1 accent-[#006699]" />
+                      <input type="radio" name="articleType" value={t} required defaultChecked={v("articleType") ? v("articleType") === t : k === 0} className="mt-1 accent-[#2864A5]" />
                       <span><span className="block text-sm font-semibold">{t}</span><span className="block text-xs text-muted">{TYPE_INFO[t]}</span></span>
                     </label>
                   ))}
@@ -318,7 +318,7 @@ function Section({ title, required, hint, children }: { title: string; required?
   );
 }
 function Check({ name, saved, children }: { name: string; saved: string; children: ReactNode }) {
-  return <label className="flex items-start gap-3 text-sm"><input type="checkbox" name={name} required defaultChecked={saved === "on"} className="mt-0.5 h-4 w-4 accent-[#006699]" /><span>{children} <span className="text-red-600">*</span></span></label>;
+  return <label className="flex items-start gap-3 text-sm"><input type="checkbox" name={name} required defaultChecked={saved === "on"} className="mt-0.5 h-4 w-4 accent-[#2864A5]" /><span>{children} <span className="text-red-600">*</span></span></label>;
 }
 function Sum({ label, children, onEdit }: { label: string; children: ReactNode; onEdit: () => void }) {
   return (

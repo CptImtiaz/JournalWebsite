@@ -70,7 +70,7 @@ export default async function Home() {
             {issue ? <IssueCover issue={issue} /> : <JournalCover />}
           </Link>
           <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#FF6B6B]">{j.isOpenAccess ? "Open access · " : ""}Peer-reviewed international journal</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold">{j.isOpenAccess ? "Open access · " : ""}Peer-reviewed international journal</p>
             <h1 className="mt-2 font-display text-[32px] font-semibold leading-[1.1] sm:text-[44px]">{hp.headline || j.tagline || "Advancing Research in Computing and Emerging Technologies."}</h1>
             <p className="mt-4 max-w-xl text-[17px] leading-relaxed text-white/80">{hp.description || j.description}</p>
             <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-sm text-white/75">
@@ -91,12 +91,32 @@ export default async function Home() {
         <div className="min-w-0 space-y-12">
           <section aria-labelledby="overview">
             <H2 id="overview" more={{ href: "/about", label: "Read more about the journal" }}>Overview</H2>
-            <p className="text-[17px] leading-relaxed text-ink/85">
-              <em>{j.name}</em> is an independent, international, peer-reviewed journal publishing original research, reviews and short communications across computer science and information technology — from artificial intelligence and data science to cybersecurity, distributed systems and human–computer interaction. All articles are published {j.isOpenAccess ? `open access under ${j.licenseName ?? "a Creative Commons licence"}` : "online"} after double-anonymous peer review.
+            <p className="text-[17px] leading-relaxed text-ink/90">
+              <em>{j.name}</em> is an open access journal publishing original research from across all areas of computer science and information technology. We publish work that is scientifically valid and technically sound — judged on the strength of its methods and evidence — and make it free for everyone to read, share and build on.
+            </p>
+            <p className="mt-3 text-[17px] leading-relaxed text-ink/90">
+              Every research manuscript is evaluated through double-anonymous peer review by independent experts, with decisions made by the editors on scholarly merit alone. Articles are published {j.isOpenAccess ? `under ${j.licenseName ?? "a Creative Commons licence"}, and authors keep the copyright to their work` : "online as soon as they are ready"}.
             </p>
             <div className="mt-5 grid gap-px overflow-hidden border border-line bg-line sm:grid-cols-3">
               {([["shield", "Double-anonymous review", "/peer-review"], ["globe", j.isOpenAccess ? "Free to read & reuse" : "Global readership", "/open-access"], ["file", "Author templates", "/for-authors#templates"]] as [IconName, string, string][]).map(([i, t, h]) => (
                 <Link key={t} href={h} className="flex items-center gap-3 bg-white px-4 py-3 text-sm font-medium hover:bg-surface hover:text-link"><Icon name={i} size={18} className="text-brand" />{t}</Link>
+              ))}
+            </div>
+          </section>
+
+          <section aria-labelledby="why">
+            <H2 id="why" more={{ href: "/for-authors", label: "Submission guidelines" }}>Why publish with us</H2>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {([
+                ["shield", "Rigorous, fair peer review", "Double-anonymous review by at least two independent experts. Decisions rest on validity and soundness, not on perceived novelty or the authors' reputation."],
+                ["globe", "Free to read for everyone", "Immediate open access under CC BY. Your work reaches every reader — in any country, at any institution — and you keep your copyright."],
+                ["clock", "A transparent process", "A guided seven-step submission and a dashboard that shows exactly where your manuscript is, from technical check to publication."],
+                ["link", "Built to be found and cited", "Permanent article addresses, citation export in six formats, and metadata structured for Google Scholar, Crossref and other discovery services."],
+              ] as [IconName, string, string][]).map(([i, t, d]) => (
+                <div key={t} className="flex gap-4">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-brand-light text-brand"><Icon name={i} size={20} /></span>
+                  <div><h3 className="font-semibold text-ink">{t}</h3><p className="mt-1 text-[15px] leading-relaxed text-ink/75">{d}</p></div>
+                </div>
               ))}
             </div>
           </section>
@@ -153,7 +173,7 @@ export default async function Home() {
           </SideBox>
 
           <SideBox title="For authors">
-            <p className="text-sm text-ink/80">Prepare your manuscript with the journal template, then submit through our online system.</p>
+            <p className="text-sm text-ink/80">Format your manuscript with the journal template, then submit through our guided online system. Submission and peer review are free.</p>
             <ul id="templates" className="mt-3 space-y-2 text-sm">
               <li><a href="/templates/IJCST-manuscript-template.docx" className="flex items-center gap-2 font-medium text-link hover:underline"><Icon name="download" size={15} />Word template (.docx)</a></li>
               <li><a href="/templates/IJCST-latex-template.zip" className="flex items-center gap-2 font-medium text-link hover:underline"><Icon name="download" size={15} />LaTeX template (.zip)</a></li>
@@ -188,8 +208,8 @@ export default async function Home() {
         <div className="container-x grid gap-8 py-12 md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <p className="kicker">Publish with us</p>
-            <h2 className="mt-1 font-display text-[28px] font-semibold">Share your research with the global computing community</h2>
-            <p className="mt-2 max-w-2xl text-ink/75">Guided online submission, transparent tracking at every stage of review, and permanent open-access publication.</p>
+            <h2 className="mt-1 font-display text-[28px] font-semibold">Ready to submit your research?</h2>
+            <p className="mt-2 max-w-2xl text-ink/75">We welcome research articles, reviews, short communications and case studies from researchers at every career stage. Prepare your manuscript with our template and submit in about fifteen minutes.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/submit" className="btn-accent px-6 py-3">Submit manuscript</Link>
