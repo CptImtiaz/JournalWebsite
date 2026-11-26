@@ -51,6 +51,7 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
   if (reg) other.citation_doi = a.doi!;
   if (pdf) other.citation_pdf_url = `${appUrl()}/api/articles/${a.slug}/pdf`;
   if (j.publisherName) other["DC.publisher"] = j.publisherName;
+  if (a.isSample) return { title: `${a.title} (sample)`, description: a.abstract.slice(0, 200), robots: { index: false, follow: false } };
   return {
     title: a.title,
     description: a.seoDescription || a.abstract.slice(0, 200),
@@ -119,7 +120,7 @@ export default async function ArticlePage({ params }: P) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
+      {!a.isSample && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />}
       <div className="container-x pt-6">
         <Breadcrumbs items={[{ label: "Articles", href: "/articles" }, ...(a.issue ? [{ label: `Volume ${a.issue.volume.number}, Issue ${a.issue.number}`, href: `/archives/${a.issue.year}/${a.issue.slug}` }] : []), { label: "Article" }]} />
       </div>
@@ -142,6 +143,9 @@ export default async function ArticlePage({ params }: P) {
               {j.isOpenAccess && <><span className="text-line">|</span><span className="inline-flex items-center gap-1 font-semibold text-emerald-700"><Icon name="lock" size={12} />Open access</span></>}
               {a.publishedAt && <><span className="text-line">|</span><span className="text-muted">Published: {formatDate(a.publishedAt, { day: "numeric", month: "long", year: "numeric" })}</span></>}
             </div>
+            {a.isSample && (
+              <div className="mt-4 flex gap-3 rounded-md border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900"><Icon name="alert" size={18} className="mt-0.5 shrink-0" /><span><strong>Sample article.</strong> This is demonstration content showing how articles appear on this website. It is not a peer-reviewed publication; authors and institutions are fictional.</span></div>
+            )}
             {a.status === "RETRACTED" && (
               <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800"><strong>This article has been retracted.</strong> See the journal&apos;s <Link className="underline" href="/retraction-policy">Retraction Policy</Link>.</div>
             )}

@@ -1,8 +1,14 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { PageHeader } from "@/components/ui";
 import { renderMarkdown } from "@/lib/markdown";
 import { formatDate } from "@/lib/utils";
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const a = await db.announcement.findUnique({ where: { slug: (await params).slug } });
+  return a ? { title: a.title, ...(a.isSample ? { robots: { index: false } } : {}) } : {};
+}
 
 export default async function Announcement({ params }: { params: Promise<{ slug: string }> }) {
   const a = await db.announcement.findUnique({ where: { slug: (await params).slug } });

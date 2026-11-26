@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const j = await getJournal();
-  const items = await db.article.findMany({ where: { status: "PUBLISHED" }, orderBy: { publishedAt: "desc" }, take: 50, include: { authors: { orderBy: { order: "asc" } } } });
+  const items = await db.article.findMany({ where: { status: "PUBLISHED", isSample: false }, orderBy: { publishedAt: "desc" }, take: 50, include: { authors: { orderBy: { order: "asc" } } } });
   const base = appUrl();
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom">

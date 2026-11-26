@@ -43,7 +43,7 @@ export default async function ArticlesAdmin({ searchParams }: { searchParams: Pr
                 <td className="whitespace-nowrap text-xs">{formatDate(a.publishedAt)}</td>
                 <td className="text-xs">{a.doi ? <>{a.doi}<br /><Badge tone={a.doiRecords[0]?.status === "REGISTERED" ? "green" : "amber"}>{a.doiRecords[0]?.status?.toLowerCase() ?? "not deposited"}</Badge></> : "—"}</td>
                 <td className="text-xs">{a.views} / {a.downloads}</td>
-                <td><Badge tone={TONE[a.status as keyof typeof TONE]}>{a.status.toLowerCase()}</Badge></td>
+                <td className="space-x-1"><Badge tone={TONE[a.status as keyof typeof TONE]}>{a.status.toLowerCase()}</Badge>{a.isSample && <Badge tone="amber">sample</Badge>}</td>
               </tr>
             ))}</tbody>
           </table>

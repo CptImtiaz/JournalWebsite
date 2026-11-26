@@ -8,9 +8,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = appUrl();
   const [pages, articles, issues, ann] = await Promise.all([
     db.page.findMany({ where: { isPublished: true }, select: { slug: true, updatedAt: true } }),
-    db.article.findMany({ where: { status: { in: ["PUBLISHED", "RETRACTED"] } }, select: { slug: true, updatedAt: true } }),
-    db.issue.findMany({ where: { isPublished: true }, select: { slug: true, year: true, publishedAt: true } }),
-    db.announcement.findMany({ where: { isPublished: true }, select: { slug: true, publishedAt: true } }),
+    db.article.findMany({ where: { status: { in: ["PUBLISHED", "RETRACTED"] }, isSample: false }, select: { slug: true, updatedAt: true } }),
+    db.issue.findMany({ where: { isPublished: true, isSample: false }, select: { slug: true, year: true, publishedAt: true } }),
+    db.announcement.findMany({ where: { isPublished: true, isSample: false }, select: { slug: true, publishedAt: true } }),
   ]);
   const fixed = ["", "/editorial-board", "/aims-scope", "/current-issue", "/archives", "/articles", "/policies", "/announcements", "/contact"];
   return [

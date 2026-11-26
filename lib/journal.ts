@@ -30,7 +30,7 @@ export const DEFAULT_FOOTER = [
 ];
 
 export type NavLink = { label: string; href: string };
-export type HomepageConfig = { headline?: string; description?: string; showAnnouncements?: boolean };
+export type HomepageConfig = { headline?: string; description?: string; showAnnouncements?: boolean; heroImageFileId?: string | null; heroImageAlt?: string };
 
 export const getJournal = cache(async () => {
   const j = await db.journal.findUnique({ where: { id: "journal" } });

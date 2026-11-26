@@ -40,10 +40,10 @@ export default async function Home() {
 
       {/* Masthead */}
       <section className="border-b border-line">
-        <div className="container-x grid items-end gap-8 py-10 lg:grid-cols-[1fr_auto] lg:py-14">
-          <div className="max-w-3xl">
+        <div className="container-x grid items-center gap-10 py-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:py-14">
+          <div>
             <p className="kicker">{j.shortName} · Computer Science & Information Technology</p>
-            <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[56px]">
+            <h1 className="mt-3 font-display text-4xl font-semibold leading-[1.08] tracking-tight text-ink sm:text-5xl xl:text-[56px]">
               {hp.headline || j.tagline || "Advancing Research in Computing and Emerging Technologies."}
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink/75">{hp.description || j.description}</p>
@@ -51,19 +51,42 @@ export default async function Home() {
               <Link href="/submit" className="btn-primary px-5 py-2.5">Submit manuscript <Icon name="arrowRight" size={16} /></Link>
               <Link href="/articles" className="btn-secondary px-5 py-2.5">Browse articles</Link>
             </div>
+            <dl className="mt-8 grid max-w-lg grid-cols-3 gap-4 border-t border-line pt-5 text-sm">
+              <div><dt className="text-xs uppercase tracking-wider text-muted">Review</dt><dd className="mt-0.5 font-semibold">Double-anonymous</dd></div>
+              <div><dt className="text-xs uppercase tracking-wider text-muted">Access</dt><dd className="mt-0.5 font-semibold">{j.isOpenAccess ? "Open access" : "Subscription"}</dd></div>
+              <div><dt className="text-xs uppercase tracking-wider text-muted">Frequency</dt><dd className="mt-0.5 font-semibold">{(j.publicationFrequency ?? "Continuous").split(" (")[0]}</dd></div>
+            </dl>
           </div>
-          {issue && (
-            <Link href={issuePath(issue)} className="group hidden w-44 lg:block">
-              <IssueCover issue={issue} />
-              <p className="mt-2 text-xs font-bold uppercase tracking-wider text-muted">Current issue</p>
-              <p className="text-sm font-semibold text-ink group-hover:text-brand">Volume {issue.volume.number}, Issue {issue.number} · {issue.year}</p>
-            </Link>
-          )}
+          <div className="relative">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-navy shadow-[0_20px_50px_-20px_rgba(20,45,78,0.55)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={hp.heroImageFileId ? `/api/files/${hp.heroImageFileId}` : "/images/hero-network.svg"}
+                alt={hp.heroImageAlt || "Illustration of a connected network representing computing research"}
+                className="h-full w-full object-cover"
+                fetchPriority="high"
+              />
+            </div>
+            {issue && (
+              <Link href={issuePath(issue)} className="group absolute -bottom-6 left-4 flex w-64 items-center gap-3 rounded-xl border border-line bg-white p-3 shadow-xl transition hover:-translate-y-0.5 sm:left-6">
+                <div className="w-14 shrink-0">
+                  {issue.coverFileId
+                    ? <img src={`/api/files/${issue.coverFileId}`} alt="" className="aspect-[3/4] w-full rounded object-cover" />
+                    : <div className="flex aspect-[3/4] w-full flex-col justify-end rounded bg-gradient-to-b from-navy to-brand p-1.5 text-white"><span className="font-display text-base font-semibold leading-none">{issue.volume.number}</span><span className="text-[8px] uppercase tracking-wider text-white/70">Vol</span></div>}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-brand">Current issue</p>
+                  <p className="text-sm font-semibold leading-snug group-hover:text-brand">Volume {issue.volume.number}, Issue {issue.number}</p>
+                  <p className="text-xs text-muted">{issue.year} · {issue.articles.length} articles</p>
+                </div>
+              </Link>
+            )}
+          </div>
         </div>
       </section>
 
       {/* Latest research */}
-      <section className="container-x py-12" aria-labelledby="latest">
+      <section className="container-x pb-12 pt-16" aria-labelledby="latest">
         <div className="rule-top mb-8 flex items-end justify-between">
           <h2 id="latest" className="section-title">Latest research</h2>
           <Link href="/articles" className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline">View all articles <Icon name="arrowRight" size={14} /></Link>

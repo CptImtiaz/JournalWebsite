@@ -35,6 +35,12 @@ async function save(fd: FormData) {
     try { logoFileId = (await storeFile(logo, { allowed: [...IMAGE_EXT], folder: "branding", uploadedById: u.id, visibility: "PUBLIC" })).id; }
     catch (e) { if (e instanceof UploadError) back("/admin/settings", { error: e.message }); throw e; }
   }
+  let heroImageFileId: string | undefined;
+  const hero = fd.get("heroImage");
+  if (isRealFile(hero)) {
+    try { heroImageFileId = (await storeFile(hero, { allowed: [...IMAGE_EXT], folder: "branding", uploadedById: u.id, visibility: "PUBLIC" })).id; }
+    catch (e) { if (e instanceof UploadError) back("/admin/settings", { error: e.message }); throw e; }
+  }
   const j = await getJournal();
   await db.journal.update({
     where: { id: "journal" },
@@ -50,7 +56,7 @@ async function save(fd: FormData) {
       footerText: optStr(fd, "footerText"), copyrightStatement: optStr(fd, "copyrightStatement"),
       emailSenderName: optStr(fd, "emailSenderName"), emailSenderAddress: optStr(fd, "emailSenderAddress"), editorialOfficeEmail: optStr(fd, "editorialOfficeEmail"),
       requireMfaForStaff: bool(fd, "requireMfaForStaff"),
-      homepage: { ...homepageOf(j), headline: optStr(fd, "headline") ?? undefined, description: optStr(fd, "heroDescription") ?? undefined },
+      homepage: { ...homepageOf(j), headline: optStr(fd, "headline") ?? undefined, description: optStr(fd, "heroDescription") ?? undefined, heroImageAlt: optStr(fd, "heroImageAlt") ?? undefined, ...(heroImageFileId ? { heroImageFileId } : {}), ...(bool(fd, "removeHeroImage") ? { heroImageFileId: null } : {}) },
       ...(logoFileId ? { logoFileId } : {}), ...(bool(fd, "removeLogo") ? { logoFileId: null } : {}),
     },
   });
@@ -84,6 +90,16 @@ export default async function Settings() {
           <div className="grid gap-4">
             <TextField label="Headline" name="headline" defaultValue={hp.headline ?? ""} placeholder={j.tagline ?? ""} />
             <TextArea label="Hero description" name="heroDescription" rows={3} defaultValue={hp.description ?? ""} placeholder={j.description ?? ""} />
+            <div className="grid gap-4 sm:grid-cols-[1fr_1fr]">
+              <Field label="Homepage image" name="heroImage" hint="Landscape image, ideally 1600×1200 px (JPG, PNG or WebP). Leave empty to use the default network illustration.">
+                <input id="heroImage" type="file" name="heroImage" accept=".jpg,.jpeg,.png,.webp" className="input" />
+                <div className="mt-2 flex items-center gap-3">
+                  <img src={hp.heroImageFileId ? `/api/files/${hp.heroImageFileId}` : "/images/hero-network.svg"} alt="" className="h-20 w-28 rounded object-cover" />
+                  {hp.heroImageFileId && <Checkbox name="removeHeroImage" label="Use default illustration" />}
+                </div>
+              </Field>
+              <TextField label="Image description (alt text)" name="heroImageAlt" defaultValue={hp.heroImageAlt ?? ""} hint="Describes the image for screen-reader users." />
+            </div>
           </div>
         </Card>
         <Card title="ISSN">

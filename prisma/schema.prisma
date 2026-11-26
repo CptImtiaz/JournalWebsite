@@ -362,6 +362,7 @@ model Volume {
   year      Int
   title     String?
   issues    Issue[]
+  isSample  Boolean  @default(false)
   createdAt DateTime @default(now())
 }
 
@@ -379,6 +380,7 @@ model Issue {
   isPublished Boolean   @default(false)
   isCurrent   Boolean   @default(false)
   slug        String    @unique // volume-1-issue-1
+  isSample    Boolean   @default(false)
   articles    Article[]
   createdAt   DateTime  @default(now())
 
@@ -414,6 +416,7 @@ model Article {
   acceptedAt         DateTime?
   publishedAt        DateTime?
   status             String    @default("DRAFT") // DRAFT, PUBLISHED, RETRACTED
+  isSample           Boolean   @default(false)
   views              Int       @default(0)
   downloads          Int       @default(0)
   seoDescription     String?
@@ -521,6 +524,7 @@ model Announcement {
   slug        String    @unique
   body        String    @db.Text
   isPublished Boolean   @default(false)
+  isSample    Boolean   @default(false)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
 }

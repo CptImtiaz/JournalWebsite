@@ -7,7 +7,7 @@ import { renderMarkdown } from "@/lib/markdown";
 type IssueFull = {
   id: string; number: number; year: number; title: string | null; description: string | null; coverFileId: string | null; pdfFileId: string | null; publishedAt: Date | null;
   volume: { number: number };
-  articles: { id: string; slug: string; title: string; articleType: string; pages: string | null; articleNumber: string | null; status: string; doi: string | null; authors: { fullName: string }[]; files: { kind: string }[]; doiRecords: { status: string }[] }[];
+  articles: { id: string; slug: string; title: string; articleType: string; pages: string | null; articleNumber: string | null; status: string; doi: string | null; isSample?: boolean; authors: { fullName: string }[]; files: { kind: string }[]; doiRecords: { status: string }[] }[];
 };
 
 export function IssueView({ issue }: { issue: IssueFull }) {
@@ -39,6 +39,7 @@ export function IssueView({ issue }: { issue: IssueFull }) {
                 <li key={a.id} className="py-4">
                   <Link href={`/article/${a.slug}`} className="text-base font-semibold text-navy hover:text-brand">{a.title}</Link>
                   {a.status === "RETRACTED" && <span className="ml-2"><Badge tone="red">Retracted</Badge></span>}
+                  {a.isSample && <span className="ml-2"><Badge tone="amber">Sample</Badge></span>}
                   <p className="mt-1 text-sm text-ink">{a.authors.map((x) => x.fullName).join(", ")}</p>
                   <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted">
                     {a.pages && <span>pp. {a.pages}</span>}

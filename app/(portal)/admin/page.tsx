@@ -10,6 +10,9 @@ import { smtpConfigured } from "@/lib/email";
 import { crossrefConfigured } from "@/lib/crossref";
 import { getJournal } from "@/lib/journal";
 import { submissionsByMonth } from "@/lib/stats";
+import { sampleCounts } from "@/lib/sample-content";
+import { SubmitButton } from "@/components/client";
+import { loadSampleAction, removeSampleAction } from "./sample/actions";
 import { MANUSCRIPT_STATUSES } from "@/lib/constants";
 
 export default async function AdminDashboard() {
@@ -34,6 +37,7 @@ export default async function AdminDashboard() {
     db.manuscript.groupBy({ by: ["status"], _count: true }),
     db.article.aggregate({ _sum: { views: true, downloads: true } }),
   ]);
+  const samples = await sampleCounts();
   const decided = accepted + rejected;
   const checks = [
     { ok: smtpConfigured(), label: "Email delivery (SMTP)", fix: "Set SMTP environment variables." },
@@ -51,6 +55,21 @@ export default async function AdminDashboard() {
   return (
     <>
       <PTitle title={`Good ${hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening"}, ${u.fullName.split(" ")[0]}`} subtitle={`${j.name} · administration overview`} actions={<><Link href="/admin/articles/new" className="btn-secondary"><Icon name="plus" size={16} />New article</Link><Link href="/editor/manuscripts" className="btn-primary">Open manuscripts</Link></>} />
+
+      <div className={`mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4 ${samples.articles ? "border-amber-300 bg-amber-50" : "border-line bg-white"}`}>
+        <div className="flex items-start gap-3">
+          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${samples.articles ? "bg-amber-100 text-amber-800" : "bg-brand-light text-brand"}`}><Icon name="layers" size={18} /></span>
+          <div className="text-sm">
+            <div className="font-semibold">{samples.articles ? `Sample content is showing on the website (${samples.articles} articles, ${samples.issues} issue, ${samples.announcements} announcements)` : "Sample content"}</div>
+            <div className="text-muted">{samples.articles ? "Sample items are labelled “Sample” and hidden from search engines. Remove them before launch or before applying to indexing services." : "Load demonstration articles, an issue and announcements to preview the website with content. Removable in one click."}</div>
+          </div>
+        </div>
+        {samples.articles ? (
+          <form action={removeSampleAction}><SubmitButton className="btn-danger" confirm="Remove all sample articles, the sample issue and sample announcements?">Remove sample content</SubmitButton></form>
+        ) : (
+          <form action={loadSampleAction}><SubmitButton className="btn-primary">Load sample content</SubmitButton></form>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat icon="inbox" label="Total submissions" value={total} hint={`${fresh} new in the last 7 days`} href="/editor/manuscripts" />
