@@ -40,7 +40,7 @@ body { background: #fff; color: var(--color-ink); }
 @utility link { @apply text-link hover:text-ink hover:underline underline-offset-2; }
 
 /*t*/.table { @apply w-full text-left text-sm; }
-.table th { @apply border-b border-line bg-app px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-muted; }
+.table th { @apply border-b-2 border-ink/15 bg-white px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted; }
 .table td { @apply border-b border-line px-4 py-3 align-top; }
 .table tbody tr:hover td { @apply bg-app/60; }
 .table tbody tr:last-child td { @apply border-b-0; }
@@ -49,6 +49,8 @@ body { background: #fff; color: var(--color-ink); }
 @utility kicker { @apply text-[11px] font-bold uppercase tracking-[0.14em] text-accent; }
 @utility section-title { @apply font-display text-2xl font-semibold text-ink sm:text-[28px]; }
 @utility rule-top { @apply border-t-2 border-ink pt-3; }
-@utility app-card { @apply rounded-xl border border-line bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]; }
+@utility app-card { @apply border border-line bg-white; }
 @utility btn-accent { @apply btn bg-gold text-navy font-semibold hover:bg-gold-dark; }
 @utility tab-link { @apply whitespace-nowrap border-b-[3px] border-transparent px-3 py-3 text-[15px] text-ink hover:border-line hover:text-link; }
+@utility panel-head { @apply flex items-center justify-between gap-2 border-b border-line bg-surface px-4 py-2.5; }
+@utility panel-title { @apply text-[11px] font-bold uppercase tracking-[0.12em] text-ink; }

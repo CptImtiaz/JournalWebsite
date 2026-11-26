@@ -8,6 +8,7 @@ import { renderBody } from "@/lib/markdown";
 import { storeFile, isRealFile, UploadError, deleteStoredFile } from "@/lib/storage";
 import { sendTemplate } from "@/lib/email";
 import { setStatus } from "@/lib/manuscripts";
+import { notifySubscribers } from "@/lib/alerts";
 import { str, optStr, int, slugify, normalizeOrcid, appUrl } from "@/lib/utils";
 import { ARTICLE_TYPES, IMAGE_EXT, SUPPLEMENTARY_EXT } from "@/lib/constants";
 
@@ -112,7 +113,8 @@ export async function publishAction(fd: FormData) {
       await sendTemplate("article_published", a.manuscript.submitter.email, { name: a.manuscript.submitter.fullName, title: a.title, url: `${appUrl()}/article/${a.slug}` });
     }
     await audit(u.id, "article.published", "Article", id);
-    back(here, { ok: "Article published." });
+    const n = a.status === "DRAFT" ? await notifySubscribers(id) : 0;
+    back(here, { ok: `Article published.${n ? ` Alert emailed to ${n} subscriber${n === 1 ? "" : "s"}.` : ""}` });
   }
   if (op === "unpublish") { await db.article.update({ where: { id }, data: { status: "DRAFT" } }); await audit(u.id, "article.unpublished", "Article", id); back(here, { ok: "Article unpublished (now draft)." }); }
   if (op === "retract") { await db.article.update({ where: { id }, data: { status: "RETRACTED" } }); await audit(u.id, "article.retracted", "Article", id); back(here, { ok: "Article marked as retracted." }); }

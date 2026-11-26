@@ -556,9 +556,12 @@ model EmailNotification {
 }
 
 model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id             String    @id @default(cuid())
+  email          String    @unique
+  token          String    @default(cuid())
+  confirmedAt    DateTime?
+  unsubscribedAt DateTime?
+  createdAt      DateTime  @default(now())
 }
 
 model ContactMessage {

@@ -4,7 +4,12 @@ import { appUrl, escapeXml } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
+  // People opening the feed in a browser get the human-readable alerts page; feed readers get RSS.
+  const accept = req.headers.get("accept") ?? "";
+  if (accept.includes("text/html") && !new URL(req.url).searchParams.has("raw")) {
+    return Response.redirect(new URL("/alerts#rss", req.url), 307);
+  }
   const j = await getJournal();
   const items = await db.article.findMany({ where: { status: "PUBLISHED", isSample: false }, orderBy: { publishedAt: "desc" }, take: 50, include: { authors: { orderBy: { order: "asc" } } } });
   const base = appUrl();

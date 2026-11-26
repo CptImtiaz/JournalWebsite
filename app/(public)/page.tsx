@@ -81,7 +81,7 @@ export default async function Home() {
             </ul>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/submit" className="btn-accent px-5 py-2.5">Submit manuscript</Link>
-              <Link href="/feed.xml" className="btn border border-white/40 px-5 py-2.5 text-white hover:bg-white/10"><Icon name="bell" size={16} />Sign up for alerts</Link>
+              <Link href="/alerts" className="btn border border-white/40 px-5 py-2.5 text-white hover:bg-white/10"><Icon name="bell" size={16} />Sign up for alerts</Link>
             </div>
           </div>
         </div>
@@ -147,19 +147,6 @@ export default async function Home() {
             </section>
           )}
 
-          <section aria-labelledby="subjects">
-            <H2 id="subjects" more={{ href: "/aims-scope", label: "Aims and scope" }}>Explore by subject</H2>
-            <ul className="grid gap-x-8 sm:grid-cols-2">
-              {categories.map((c) => (
-                <li key={c.id} className="border-b border-line">
-                  <Link href={`/articles?category=${c.slug}`} className="group flex items-center justify-between gap-3 py-2.5 text-[15px] hover:text-link">
-                    <span className="group-hover:underline">{c.name}</span>
-                    <span className="text-xs text-muted">{c._count.articles || ""}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
         </div>
 
         <aside className="space-y-6">
@@ -198,8 +185,9 @@ export default async function Home() {
           </SideBox>
 
           <SideBox title="Stay informed">
-            <p className="text-sm text-ink/80">Get new articles in any feed reader.</p>
-            <a href="/feed.xml" className="btn-secondary mt-3 w-full"><Icon name="rss" size={15} />RSS feed</a>
+            <p className="text-sm text-ink/80">Get an email when a new article is published, or follow us by RSS.</p>
+            <Link href="/alerts" className="btn-accent mt-3 w-full"><Icon name="bell" size={15} />Sign up for alerts</Link>
+            <a href="/feed.xml" className="btn-secondary mt-2 w-full"><Icon name="rss" size={15} />RSS feed</a>
           </SideBox>
         </aside>
       </div>

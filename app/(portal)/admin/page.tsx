@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requirePermission } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { PTitle } from "@/components/portal";
-import { Stat, Card, StatusBadge, Empty } from "@/components/ui";
+import { Stat, StatStrip, Card, StatusBadge, Empty } from "@/components/ui";
 import { ColumnChart } from "@/components/charts";
 import { Icon } from "@/components/icons";
 import { formatDateTime, formatDate } from "@/lib/utils";
@@ -50,15 +50,13 @@ export default async function AdminDashboard() {
   const ready = checks.filter((c) => c.ok).length;
   const pipeline = (["SUBMITTED", "TECHNICAL_CHECK", "AWAITING_EDITOR", "EDITOR_ASSIGNED", "UNDER_REVIEW", "REVISION_REQUIRED", "REVISED_SUBMITTED", "ACCEPTED", "IN_PRODUCTION"] as const).map((s) => ({ s, n: byStatus.find((x) => x.status === s)?._count ?? 0 }));
   const pmax = Math.max(1, ...pipeline.map((p) => p.n));
-  const hour = new Date().getUTCHours();
 
   return (
     <>
-      <PTitle title={`Good ${hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening"}, ${u.fullName.split(" ")[0]}`} subtitle={`${j.name} · administration overview`} actions={<><Link href="/admin/articles/new" className="btn-secondary"><Icon name="plus" size={16} />New article</Link><Link href="/editor/manuscripts" className="btn-primary">Open manuscripts</Link></>} />
+      <PTitle title="Dashboard" subtitle={`${j.name} · administration`} actions={<><Link href="/admin/articles/new" className="btn-secondary"><Icon name="plus" size={16} />New article</Link><Link href="/editor/manuscripts" className="btn-primary">Open manuscripts</Link></>} />
 
-      <div className={`mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4 ${samples.articles ? "border-amber-300 bg-amber-50" : "border-line bg-white"}`}>
+      <div className={`mb-6 flex flex-wrap items-center justify-between gap-4 border p-4 ${samples.articles ? "border-amber-300 border-l-4 border-l-amber-500 bg-amber-50" : "border-line bg-white"}`}>
         <div className="flex items-start gap-3">
-          <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${samples.articles ? "bg-amber-100 text-amber-800" : "bg-brand-light text-brand"}`}><Icon name="layers" size={18} /></span>
           <div className="text-sm">
             <div className="font-semibold">{samples.articles ? `Sample content is showing on the website (${samples.articles} articles, ${samples.issues} issue, ${samples.announcements} announcements)` : "Sample content"}</div>
             <div className="text-muted">{samples.articles ? "Sample items are labelled “Sample” and hidden from search engines. Remove them before launch or before applying to indexing services." : "Load demonstration articles, an issue and announcements to preview the website with content. Removable in one click."}</div>
@@ -71,18 +69,18 @@ export default async function AdminDashboard() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat icon="inbox" label="Total submissions" value={total} hint={`${fresh} new in the last 7 days`} href="/editor/manuscripts" />
-        <Stat icon="review" tone="blue" label="Under review" value={review} hint={`${awaiting} awaiting a decision`} href="/editor/manuscripts?status=UNDER_REVIEW" />
-        <Stat icon="check" tone="green" label="Accepted" value={accepted} hint={decided ? `${Math.round((accepted / decided) * 100)}% acceptance rate (${rejected} rejected)` : `${rejected} rejected`} href="/editor/manuscripts?status=ACCEPTED" />
-        <Stat icon="book" tone="amber" label="Published articles" value={published} hint={`${(views._sum.views ?? 0).toLocaleString()} views · ${(views._sum.downloads ?? 0).toLocaleString()} downloads`} href="/admin/articles" />
-      </div>
-      <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <StatStrip cols={4}>
+        <Stat label="Total submissions" value={total} hint={`${fresh} in the last 7 days`} href="/editor/manuscripts" />
+        <Stat label="Under review" value={review} hint={`${awaiting} awaiting a decision`} href="/editor/manuscripts?status=UNDER_REVIEW" />
+        <Stat label="Accepted" value={accepted} hint={decided ? `${Math.round((accepted / decided) * 100)}% acceptance, ${rejected} rejected` : `${rejected} rejected`} href="/editor/manuscripts?status=ACCEPTED" />
+        <Stat label="Published articles" value={published} hint={`${(views._sum.views ?? 0).toLocaleString()} views, ${(views._sum.downloads ?? 0).toLocaleString()} downloads`} href="/admin/articles" />
+      </StatStrip>
+      <div className="mt-px"><StatStrip cols={4}>
         <Stat label="Registered authors" value={authors} href="/admin/users?role=AUTHOR" />
         <Stat label="Registered reviewers" value={reviewers} href="/admin/users?role=REVIEWER" />
         <Stat label="Board members" value={board} href="/admin/board" />
         <Stat label="New this week" value={fresh} href="/editor/manuscripts?status=SUBMITTED" />
-      </div>
+      </StatStrip></div>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[1.6fr_1fr]">
         <Card title="Submissions per month" subtitle="Last 12 months">
@@ -95,7 +93,7 @@ export default async function AdminDashboard() {
                 <Link href={`/editor/manuscripts?status=${p.s}`} className="group grid grid-cols-[1fr_auto] items-center gap-x-3 text-sm">
                   <span className="truncate text-ink group-hover:text-brand">{MANUSCRIPT_STATUSES[p.s]}</span>
                   <span className="font-semibold tabular-nums">{p.n}</span>
-                  <span className="col-span-2 mt-1 h-1.5 overflow-hidden rounded-full bg-app"><span className="block h-full rounded-full bg-brand" style={{ width: `${(p.n / pmax) * 100}%` }} /></span>
+                  <span className="col-span-2 mt-1 h-1 overflow-hidden bg-app"><span className="block h-full bg-navy" style={{ width: `${(p.n / pmax) * 100}%` }} /></span>
                 </Link>
               </li>
             ))}
@@ -122,15 +120,15 @@ export default async function AdminDashboard() {
           )}
         </Card>
         <Card title="Launch readiness" subtitle={`${ready} of ${checks.length} complete`}>
-          <div className="mb-4 h-2 overflow-hidden rounded-full bg-app"><div className="h-full rounded-full bg-emerald-600" style={{ width: `${(ready / checks.length) * 100}%` }} /></div>
+          <div className="mb-4 h-1.5 overflow-hidden bg-app"><div className="h-full bg-emerald-600" style={{ width: `${(ready / checks.length) * 100}%` }} /></div>
           <ul className="space-y-3 text-sm">
             {checks.map((c) => (
               <li key={c.label} className="flex gap-3">
-                <span className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${c.ok ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}><Icon name={c.ok ? "check" : "alert"} size={12} /></span>
+                <span className={`mt-0.5 w-12 shrink-0 text-[11px] font-bold uppercase ${c.ok ? "text-emerald-700" : "text-amber-700"}`}>{c.ok ? "Done" : "To do"}</span>
                 <span><span className="font-medium">{c.label}</span>{!c.ok && <span className="block text-xs text-muted">{c.fix}</span>}</span>
               </li>
             ))}
-            {failedEmails > 0 && <li className="flex gap-3"><span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-700"><Icon name="alert" size={12} /></span><Link className="link" href="/admin/email?status=FAILED">{failedEmails} failed email(s)</Link></li>}
+            {failedEmails > 0 && <li className="flex gap-3"><span className="mt-0.5 w-12 shrink-0 text-[11px] font-bold uppercase text-red-700">Alert</span><Link className="link" href="/admin/email?status=FAILED">{failedEmails} failed email(s)</Link></li>}
           </ul>
         </Card>
       </div>
@@ -139,7 +137,7 @@ export default async function AdminDashboard() {
         <ol className="relative space-y-4 border-l border-line pl-6">
           {logs.map((l) => (
             <li key={l.id} className="relative">
-              <span className="absolute -left-[29px] top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-brand ring-1 ring-line" />
+              <span className="absolute -left-[28px] top-1.5 h-2 w-2 bg-navy" />
               <div className="text-sm"><span className="font-medium">{l.actor?.fullName ?? "System"}</span> <span className="text-muted">None</span> <span className="font-mono text-xs">{l.action}</span> {l.entityType && <span className="text-muted">({l.entityType})</span>}</div>
               <div className="text-xs text-muted">{formatDateTime(l.createdAt)}</div>
             </li>

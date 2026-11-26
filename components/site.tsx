@@ -32,7 +32,7 @@ function groups(extra: { label: string; href: string }[]): Group[] {
         { label: "Browse archives", href: "/archives", desc: "All volumes and issues" },
         { label: "Browse by subject", href: "/aims-scope", desc: "15 research areas" },
         { label: "Announcements", href: "/announcements" },
-        { label: "RSS feed", href: "/feed.xml" },
+        { label: "Article alerts", href: "/alerts", desc: "Email and RSS" },
       ],
     },
     {
@@ -134,7 +134,7 @@ export async function SiteFooter() {
   const j = await getJournal();
   const links = footerOf(j);
   const cols = [
-    { title: "Explore", links: [{ label: "Research articles", href: "/articles" }, { label: "Current issue", href: "/current-issue" }, { label: "Archives", href: "/archives" }, { label: "Announcements", href: "/announcements" }, { label: "RSS feed", href: "/feed.xml" }] },
+    { title: "Explore", links: [{ label: "Research articles", href: "/articles" }, { label: "Current issue", href: "/current-issue" }, { label: "Archives", href: "/archives" }, { label: "Announcements", href: "/announcements" }, { label: "Article alerts", href: "/alerts" }, { label: "RSS feed", href: "/feed.xml" }] },
     { title: "Publish with us", links: [{ label: "Submit manuscript", href: "/submit" }, { label: "For authors", href: "/for-authors" }, { label: "Peer review", href: "/peer-review" }, { label: "Publication fees", href: "/publication-fees" }, { label: "Reviewer & author login", href: "/login" }] },
     { title: "Journal", links },
   ];

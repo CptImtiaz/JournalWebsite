@@ -50,7 +50,7 @@ export function Badge({ children, tone = "gray" }: { children: ReactNode; tone?:
     amber: "bg-amber-50 text-amber-800",
     navy: "bg-navy text-white",
   }[tone];
-  return <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${t}`}>{children}</span>;
+  return <span className={`inline-flex items-center whitespace-nowrap rounded-sm px-1.5 py-0.5 text-[11px] font-semibold ${t}`}>{children}</span>;
 }
 
 const STATUS_TONE: Record<string, "gray" | "blue" | "green" | "red" | "amber"> = {
@@ -65,15 +65,15 @@ export function Card({ title, children, actions, className = "", subtitle, flush
   return (
     <section className={`app-card ${className}`}>
       {title && (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-5 py-4">
-          <div>
-            <h2 className="text-[15px] font-semibold text-ink">{title}</h2>
+        <div className="panel-head">
+          <div className="min-w-0">
+            <h2 className="panel-title">{title}</h2>
             {subtitle && <p className="mt-0.5 text-xs text-muted">{subtitle}</p>}
           </div>
           {actions}
         </div>
       )}
-      <div className={flush ? "" : "p-5"}>{children}</div>
+      <div className={flush ? "" : "p-4"}>{children}</div>
     </section>
   );
 }
@@ -134,26 +134,29 @@ export function Checkbox({ label, name, defaultChecked, required, hint }: { labe
 
 export function Empty({ title, children }: { title: string; children?: ReactNode }) {
   return (
-    <div className="rounded-xl border border-dashed border-line bg-white px-6 py-12 text-center">
+    <div className="border border-dashed border-line bg-white px-6 py-10 text-center">
       <p className="font-medium text-ink">{title}</p>
       {children && <div className="mt-1 text-sm text-muted">{children}</div>}
     </div>
   );
 }
 
-export function Stat({ label, value, href, icon, hint, tone = "navy" }: { label: string; value: number | string; href?: string; icon?: IconName; hint?: string; tone?: "navy" | "blue" | "green" | "amber" | "red" }) {
-  const t = { navy: "bg-navy/8 text-navy", blue: "bg-brand-light text-brand", green: "bg-emerald-50 text-emerald-700", amber: "bg-amber-50 text-amber-700", red: "bg-red-50 text-red-700" }[tone];
+export function Stat({ label, value, href, hint, tone }: { label: string; value: number | string; href?: string; icon?: IconName; hint?: string; tone?: "navy" | "blue" | "green" | "amber" | "red" }) {
+  const accent = tone === "red" ? "text-red-700" : tone === "amber" ? "text-amber-700" : tone === "green" ? "text-emerald-700" : "text-ink";
   const inner = (
-    <div className="app-card flex h-full items-start gap-4 p-5 transition hover:-translate-y-0.5 hover:shadow-md">
-      {icon && <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${t}`}><Icon name={icon} size={20} /></span>}
-      <div className="min-w-0">
-        <div className="text-[13px] font-medium text-muted">{label}</div>
-        <div className="mt-1 text-2xl font-semibold tabular-nums text-ink">{value}</div>
-        {hint && <div className="mt-0.5 text-xs text-muted">{hint}</div>}
-      </div>
+    <div className="h-full bg-white px-4 py-3.5">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted">{label}</div>
+      <div className={`mt-1 font-display text-[30px] font-semibold leading-none tabular-nums ${accent}`}>{value}</div>
+      {hint && <div className="mt-1.5 text-xs text-muted">{hint}</div>}
     </div>
   );
-  return href ? <Link href={href} className="block">{inner}</Link> : inner;
+  return href ? <Link href={href} className="block transition-colors hover:bg-surface [&>div]:hover:bg-surface">{inner}</Link> : inner;
+}
+
+/** A row of figures separated by hairlines, as in editorial systems. */
+export function StatStrip({ children, cols = 4 }: { children: ReactNode; cols?: number }) {
+  const c = { 2: "sm:grid-cols-2", 3: "sm:grid-cols-3", 4: "sm:grid-cols-2 xl:grid-cols-4", 5: "sm:grid-cols-3 xl:grid-cols-5", 6: "sm:grid-cols-3 xl:grid-cols-6" }[cols] ?? "sm:grid-cols-4";
+  return <div className={`grid grid-cols-2 gap-px border border-line bg-line ${c}`}>{children}</div>;
 }
 
 export function Pagination({ page, pages, makeHref }: { page: number; pages: number; makeHref: (p: number) => string }) {

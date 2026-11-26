@@ -134,7 +134,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
             const isDone = done.has(i) && i !== step;
             return (
               <li key={s.id}>
-                <button type="button" onClick={() => (i <= step || done.has(i) ? go(i) : go(i))} className={`flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left ${i === step ? "bg-brand-light" : "hover:bg-app"}`}>
+                <button type="button" onClick={() => (i <= step || done.has(i) ? go(i) : go(i))} className={`flex w-full items-start gap-3 rounded-sm px-3 py-2.5 text-left ${i === step ? "bg-brand-light" : "hover:bg-app"}`}>
                   <span className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${i === step ? "bg-brand text-white" : isDone ? "bg-emerald-600 text-white" : "border border-line bg-white text-muted"}`}>{isDone ? <Icon name="check" size={13} /> : i + 1}</span>
                   <span><span className={`block text-sm ${i === step ? "font-semibold text-ink" : "font-medium text-ink"}`}>{s.title}</span><span className="block text-xs text-muted">{s.desc}</span></span>
                 </button>
@@ -168,7 +168,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
           <div className="border-b border-line px-6 py-5 sm:px-8">
             <p className="text-xs font-semibold uppercase tracking-wider text-brand">Step {step + 1} of {STEPS.length}</p>
             <h2 className="mt-1 font-display text-2xl font-semibold">{STEPS[step].title}</h2>
-            <div className="mt-4 h-1 overflow-hidden rounded-full bg-app"><div className="h-full rounded-full bg-brand transition-all" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} /></div>
+            <div className="mt-4 h-1 overflow-hidden bg-app"><div className="h-full bg-brand transition-all" style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} /></div>
           </div>
 
           <div className="px-6 py-6 sm:px-8">
@@ -177,7 +177,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
               <Section title="What type of article are you submitting?" required>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {types.map((t, k) => (
-                    <label key={t} className="group relative flex cursor-pointer gap-3 rounded-lg border border-line p-4 has-[:checked]:border-brand has-[:checked]:bg-brand-light/50 hover:border-brand/60">
+                    <label key={t} className="group relative flex cursor-pointer gap-3 rounded-sm border border-line p-4 has-[:checked]:border-brand has-[:checked]:bg-brand-light/50 hover:border-brand/60">
                       <input type="radio" name="articleType" value={t} required defaultChecked={v("articleType") ? v("articleType") === t : k === 0} className="mt-1 accent-[#2864A5]" />
                       <span><span className="block text-sm font-semibold">{t}</span><span className="block text-xs text-muted">{TYPE_INFO[t]}</span></span>
                     </label>
@@ -190,7 +190,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
                   {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </Section>
-              <div className="flex flex-wrap items-center gap-3 rounded-lg border border-line bg-app/60 p-4 text-sm">
+              <div className="flex flex-wrap items-center gap-3 rounded-sm border border-line bg-app/60 p-4 text-sm">
                 <Icon name="file" size={18} className="text-brand" />
                 <span className="flex-1">Use the journal template to format your manuscript.</span>
                 <a href="/templates/IJCST-manuscript-template.docx" className="font-medium text-brand hover:underline">Word (.docx)</a>
@@ -223,7 +223,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
 
             {/* 3. Authors */}
             <Panel i={2} step={step}>
-              <p className="mb-5 rounded-lg bg-app p-4 text-sm text-ink/80">List <strong>all</strong> authors in the order they should appear in the published article. Choose one corresponding author, who will receive all correspondence. Author details are <strong>not</strong> shared with reviewers.</p>
+              <p className="mb-5 rounded-sm bg-app p-4 text-sm text-ink/80">List <strong>all</strong> authors in the order they should appear in the published article. Choose one corresponding author, who will receive all correspondence. Author details are <strong>not</strong> shared with reviewers.</p>
               <AuthorsEditor initial={authors} />
             </Panel>
 
@@ -239,7 +239,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
                 <textarea name="coverLetter" rows={7} defaultValue={v("coverLetter")} className="input" placeholder="Dear Editor in Chief, …" />
                 <div className="mt-3"><DropZone name="coverLetterFile" accept=".doc,.docx,.pdf" label="…or upload a cover letter file" compact picked={[]} onPick={() => {}} /></div>
               </Section>
-              <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">Browsers cannot keep selected files in a saved draft. If you leave this page, please select your files again before submitting.</p>
+              <p className="rounded-sm border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">Browsers cannot keep selected files in a saved draft. If you leave this page, please select your files again before submitting.</p>
             </Panel>
 
             {/* 5. Reviewers */}
@@ -266,7 +266,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
               <Section title="Use of AI tools" hint="Describe any use of generative AI in preparing the work or manuscript. Leave blank if none.">
                 <textarea name="aiUsageDisclosure" rows={2} defaultValue={v("aiUsageDisclosure")} className="input" />
               </Section>
-              <div className="space-y-3 rounded-lg bg-app p-4">
+              <div className="space-y-3 rounded-sm bg-app p-4">
                 <Check name="originality" saved={v("originality")}>I confirm the manuscript is original, has not been published before, and is not under consideration by another journal.</Check>
                 <Check name="authorsAgree" saved={v("authorsAgree")}>All authors have approved the manuscript and agree with its submission and the author order.</Check>
                 <Check name="policies" saved={v("policies")}>I have read and agree to the journal&apos;s <a className="link" href="/publication-ethics" target="_blank">Publication Ethics</a>, <a className="link" href="/copyright" target="_blank">Copyright & Licensing</a> and <a className="link" href="/publication-fees" target="_blank">Publication Fees</a> policies.</Check>
@@ -276,11 +276,11 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
             {/* 7. Review */}
             <Panel i={6} step={step}>
               <p className="mb-5 text-sm text-muted">Please check your submission carefully. You can go back to any step to make changes.</p>
-              <div className="divide-y divide-line rounded-lg border border-line">
+              <div className="divide-y divide-line rounded-sm border border-line">
                 <Sum label="Article type" onEdit={() => go(0)}>{summary.articleType} · {cat ?? <em className="text-red-700">no field selected</em>}</Sum>
                 <Sum label="Title" onEdit={() => go(1)}><span className="font-display text-base font-semibold">{summary.title}</span></Sum>
                 <Sum label="Abstract" onEdit={() => go(1)}><span className="line-clamp-4">{summary.abstract}</span><span className="text-xs text-muted">{words(summary.abstract ?? "")} words</span></Sum>
-                <Sum label="Keywords" onEdit={() => go(1)}><span className="flex flex-wrap gap-1.5">{(summary.keywords ?? "").split(/[;,]/).map((k) => k.trim()).filter(Boolean).map((k) => <span key={k} className="rounded-full bg-app px-2.5 py-0.5 text-xs">{k}</span>)}</span></Sum>
+                <Sum label="Keywords" onEdit={() => go(1)}><span className="flex flex-wrap gap-1.5">{(summary.keywords ?? "").split(/[;,]/).map((k) => k.trim()).filter(Boolean).map((k) => <span key={k} className="bg-app px-2.5 py-0.5 text-xs">{k}</span>)}</span></Sum>
                 <Sum label="Authors" onEdit={() => go(2)}>
                   <ol className="space-y-1">{authorsSummary.map((a, i) => <li key={i}>{i + 1}. <strong>{a.fullName}</strong>{i === corrIdx && <span className="ml-1 rounded bg-brand-light px-1.5 text-[11px] text-brand">corresponding</span>} <span className="text-muted">· {a.affiliation}</span></li>)}</ol>
                 </Sum>
@@ -341,7 +341,7 @@ function DropZone({ name, accept, multiple, required, label, picked, onPick, com
         e.preventDefault(); setOver(false);
         if (ref.current && e.dataTransfer.files.length) { ref.current.files = e.dataTransfer.files; onPick(Array.from(e.dataTransfer.files).map((f) => f.name)); }
       }}
-      className={`relative rounded-xl border-2 border-dashed text-center transition ${over ? "border-brand bg-brand-light/60" : picked.length ? "border-emerald-400 bg-emerald-50/50" : "border-line bg-app/40 hover:border-brand/60"} ${compact ? "px-4 py-4" : "px-6 py-8"}`}
+      className={`relative rounded-sm border-2 border-dashed text-center transition ${over ? "border-brand bg-brand-light/60" : picked.length ? "border-emerald-400 bg-emerald-50/50" : "border-line bg-app/40 hover:border-brand/60"} ${compact ? "px-4 py-4" : "px-6 py-8"}`}
     >
       <input ref={ref} type="file" name={name} accept={accept} multiple={multiple} required={required} className="absolute inset-0 cursor-pointer opacity-0" onChange={(e) => onPick(Array.from(e.target.files ?? []).map((f) => f.name))} aria-label={label} />
       {!compact && <Icon name="upload" size={26} className="mx-auto text-brand" />}
@@ -362,7 +362,7 @@ function ReviewerList({ title, name, rows, setRows, max, reasonLabel }: { title:
       <div className="mb-3 flex items-center justify-between"><h3 className="text-sm font-semibold">{title}</h3><span className="text-xs text-muted">{rows.length}/{max}</span></div>
       <div className="space-y-3">
         {rows.map((r, i) => (
-          <div key={i} className="grid gap-2 rounded-lg border border-line p-3 sm:grid-cols-2">
+          <div key={i} className="grid gap-2 rounded-sm border border-line p-3 sm:grid-cols-2">
             <input data-nosave="1" className="input" placeholder="Full name" value={r.name} onChange={(e) => upd(i, "name", e.target.value)} />
             <input data-nosave="1" className="input" type="email" placeholder="Institutional email" value={r.email} onChange={(e) => upd(i, "email", e.target.value)} />
             <input data-nosave="1" className="input" placeholder="Institution" value={r.institution} onChange={(e) => upd(i, "institution", e.target.value)} />
