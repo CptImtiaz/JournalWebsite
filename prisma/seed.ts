@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { ROLES, ROLE_DESCRIPTIONS, PERMISSIONS, ROLE_PERMISSIONS } from "../lib/roles.ts";
 import { CATEGORIES, PAGES, EMAIL_TEMPLATES } from "./seed-content.ts";
 import { PAGES as PAGES_V1 } from "./seed-content-v1.ts";
+import { PAGES as PAGES_V2, EMAIL_TEMPLATES as EMAIL_V2 } from "./seed-content-v2.ts";
 
 const db = new PrismaClient();
 const slug = (s: string) => s.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -27,7 +28,7 @@ async function main() {
       shortName: "IJCST",
       abbreviation: "Int. J. Comput. Sci. Technol.",
       tagline: "Advancing Research in Computing and Emerging Technologies.",
-      description: "An open access journal publishing original, peer-reviewed research from across all areas of computer science and information technology.",
+      description: "An open access journal for original research in computer science and information technology.",
       publicationFrequency: "Biannual (two issues per year)",
       manuscriptPrefix: "JCS",
       isOpenAccess: true,
@@ -45,15 +46,22 @@ async function main() {
       continue;
     }
     // Content upgrade: replace text only if it is still the previous default (never overwrite admin edits).
-    const old = PAGES_V1.find((o) => o.slug === p.slug);
-    if (old && existing.body === old.body && existing.body !== p.body) {
+    const olds = [PAGES_V1, PAGES_V2].map((v) => v.find((o) => o.slug === p.slug)?.body).filter(Boolean);
+    if (olds.includes(existing.body) && existing.body !== p.body) {
       await db.page.update({ where: { slug: p.slug }, data: { title: p.title, body: p.body, seoDescription: p.seo ?? existing.seoDescription } });
       console.log(`Updated default content for /${p.slug}`);
     }
   }
-  await db.journal.updateMany({ where: { id: "journal", description: "An international peer-reviewed academic journal dedicated to publishing original research, innovative methodologies and scientific contributions in computer science and information technology." }, data: { description: "An open access journal publishing original, peer-reviewed research from across all areas of computer science and information technology." } });
+  await db.journal.updateMany({ where: { id: "journal", description: "An international peer-reviewed academic journal dedicated to publishing original research, innovative methodologies and scientific contributions in computer science and information technology." }, data: { description: "An open access journal for original research in computer science and information technology." } });
+  await db.journal.updateMany({ where: { id: "journal", description: "An open access journal publishing original, peer-reviewed research from across all areas of computer science and information technology." }, data: { description: "An open access journal for original research in computer science and information technology." } });
   for (const t of EMAIL_TEMPLATES) {
-    await db.emailTemplate.upsert({ where: { key: t.key }, update: {}, create: { key: t.key, name: t.name, subject: t.subject, bodyHtml: t.body } });
+    const e = await db.emailTemplate.findUnique({ where: { key: t.key } });
+    if (!e) await db.emailTemplate.create({ data: { key: t.key, name: t.name, subject: t.subject, bodyHtml: t.body } });
+    else {
+      const old = EMAIL_V2.find((o) => o.key === t.key);
+      if (old && e.bodyHtml === old.body && e.subject === old.subject && (old.body !== t.body || old.subject !== t.subject))
+        await db.emailTemplate.update({ where: { key: t.key }, data: { name: t.name, subject: t.subject, bodyHtml: t.body } });
+    }
   }
 
   const email = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();

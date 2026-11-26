@@ -47,10 +47,10 @@ export default async function EmailAdmin({ searchParams }: { searchParams: Promi
       <div className="grid gap-6 xl:grid-cols-2">
         <Card title="Delivery configuration">
           <ul className="space-y-1 text-sm">
-            <li>SMTP: {smtpConfigured() ? <Badge tone="green">configured ({process.env.SMTP_HOST})</Badge> : <Badge tone="amber">not configured — messages are logged only</Badge>}</li>
+            <li>SMTP: {smtpConfigured() ? <Badge tone="green">configured ({process.env.SMTP_HOST})</Badge> : <Badge tone="amber">not configured, messages are only logged</Badge>}</li>
             <li>Sender name: <strong>{j.emailSenderName || j.name}</strong></li>
-            <li>Sender email: <strong>{j.emailSenderAddress || process.env.SMTP_FROM || "—"}</strong> <Link className="link ml-1" href="/admin/settings#email">edit</Link></li>
-            <li>Editorial office: {j.editorialOfficeEmail || "Editors-in-Chief & Managing Editors"}</li>
+            <li>Sender email: <strong>{j.emailSenderAddress || process.env.SMTP_FROM || "None"}</strong> <Link className="link ml-1" href="/admin/settings#email">edit</Link></li>
+            <li>Editorial office: {j.editorialOfficeEmail || "Editors in Chief & Managing Editors"}</li>
             <li>Review reminders: daily scheduled job (3 days before and after due date)</li>
           </ul>
           <form action={test} className="mt-4 flex items-end gap-2"><div className="flex-1"><TextField label="Send test email to" name="to" type="email" defaultValue={u.email} required /></div><SubmitButton className="btn-secondary">Send test</SubmitButton></form>

@@ -28,7 +28,7 @@ export default async function AuthorDashboard() {
       {action.length > 0 && (
         <div className="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-5">
           <div className="flex items-center gap-2 font-semibold text-amber-900"><Icon name="alert" size={18} />Revision requested</div>
-          <ul className="mt-2 space-y-1 text-sm">{action.map((m) => <li key={m.id}><Link className="font-medium text-amber-900 underline" href={`/author/manuscripts/${m.id}`}>{m.code} — {m.title}</Link></li>)}</ul>
+          <ul className="mt-2 space-y-1 text-sm">{action.map((m) => <li key={m.id}><Link className="font-medium text-amber-900 underline" href={`/author/manuscripts/${m.id}`}>{m.code} · {m.title}</Link></li>)}</ul>
         </div>
       )}
 

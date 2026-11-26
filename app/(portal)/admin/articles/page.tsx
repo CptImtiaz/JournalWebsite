@@ -23,7 +23,7 @@ export default async function ArticlesAdmin({ searchParams }: { searchParams: Pr
       <PTitle title="Articles" actions={<Link href="/admin/articles/new" className="btn-primary">New article</Link>} />
       {production.length > 0 && (
         <Card title="Accepted manuscripts awaiting production" className="mb-6">
-          <ul className="space-y-1 text-sm">{production.map((m) => <li key={m.id}><Link className="link" href={`/editor/manuscripts/${m.id}`}>{m.code} — {m.title}</Link></li>)}</ul>
+          <ul className="space-y-1 text-sm">{production.map((m) => <li key={m.id}><Link className="link" href={`/editor/manuscripts/${m.id}`}>{m.code} · {m.title}</Link></li>)}</ul>
           <p className="hint">Open a manuscript and click “Send to production” to create its article record.</p>
         </Card>
       )}
@@ -39,9 +39,9 @@ export default async function ArticlesAdmin({ searchParams }: { searchParams: Pr
             <tbody>{arts.map((a) => (
               <tr key={a.id}>
                 <td className="min-w-72"><Link className="link font-medium" href={`/admin/articles/${a.id}`}>{a.title}</Link><div className="text-xs text-muted">{a.authors.map((x) => x.fullName).join(", ")}</div></td>
-                <td className="whitespace-nowrap text-xs">{a.issue ? `Vol ${a.issue.volume.number}(${a.issue.number})` : "—"}</td>
+                <td className="whitespace-nowrap text-xs">{a.issue ? `Vol ${a.issue.volume.number}(${a.issue.number})` : "None"}</td>
                 <td className="whitespace-nowrap text-xs">{formatDate(a.publishedAt)}</td>
-                <td className="text-xs">{a.doi ? <>{a.doi}<br /><Badge tone={a.doiRecords[0]?.status === "REGISTERED" ? "green" : "amber"}>{a.doiRecords[0]?.status?.toLowerCase() ?? "not deposited"}</Badge></> : "—"}</td>
+                <td className="text-xs">{a.doi ? <>{a.doi}<br /><Badge tone={a.doiRecords[0]?.status === "REGISTERED" ? "green" : "amber"}>{a.doiRecords[0]?.status?.toLowerCase() ?? "not deposited"}</Badge></> : "None"}</td>
                 <td className="text-xs">{a.views} / {a.downloads}</td>
                 <td className="space-x-1"><Badge tone={TONE[a.status as keyof typeof TONE]}>{a.status.toLowerCase()}</Badge>{a.isSample && <Badge tone="amber">sample</Badge>}</td>
               </tr>

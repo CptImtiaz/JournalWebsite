@@ -98,11 +98,11 @@ export default async function IssueEdit({ params }: { params: Promise<{ id: stri
             <div><SubmitButton>Save issue</SubmitButton></div>
           </form>
         </Card>
-        <Card title={`Articles (${i.articles.length}) — table of contents order`}>
+        <Card title={`Articles (${i.articles.length}) in table of contents order`}>
           <ol className="divide-y divide-line">
             {i.articles.map((a, k) => (
               <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">
-                <span><span className="mr-2 text-muted">{k + 1}.</span><Link className="link" href={`/admin/articles/${a.id}`}>{a.title}</Link> <span className="text-xs text-muted">— {a.authors.map((x) => x.fullName).join(", ")} {a.pages && `· pp. ${a.pages}`} {formatDate(a.publishedAt)}</span> <Badge tone={a.status === "PUBLISHED" ? "green" : "amber"}>{a.status.toLowerCase()}</Badge></span>
+                <span><span className="mr-2 text-muted">{k + 1}.</span><Link className="link" href={`/admin/articles/${a.id}`}>{a.title}</Link> <span className="text-xs text-muted">· {a.authors.map((x) => x.fullName).join(", ")} {a.pages && `· pp. ${a.pages}`} {formatDate(a.publishedAt)}</span> <Badge tone={a.status === "PUBLISHED" ? "green" : "amber"}>{a.status.toLowerCase()}</Badge></span>
                 <form action={op} className="flex gap-1">
                   <input type="hidden" name="id" value={i.id} /><input type="hidden" name="articleId" value={a.id} />
                   <SubmitButton name="op" value="up" className="btn-secondary btn-sm">↑</SubmitButton>

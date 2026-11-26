@@ -21,7 +21,7 @@ export default async function DoiAdmin() {
       <Card title="Configuration" className="mb-6">
         <ul className="space-y-1 text-sm">
           <li>DOI prefix: <strong>{j.doiPrefix || "not set"}</strong> <Link className="link ml-2" href="/admin/settings#doi">edit</Link></li>
-          <li>Depositor: {j.crossrefDepositorName || "—"} {j.crossrefDepositorEmail && `<${j.crossrefDepositorEmail}>`}</li>
+          <li>Depositor: {j.crossrefDepositorName || "None"} {j.crossrefDepositorEmail && `<${j.crossrefDepositorEmail}>`}</li>
           <li>Mode: <Badge tone={j.crossrefTestMode ? "amber" : "green"}>{j.crossrefTestMode ? "Crossref test system" : "Crossref production"}</Badge></li>
           <li>Credentials: {crossrefConfigured() ? <Badge tone="green">configured</Badge> : <Badge tone="red">CROSSREF_USERNAME / CROSSREF_PASSWORD not set</Badge>}</li>
         </ul>
@@ -37,7 +37,7 @@ export default async function DoiAdmin() {
                 <tr key={a.id}>
                   <td className="min-w-64">{a.title}</td>
                   <td className="font-mono text-xs">{a.doi ?? <span className="text-muted">none</span>}</td>
-                  <td>{r ? <Badge tone={TONE[r.status as keyof typeof TONE]}>{r.status.toLowerCase()}</Badge> : <Badge>—</Badge>}</td>
+                  <td>{r ? <Badge tone={TONE[r.status as keyof typeof TONE]}>{r.status.toLowerCase()}</Badge> : <Badge>none</Badge>}</td>
                   <td className="text-xs">{formatDate(r?.registeredAt ?? r?.submittedAt ?? r?.createdAt)}</td>
                   <td><Link className="btn-secondary btn-sm" href={`/admin/doi/${a.id}`}>Manage</Link></td>
                 </tr>

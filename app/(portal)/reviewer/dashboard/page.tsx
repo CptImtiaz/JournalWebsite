@@ -21,7 +21,7 @@ export default async function ReviewerDashboard() {
   const past = as.filter((a) => !(a.status === "INVITED" || a.status === "ACCEPTED"));
   return (
     <>
-      <PTitle title="Review assignments" subtitle="Double-anonymous review — author identities are withheld from reviewers." />
+      <PTitle title="Review assignments" subtitle="Reviews are double anonymous. You will not see the authors' names." />
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat icon="bell" tone="amber" label="New invitations" value={as.filter((a) => a.status === "INVITED").length} />
         <Stat icon="review" tone="blue" label="Reviews in progress" value={as.filter((a) => a.status === "ACCEPTED").length} />

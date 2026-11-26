@@ -1,7 +1,7 @@
 export const ROLES = {
   SUPER_ADMIN: "Super Administrator",
   JOURNAL_ADMIN: "Journal Administrator",
-  EDITOR_IN_CHIEF: "Editor-in-Chief",
+  EDITOR_IN_CHIEF: "Editor in Chief",
   MANAGING_EDITOR: "Managing Editor",
   ASSOCIATE_EDITOR: "Associate Editor",
   REVIEWER: "Reviewer",

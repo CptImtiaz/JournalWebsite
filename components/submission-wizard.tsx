@@ -56,7 +56,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
   const [summary, setSummary] = useState<Record<string, string>>({});
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
-  // Restore draft (text fields only — files cannot be stored by the browser).
+  // Restore draft (text fields only · files cannot be stored by the browser).
   useEffect(() => {
     try {
       const d = JSON.parse(localStorage.getItem(KEY) ?? "null");
@@ -198,7 +198,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
               </div>
               <Section title="Before you begin">
                 <ul className="grid gap-2 text-sm text-ink/80 sm:grid-cols-2">
-                  {["Manuscript file anonymised (no author names)", "Names, emails and affiliations of all co-authors", "Abstract (150–300 words) and 4–8 keywords", "Funding and conflict-of-interest statements", "Ethics approval details, if applicable", `Files in DOC, DOCX or PDF, up to ${maxMb} MB each`].map((t) => (
+                  {["Manuscript file anonymised (no author names)", "Names, emails and affiliations of all coauthors", "Abstract (150 to 300 words) and 4 to 8 keywords", "Funding and conflict-of-interest statements", "Ethics approval details, if applicable", `Files in DOC, DOCX or PDF, up to ${maxMb} MB each`].map((t) => (
                     <li key={t} className="flex gap-2"><Icon name="check" size={16} className="mt-0.5 shrink-0 text-emerald-600" />{t}</li>
                   ))}
                 </ul>
@@ -210,10 +210,10 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
               <Section title="Manuscript title" required hint="Concise and informative. Avoid abbreviations.">
                 <textarea name="title" required rows={2} maxLength={500} defaultValue={v("title")} className="input font-display text-lg" placeholder="Enter the full title of your manuscript" />
               </Section>
-              <Section title="Abstract" required hint={<span className={words(abstract) > 300 ? "text-amber-700" : ""}>{words(abstract)} words · 150–300 recommended</span>}>
+              <Section title="Abstract" required hint={<span className={words(abstract) > 300 ? "text-amber-700" : ""}>{words(abstract)} words · 150 to 300 recommended</span>}>
                 <textarea name="abstract" required rows={9} maxLength={5000} defaultValue={v("abstract")} onChange={(e) => setAbstract(e.target.value)} className="input leading-relaxed" placeholder="Background, methods, results and conclusions" />
               </Section>
-              <Section title="Keywords" required hint="4–8 keywords separated by semicolons, e.g. machine learning; edge computing; federated learning">
+              <Section title="Keywords" required hint="4 to 8 keywords separated by semicolons, for example: machine learning; edge computing">
                 <input name="keywords" required defaultValue={v("keywords")} className="input" pattern="(?:[^;,]+[;,]){2,}[^;,]+.*" title="Enter at least 3 keywords separated by semicolons or commas" />
               </Section>
               <Section title="Has this manuscript been previously submitted to this journal?">
@@ -229,14 +229,14 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
 
             {/* 4. Files */}
             <Panel i={3} step={step}>
-              <Section title="Manuscript file" required hint={`Anonymised for double-anonymous review · DOC, DOCX or PDF · max ${maxMb} MB`}>
+              <Section title="Manuscript file" required hint={`Anonymised for double anonymous review · DOC, DOCX or PDF · max ${maxMb} MB`}>
                 <DropZone name="manuscriptFile" accept=".doc,.docx,.pdf" required label="Drop your manuscript here or browse" picked={files.main ? [files.main] : []} onPick={(n) => setFiles((f) => ({ ...f, main: n[0] }))} />
               </Section>
               <Section title="Supplementary material" hint="Data, code (ZIP), extra figures or appendices. Multiple files allowed.">
                 <DropZone name="supplementaryFiles" multiple accept=".doc,.docx,.pdf,.zip,.xlsx,.csv,.png,.jpg,.jpeg" label="Drop supplementary files here or browse" picked={files.supp} onPick={(n) => setFiles((f) => ({ ...f, supp: n }))} />
               </Section>
               <Section title="Cover letter" hint="Explain the significance of the work and confirm it is not under consideration elsewhere. Visible to editors only.">
-                <textarea name="coverLetter" rows={7} defaultValue={v("coverLetter")} className="input" placeholder="Dear Editor-in-Chief, …" />
+                <textarea name="coverLetter" rows={7} defaultValue={v("coverLetter")} className="input" placeholder="Dear Editor in Chief, …" />
                 <div className="mt-3"><DropZone name="coverLetterFile" accept=".doc,.docx,.pdf" label="…or upload a cover letter file" compact picked={[]} onPick={() => {}} /></div>
               </Section>
               <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">Browsers cannot keep selected files in a saved draft. If you leave this page, please select your files again before submitting.</p>
@@ -255,7 +255,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
                 <textarea name="conflictOfInterest" required rows={2} defaultValue={v("conflictOfInterest") || "The authors declare no competing interests."} className="input" />
               </Section>
               <Section title="Funding" required>
-                <textarea name="fundingStatement" required rows={2} defaultValue={v("fundingStatement")} className="input" placeholder="This work was supported by … (grant no. …) — or: This research received no external funding." />
+                <textarea name="fundingStatement" required rows={2} defaultValue={v("fundingStatement")} className="input" placeholder="This work was supported by … (grant no. …) · or: This research received no external funding." />
               </Section>
               <Section title="Ethics approval" hint="Required if the research involved human participants, personal data or animals.">
                 <EthicsToggle defaultChecked={v("ethicsApprovalRequired") === "on"} />
@@ -282,7 +282,7 @@ export function SubmissionWizard({ action, categories, types, me, maxMb }: { act
                 <Sum label="Abstract" onEdit={() => go(1)}><span className="line-clamp-4">{summary.abstract}</span><span className="text-xs text-muted">{words(summary.abstract ?? "")} words</span></Sum>
                 <Sum label="Keywords" onEdit={() => go(1)}><span className="flex flex-wrap gap-1.5">{(summary.keywords ?? "").split(/[;,]/).map((k) => k.trim()).filter(Boolean).map((k) => <span key={k} className="rounded-full bg-app px-2.5 py-0.5 text-xs">{k}</span>)}</span></Sum>
                 <Sum label="Authors" onEdit={() => go(2)}>
-                  <ol className="space-y-1">{authorsSummary.map((a, i) => <li key={i}>{i + 1}. <strong>{a.fullName}</strong>{i === corrIdx && <span className="ml-1 rounded bg-brand-light px-1.5 text-[11px] text-brand">corresponding</span>} <span className="text-muted">— {a.affiliation}</span></li>)}</ol>
+                  <ol className="space-y-1">{authorsSummary.map((a, i) => <li key={i}>{i + 1}. <strong>{a.fullName}</strong>{i === corrIdx && <span className="ml-1 rounded bg-brand-light px-1.5 text-[11px] text-brand">corresponding</span>} <span className="text-muted">· {a.affiliation}</span></li>)}</ol>
                 </Sum>
                 <Sum label="Files" onEdit={() => go(3)}>{files.main ? <span className="flex items-center gap-1.5"><Icon name="file" size={15} />{files.main}</span> : <em className="text-red-700">No manuscript file selected</em>}{files.supp.length > 0 && <span className="mt-1 block text-xs text-muted">+ {files.supp.length} supplementary file(s)</span>}</Sum>
                 <Sum label="Reviewers" onEdit={() => go(4)}>{suggested.length} suggested · {opposed.length} opposed</Sum>

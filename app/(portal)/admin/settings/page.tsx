@@ -25,7 +25,7 @@ async function save(fd: FormData) {
   const u = await requirePermission("content.manage");
   for (const k of ["printIssn", "eIssn", "issnL"]) {
     const v = str(fd, k);
-    if (v && !issnValid(v)) back("/admin/settings", { error: `${k === "eIssn" ? "e-ISSN" : k === "issnL" ? "ISSN-L" : "Print ISSN"} "${v}" is not a valid ISSN (format 1234-567X with a correct check digit).` });
+    if (v && !issnValid(v)) back("/admin/settings", { error: `${k === "eIssn" ? "eISSN" : k === "issnL" ? "ISSN-L" : "Print ISSN"} "${v}" is not a valid ISSN (format 1234-567X with a correct check digit).` });
   }
   const doiPrefix = optStr(fd, "doiPrefix");
   if (doiPrefix && !/^10\.\d{4,9}$/.test(doiPrefix)) back("/admin/settings", { error: "DOI prefix must look like 10.12345" });
@@ -105,12 +105,12 @@ export default async function Settings() {
         <Card title="ISSN">
           <div className="grid gap-4 sm:grid-cols-3">
             <TextField label="Print ISSN (if applicable)" name="printIssn" defaultValue={j.printIssn ?? ""} placeholder="leave blank until assigned" />
-            <TextField label="Electronic ISSN (e-ISSN)" name="eIssn" defaultValue={j.eIssn ?? ""} placeholder="leave blank until assigned" />
+            <TextField label="Electronic ISSN (eISSN)" name="eIssn" defaultValue={j.eIssn ?? ""} placeholder="leave blank until assigned" />
             <TextField label="ISSN-L" name="issnL" defaultValue={j.issnL ?? ""} />
             <TextField label="ISSN registration authority" name="issnAuthority" defaultValue={j.issnAuthority ?? ""} placeholder="e.g. ISSN National Centre for …" />
             <TextField label="Publication country" name="publicationCountry" defaultValue={j.publicationCountry ?? ""} />
           </div>
-          <p className="hint mt-2">Never invent ISSN numbers — enter them only after official assignment. Check digits are validated.</p>
+          <p className="hint mt-2">Enter ISSN numbers only after they are officially assigned. Check digits are validated.</p>
         </Card>
         <Card title="Publisher & contact">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -123,7 +123,7 @@ export default async function Settings() {
         </Card>
         <Card title="Access & licensing">
           <div className="grid gap-4 sm:grid-cols-3">
-            <Checkbox name="isOpenAccess" defaultChecked={j.isOpenAccess} label="Open-access journal" />
+            <Checkbox name="isOpenAccess" defaultChecked={j.isOpenAccess} label="Open access journal" />
             <TextField label="Default licence" name="licenseName" defaultValue={j.licenseName ?? ""} />
             <TextField label="Licence URL" name="licenseUrl" defaultValue={j.licenseUrl ?? ""} />
             <div className="sm:col-span-3"><TextField label="Copyright statement (footer)" name="copyrightStatement" defaultValue={j.copyrightStatement ?? ""} /></div>
@@ -132,7 +132,7 @@ export default async function Settings() {
         </Card>
         <Card title="DOI / Crossref">
           <div id="doi" className="grid gap-4 sm:grid-cols-3">
-            <TextField label="DOI prefix" name="doiPrefix" defaultValue={j.doiPrefix ?? ""} placeholder="10.xxxxx — assigned by Crossref" />
+            <TextField label="DOI prefix" name="doiPrefix" defaultValue={j.doiPrefix ?? ""} placeholder="10.xxxxx (assigned by Crossref)" />
             <TextField label="Depositor name" name="crossrefDepositorName" defaultValue={j.crossrefDepositorName ?? ""} />
             <TextField label="Depositor email" name="crossrefDepositorEmail" type="email" defaultValue={j.crossrefDepositorEmail ?? ""} />
             <Checkbox name="crossrefTestMode" defaultChecked={j.crossrefTestMode} label="Use Crossref test system (test.crossref.org)" />
@@ -143,7 +143,7 @@ export default async function Settings() {
           <div id="email" className="grid gap-4 sm:grid-cols-3">
             <TextField label="Sender name" name="emailSenderName" defaultValue={j.emailSenderName ?? ""} placeholder={j.name} />
             <TextField label="Sender email (journal domain)" name="emailSenderAddress" type="email" defaultValue={j.emailSenderAddress ?? ""} />
-            <TextField label="Editorial office notification email" name="editorialOfficeEmail" type="email" defaultValue={j.editorialOfficeEmail ?? ""} hint="Blank = all Editors-in-Chief & Managing Editors" />
+            <TextField label="Editorial office notification email" name="editorialOfficeEmail" type="email" defaultValue={j.editorialOfficeEmail ?? ""} hint="Blank = all Editors in Chief & Managing Editors" />
           </div>
         </Card>
         <Card title="Submissions & security">

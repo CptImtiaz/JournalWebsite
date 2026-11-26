@@ -55,8 +55,8 @@ export default async function ArticleEdit({ params }: { params: Promise<{ id: st
               <div className="sm:col-span-2"><TextArea label="Abstract" name="abstract" required rows={6} defaultValue={a?.abstract} /></div>
               <TextField label="Keywords" name="keywords" required defaultValue={a?.keywords} hint="Separated by commas or semicolons" />
               <SelectField label="Article type" name="articleType" defaultValue={a?.articleType ?? "Research Article"} options={ARTICLE_TYPES} />
-              <SelectField label="Research category" name="categoryId" defaultValue={a?.categoryId ?? ""} placeholder="—" options={cats.map((c) => ({ value: c.id, label: c.name }))} />
-              <SelectField label="Issue" name="issueId" defaultValue={a?.issueId ?? ""} placeholder="Not assigned (online first)" options={issues.map((i) => ({ value: i.id, label: `Volume ${i.volume.number}, Issue ${i.number} (${i.year})${i.isPublished ? "" : " — unpublished"}` }))} />
+              <SelectField label="Research category" name="categoryId" defaultValue={a?.categoryId ?? ""} placeholder="None" options={cats.map((c) => ({ value: c.id, label: c.name }))} />
+              <SelectField label="Issue" name="issueId" defaultValue={a?.issueId ?? ""} placeholder="Not assigned (online first)" options={issues.map((i) => ({ value: i.id, label: `Volume ${i.volume.number}, Issue ${i.number} (${i.year})${i.isPublished ? "" : " · unpublished"}` }))} />
               <TextField label="Page numbers" name="pages" defaultValue={a?.pages ?? ""} placeholder="e.g. 1-15" />
               <TextField label="Article number" name="articleNumber" defaultValue={a?.articleNumber ?? ""} placeholder="e.g. e2026001" />
               <TextField label="DOI" name="doi" defaultValue={a?.doi ?? ""} placeholder={j.doiPrefix ? `${j.doiPrefix}/ijcst.${new Date().getFullYear()}.001` : "10.xxxxx/..."} hint="Displayed publicly only after successful registration (see DOI module)." />
@@ -106,7 +106,7 @@ export default async function ArticleEdit({ params }: { params: Promise<{ id: st
             <p className="hint">Files become publicly accessible (with permanent links) only while the article is published.</p>
           </Card>
         )}
-        {a?.doi && <Card title="DOI"><p className="text-sm">DOI <code>{a.doi}</code> — status: <Badge>{a.doiRecords[0]?.status?.toLowerCase() ?? "none"}</Badge> <Link className="link ml-2" href={`/admin/doi/${a.id}`}>Manage deposit →</Link></p></Card>}
+        {a?.doi && <Card title="DOI"><p className="text-sm">DOI <code>{a.doi}</code> · status: <Badge>{a.doiRecords[0]?.status?.toLowerCase() ?? "none"}</Badge> <Link className="link ml-2" href={`/admin/doi/${a.id}`}>Manage deposit →</Link></p></Card>}
       </div>
     </>
   );

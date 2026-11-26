@@ -69,7 +69,7 @@ export default async function IssuesAdmin() {
               <ul className="divide-y divide-line text-sm">
                 {v.issues.map((i) => (
                   <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                    <Link className="link font-medium" href={`/admin/issues/${i.id}`}>Issue {i.number} ({i.year}){i.title ? ` — ${i.title}` : ""}</Link>
+                    <Link className="link font-medium" href={`/admin/issues/${i.id}`}>Issue {i.number} ({i.year}){i.title ? ` · ${i.title}` : ""}</Link>
                     <span className="flex gap-1 text-xs">{i._count.articles} articles {i.isPublished ? <Badge tone="green">published</Badge> : <Badge>unpublished</Badge>}{i.isCurrent && <Badge tone="navy">current</Badge>}</span>
                   </li>
                 ))}

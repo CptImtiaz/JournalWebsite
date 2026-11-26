@@ -31,12 +31,12 @@ async function op(fd: FormData) {
     try { xml = buildCrossrefXml(a, j, batchId); } catch (e) { back(here, { error: (e as Error).message }); }
     const rec = await db.doiRecord.create({ data: { articleId: id, doi: a.doi, status: "DRAFT", batchId, depositXml: xml } });
     if (o === "submit") {
-      if (a.status === "DRAFT") back(here, { error: "Publish the article before depositing — the DOI must resolve to a live page." });
+      if (a.status === "DRAFT") back(here, { error: "Publish the article first. The DOI must point to a live page." });
       try {
         const r = await submitDeposit(xml, batchId, j.crossrefTestMode);
         await db.doiRecord.update({ where: { id: rec.id }, data: { status: r.ok ? "SUBMITTED" : "FAILED", submittedAt: new Date(), response: `HTTP ${r.status}\n${r.text}` } });
         await audit(u.id, "doi.deposit_submitted", "Article", id, { doi: a.doi, ok: r.ok, test: j.crossrefTestMode });
-        back(here, r.ok ? { ok: "Deposit submitted to Crossref. Registration is processed asynchronously — use “Verify registration” after a few minutes." } : { error: `Crossref returned HTTP ${r.status}.` });
+        back(here, r.ok ? { ok: "Deposit sent to Crossref. Registration takes a few minutes. Then click Verify registration." } : { error: `Crossref returned HTTP ${r.status}.` });
       } catch (e) {
         await db.doiRecord.update({ where: { id: rec.id }, data: { status: "FAILED", response: (e as Error).message } });
         back(here, { error: (e as Error).message });

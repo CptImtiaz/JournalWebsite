@@ -93,13 +93,13 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
               <div><dt className="text-muted">Originality declaration</dt><dd>{m.originalityDeclared ? "Confirmed" : "No"}</dd></div>
               {m.dataAvailability && <div className="sm:col-span-2"><dt className="text-muted">Data availability</dt><dd>{m.dataAvailability}</dd></div>}
               {m.previouslySubmitted && <div><dt className="text-muted">Previous submission</dt><dd>{m.previouslySubmitted}</dd></div>}
-              {Array.isArray(m.suggestedReviewers) && m.suggestedReviewers.length > 0 && <div className="sm:col-span-2"><dt className="text-muted">Suggested reviewers</dt><dd><ul className="list-disc pl-5">{(m.suggestedReviewers as { name: string; email: string; institution: string; reason: string }[]).map((r, i) => <li key={i}><strong>{r.name}</strong> {r.institution && `· ${r.institution}`} {r.email && `· ${r.email}`} {r.reason && <span className="text-muted">— {r.reason}</span>}</li>)}</ul></dd></div>}
-              {Array.isArray(m.opposedReviewers) && m.opposedReviewers.length > 0 && <div className="sm:col-span-2"><dt className="text-muted">Opposed reviewers</dt><dd><ul className="list-disc pl-5">{(m.opposedReviewers as { name: string; institution: string; reason: string }[]).map((r, i) => <li key={i}><strong>{r.name}</strong> {r.institution && `· ${r.institution}`} {r.reason && <span className="text-muted">— {r.reason}</span>}</li>)}</ul></dd></div>}
+              {Array.isArray(m.suggestedReviewers) && m.suggestedReviewers.length > 0 && <div className="sm:col-span-2"><dt className="text-muted">Suggested reviewers</dt><dd><ul className="list-disc pl-5">{(m.suggestedReviewers as { name: string; email: string; institution: string; reason: string }[]).map((r, i) => <li key={i}><strong>{r.name}</strong> {r.institution && `· ${r.institution}`} {r.email && `· ${r.email}`} {r.reason && <span className="text-muted">({r.reason})</span>}</li>)}</ul></dd></div>}
+              {Array.isArray(m.opposedReviewers) && m.opposedReviewers.length > 0 && <div className="sm:col-span-2"><dt className="text-muted">Opposed reviewers</dt><dd><ul className="list-disc pl-5">{(m.opposedReviewers as { name: string; institution: string; reason: string }[]).map((r, i) => <li key={i}><strong>{r.name}</strong> {r.institution && `· ${r.institution}`} {r.reason && <span className="text-muted">({r.reason})</span>}</li>)}</ul></dd></div>}
               {m.coverLetter && <div className="sm:col-span-2"><dt className="text-muted">Cover letter</dt><dd className="whitespace-pre-line">{m.coverLetter}</dd></div>}
             </dl>
             <h3 className="mt-5 text-sm font-semibold text-ink">Authors</h3>
             <ol className="mt-2 space-y-1 text-sm">
-              {m.authors.map((a) => <li key={a.id}>{a.order}. <strong>{a.fullName}</strong>{a.isCorresponding && " (corresponding)"} — {a.affiliation}{a.country ? `, ${a.country}` : ""} · {a.email}{a.orcid && <> · <a className="link" href={`https://orcid.org/${a.orcid}`} target="_blank" rel="noopener">{a.orcid}</a></>}</li>)}
+              {m.authors.map((a) => <li key={a.id}>{a.order}. <strong>{a.fullName}</strong>{a.isCorresponding && " (corresponding)"} · {a.affiliation}{a.country ? `, ${a.country}` : ""} · {a.email}{a.orcid && <> · <a className="link" href={`https://orcid.org/${a.orcid}`} target="_blank" rel="noopener">{a.orcid}</a></>}</li>)}
             </ol>
           </Card>
         </div>
@@ -165,7 +165,7 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
               <input type="hidden" name="id" value={m.id} />
               <h3 className="text-sm font-semibold text-ink md:col-span-2">Invite a reviewer for round {m.currentRevision + 1}</h3>
               <div className="md:col-span-2">
-                <SelectField label="From reviewer pool" name="reviewerId" placeholder="— or invite a new reviewer below —" options={reviewers.map((r) => ({ value: r.id, label: `${r.fullName} — ${r.reviewerProfile?.expertise ?? r.researchInterests ?? "no expertise listed"} (${r.reviewerProfile?.availability?.toLowerCase() ?? "available"}, ${r._count.reviewAssignments} active)` }))} />
+                <SelectField label="From reviewer pool" name="reviewerId" placeholder="Choose a reviewer, or invite a new one below" options={reviewers.map((r) => ({ value: r.id, label: `${r.fullName} · ${r.reviewerProfile?.expertise ?? r.researchInterests ?? "no expertise listed"} (${r.reviewerProfile?.availability?.toLowerCase() ?? "available"}, ${r._count.reviewAssignments} active)` }))} />
               </div>
               <TextField label="New reviewer name" name="fullName" />
               <TextField label="New reviewer email" name="email" type="email" />
@@ -204,7 +204,7 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
                     </div>
                   </>
                 ) : (
-                  <div><SubmitButton>Submit recommendation to Editor-in-Chief</SubmitButton><p className="hint">Only the Editor-in-Chief or Managing Editor can issue official decisions.</p></div>
+                  <div><SubmitButton>Submit recommendation to Editor in Chief</SubmitButton><p className="hint">Only the Editor in Chief or Managing Editor can issue official decisions.</p></div>
                 )}
               </form>
             ) : <p className="text-sm text-muted">A final decision has been recorded ({MANUSCRIPT_STATUSES[m.status as keyof typeof MANUSCRIPT_STATUSES]}).</p>}
@@ -224,7 +224,7 @@ export default async function EditorManuscript({ params }: { params: Promise<{ i
           </Card>
           <Card title="History">
             <ol className="space-y-2 text-sm">
-              {m.statusEvents.map((e) => <li key={e.id}><span className="text-muted">{formatDateTime(e.createdAt)}</span> — <StatusBadge status={e.status} /> {e.note && <span className="text-muted">{e.note}</span>}</li>)}
+              {m.statusEvents.map((e) => <li key={e.id}><span className="text-muted">{formatDateTime(e.createdAt)}</span> · <StatusBadge status={e.status} /> {e.note && <span className="text-muted">{e.note}</span>}</li>)}
               {m.revisions.map((r) => <li key={r.id}><details><summary className="cursor-pointer">Revision {r.number} response ({formatDate(r.submittedAt)})</summary><p className="mt-1 whitespace-pre-line text-muted">{r.responseToReviewers}</p></details></li>)}
             </ol>
           </Card>

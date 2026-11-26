@@ -73,7 +73,7 @@ export default async function UserDetail({ params }: { params: Promise<{ id: str
             {(Object.keys(ROLES) as RoleKey[]).map((k) => (
               <label key={k} className="flex items-start gap-2 text-sm">
                 <input type="checkbox" name="roles" value={k} defaultChecked={has.has(k)} className="mt-1" />
-                <span><strong>{ROLES[k]}</strong> — <span className="text-muted">{ROLE_DESCRIPTIONS[k]}</span><span className="block text-xs text-muted">{ROLE_PERMISSIONS[k].map((p) => PERMISSIONS[p]).join("; ") || "Public content only"}</span></span>
+                <span><strong>{ROLES[k]}</strong> · <span className="text-muted">{ROLE_DESCRIPTIONS[k]}</span><span className="block text-xs text-muted">{ROLE_PERMISSIONS[k].map((p) => PERMISSIONS[p]).join("; ") || "Public content only"}</span></span>
               </label>
             ))}
             <SubmitButton>Save roles</SubmitButton>
@@ -93,7 +93,7 @@ export default async function UserDetail({ params }: { params: Promise<{ id: str
               <div>Joined: {formatDateTime(u.createdAt)}</div><div>Last login: {formatDateTime(u.lastLoginAt) || "never"}</div>
               <div>Email verified: {u.emailVerifiedAt ? formatDateTime(u.emailVerifiedAt) : "no"}</div><div>2FA: {u.mfaEnabled ? "enabled" : "off"}</div>
               <div>Submissions: {u._count.manuscripts}</div><div>Review assignments: {u._count.reviewAssignments}</div>
-              <div>ORCID: {u.orcid ?? "—"}</div><div>Active sessions: {u._count.sessions}</div>
+              <div>ORCID: {u.orcid ?? "None"}</div><div>Active sessions: {u._count.sessions}</div>
             </dl>
           </Card>
           <Card title="Account actions">

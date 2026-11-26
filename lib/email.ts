@@ -41,7 +41,7 @@ export async function deliver(id: string) {
   if (!n) return;
   const t = transport();
   if (!t) {
-    await db.emailNotification.update({ where: { id }, data: { status: "LOGGED", error: "SMTP not configured — message recorded but not sent.", attempts: { increment: 1 } } });
+    await db.emailNotification.update({ where: { id }, data: { status: "LOGGED", error: "SMTP is not configured. The message was recorded but not sent.", attempts: { increment: 1 } } });
     return;
   }
   const j = await getJournal();

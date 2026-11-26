@@ -23,7 +23,7 @@ async function op(fd: FormData) {
   if (o === "up" || o === "down") await moveItem("researchCategory", id, o === "up" ? -1 : 1);
   if (o === "delete") {
     const used = await db.researchCategory.findUniqueOrThrow({ where: { id }, include: { _count: { select: { manuscripts: true, articles: true } } } });
-    if (used._count.manuscripts || used._count.articles) back("/admin/categories", { error: "Category is in use — deactivate it instead." });
+    if (used._count.manuscripts || used._count.articles) back("/admin/categories", { error: "This category is in use. Deactivate it instead." });
     await db.researchCategory.delete({ where: { id } });
   }
   await audit(u.id, `category.${o}`, "ResearchCategory", id || undefined);

@@ -13,7 +13,7 @@ export default async function Verify({ searchParams }: { searchParams: Promise<{
   }
   return (
     <AuthCard title={t ? "Email verified" : "Verification failed"}>
-      <p className="text-sm text-muted">{t ? "Thank you — your email address has been verified." : "This verification link is invalid, expired or has already been used."}</p>
+      <p className="text-sm text-muted">{t ? "Thank you. Your email address is verified." : "This verification link is invalid, expired or has already been used."}</p>
       <Link href={t ? "/account" : "/verify-email/pending"} className="btn-primary mt-6 w-full">{t ? "Continue to your dashboard" : "Request a new link"}</Link>
     </AuthCard>
   );

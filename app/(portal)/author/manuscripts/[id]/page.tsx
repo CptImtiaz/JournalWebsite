@@ -179,7 +179,7 @@ export default async function AuthorManuscript({ params }: { params: Promise<{ i
               </ul>
               {m.revisions.length > 0 && (
                 <div className="mt-4 border-t border-line pt-3">
-                  {m.revisions.map((r) => <details key={r.id} className="text-sm"><summary className="cursor-pointer">Revision {r.number} — {formatDate(r.submittedAt)}</summary><p className="mt-1 whitespace-pre-line text-muted">{r.responseToReviewers}</p></details>)}
+                  {m.revisions.map((r) => <details key={r.id} className="text-sm"><summary className="cursor-pointer">Revision {r.number} · {formatDate(r.submittedAt)}</summary><p className="mt-1 whitespace-pre-line text-muted">{r.responseToReviewers}</p></details>)}
                 </div>
               )}
             </Card>

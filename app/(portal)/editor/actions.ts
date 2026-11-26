@@ -159,7 +159,7 @@ export async function decisionAction(fd: FormData) {
   if (!official) {
     await audit(u.id, "manuscript.recommendation", "Manuscript", m.id, { decision });
     await sendTemplate("review_submitted", await editorialOfficeEmails(), { title: m.title, manuscript_id: m.code, recommendation: `Editor recommendation: ${RECOMMENDATIONS[decision as keyof typeof RECOMMENDATIONS]}`, url: `${appUrl()}${here}` });
-    back(here, { ok: "Recommendation recorded and sent to the Editor-in-Chief / Managing Editor." });
+    back(here, { ok: "Recommendation recorded and sent to the Editor in Chief / Managing Editor." });
   }
   if (bool(fd, "releaseReviews")) {
     await db.reviewReport.updateMany({ where: { assignment: { manuscriptId: m.id, revision: m.currentRevision } }, data: { releasedToAuthor: true } });

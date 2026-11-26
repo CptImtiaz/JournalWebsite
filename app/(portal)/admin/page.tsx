@@ -140,7 +140,7 @@ export default async function AdminDashboard() {
           {logs.map((l) => (
             <li key={l.id} className="relative">
               <span className="absolute -left-[29px] top-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-brand ring-1 ring-line" />
-              <div className="text-sm"><span className="font-medium">{l.actor?.fullName ?? "System"}</span> <span className="text-muted">—</span> <span className="font-mono text-xs">{l.action}</span> {l.entityType && <span className="text-muted">({l.entityType})</span>}</div>
+              <div className="text-sm"><span className="font-medium">{l.actor?.fullName ?? "System"}</span> <span className="text-muted">None</span> <span className="font-mono text-xs">{l.action}</span> {l.entityType && <span className="text-muted">({l.entityType})</span>}</div>
               <div className="text-xs text-muted">{formatDateTime(l.createdAt)}</div>
             </li>
           ))}

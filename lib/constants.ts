@@ -42,7 +42,7 @@ export const RECOMMENDATIONS = {
 } as const;
 
 export const BOARD_POSITIONS = {
-  EDITOR_IN_CHIEF: "Editor-in-Chief",
+  EDITOR_IN_CHIEF: "Editor in Chief",
   MANAGING_EDITOR: "Managing Editor",
   ASSOCIATE_EDITOR: "Associate Editors",
   SECTION_EDITOR: "Section Editors",

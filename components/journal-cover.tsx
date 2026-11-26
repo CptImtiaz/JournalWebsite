@@ -20,7 +20,7 @@ export function JournalCover({ volume, issue, year, short = "IJCST", className =
       <circle cx="136" cy="112" r="9" fill="none" stroke="#F2B33D" strokeWidth="1" />
       <rect x="0" y="252" width="210" height="45" fill="#ffffff" />
       <text x="16" y="271" fontFamily="Arial, sans-serif" fontSize="9" fontWeight="700" fill="#142D4E">{volume ? `Volume ${volume} · Issue ${issue}` : "Open Access Journal"}</text>
-      <text x="16" y="285" fontFamily="Arial, sans-serif" fontSize="7.5" fill="#6B7280">{year ? `${year} · Open access` : "Peer-reviewed · Open access"}</text>
+      <text x="16" y="285" fontFamily="Arial, sans-serif" fontSize="7.5" fill="#6B7280">{year ? `${year} · Open access` : "Peer reviewed · Open access"}</text>
       <rect x="168" y="262" width="26" height="26" fill="#142D4E" />
       <text x="181" y="279" textAnchor="middle" fontFamily="Georgia, serif" fontSize="11" fontWeight="700" fill="#F2B33D">OA</text>
     </svg>

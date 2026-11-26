@@ -104,7 +104,7 @@ export default async function Assignment({ params }: { params: Promise<{ id: str
               <input type="hidden" name="id" value={a.id} />
               <SelectField label="Recommendation" name="recommendation" required placeholder="Select…" options={Object.entries(RECOMMENDATIONS).map(([value, label]) => ({ value, label }))} />
               <TextArea label="Comments for the authors" name="commentsToAuthor" required rows={10} hint="These comments may be shared with the authors. Do not include your identity." />
-              <TextArea label="Confidential comments to the editor" name="confidentialComments" rows={4} hint="Visible to editors only — never shown to authors." />
+              <TextArea label="Confidential comments to the editor" name="confidentialComments" rows={4} hint="Only editors see this. Authors never do." />
               <Field label="Annotated document (optional)" name="annotatedFile" hint="Remove your name from document properties before uploading."><input id="annotatedFile" name="annotatedFile" type="file" className="input" accept=".pdf,.doc,.docx,.zip" /></Field>
               <div><SubmitButton confirm="Submit your review? It cannot be edited afterwards.">Submit review</SubmitButton></div>
             </form>
